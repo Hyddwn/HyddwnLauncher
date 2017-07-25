@@ -1,0 +1,32 @@
+﻿<controls:MetroWindow x:Class="HyddwnLauncher.ExceptionReporter"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:HyddwnLauncher"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      mc:Ignorable="d"
+                      Icon="Icon_Internal_a.ico"
+                      Window.Title="HL APPCRASH" FrameworkElement.Height="327" FrameworkElement.Width="489"
+                      GlowBrush="#FFDDDDDD"
+                      ResizeMode="NoResize"
+                      WindowTransitionsEnabled="true" NonActiveGlowBrush="Red">
+    <FrameworkElement.Style>
+        <Style TargetType="{x:Type controls:MetroWindow}">
+            <Setter Property="controls:MetroWindow.WindowTitleBrush" Value="#FF272626" />
+            <Setter Property="controls:MetroWindow.NonActiveWindowTitleBrush" Value="#FF272626" />
+        </Style>
+    </FrameworkElement.Style>
+    <Grid Loaded="OnLoaded">
+        <TextBlock HorizontalAlignment="Left" Height="76" Margin="10,10,0,0" Foreground="White" TextWrapping="Wrap"
+                   VerticalAlignment="Top" Width="464">
+            <Run FontWeight="Bold" FontSize="18" Text="The Application has crashed! No pie for you!" />
+            <LineBreak />
+            <LineBreak />
+            <Run
+                Text="An error occurred which has caused this application to operate incorrectly. Details are provided below. " />
+        </TextBlock>
+        <TextBox Name="ExceptionBox" HorizontalAlignment="Left" Height="195" Margin="10,91,0,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="464" IsReadOnly="true" />
+    </Grid>
+</controls:MetroWindow>

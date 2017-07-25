@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="HyddwnLauncher.Controls.NewServerProfileUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:HyddwnLauncher"
+             mc:Ignorable="d" d:DesignWidth="400" Height="396.978">
+    <Grid>
+        <StackPanel Margin="5">
+            <StackPanel Margin="5" Orientation="Horizontal">
+                <TextBlock Text="Server Profile Editor" FontWeight="Bold" FontSize="16" />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The name of this server.">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Server Name" />
+                <TextBox Margin="65 0 0 0" Width="180" />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The IP used to log into this server.">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Login Ip" />
+                <TextBox Margin="90 0 0 0" Width="180" />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
+                        ToolTip="The IP used with chat operations (friends list, private messaging, etc.)">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Chat Ip" />
+                <TextBox Margin="95 0 0 0" Width="180" />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
+                        ToolTip="Link to zip file containing files that will be packed into a pack file.">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Pack Data Url" />
+                <TextBox Margin="62 0 0 0" Width="180" />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
+                        ToolTip="Link to zip file that contains files that DO NOT belong in a pack file.">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Root Data Url" />
+                <TextBox Margin="61 0 0 0" Width="180" />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="Link to text file containing current ip.">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Ip Update Url" />
+                <TextBox Margin="62 0 0 0" Width="180" />
+            </StackPanel>
+            <StackPanel>
+                <StackPanel
+                    ToolTip="You can override url.xml values to redirect certain operations to your server instead of official.">
+                    <TextBlock Text="'Urls.xml' value overrides." />
+                    <DataGrid Margin="0 5 0 0" Height="150"
+                              ToolTip="You can override urls.xml values to redirect certain operations to your server instead of official.">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Option" Width="*" />
+                            <DataGridTextColumn Header="Value" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
