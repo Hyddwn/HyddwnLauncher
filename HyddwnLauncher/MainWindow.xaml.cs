@@ -275,7 +275,7 @@ namespace HyddwnLauncher
                 if (ActiveClientProfile == null || ActiveServerProfile == null)
                     throw new ApplicationException("Unable to start client: no client or server profile available!");
 
-                if (!ActiveServerProfile.IsOfficial)
+                if (ActiveServerProfile.IsOfficial)
                 {
                     await DeletePackFiles();
                     NxAuthLogin.IsOpen = true;
