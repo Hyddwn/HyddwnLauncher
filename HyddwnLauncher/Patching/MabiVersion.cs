@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace HyddwnLauncher.Patching
 {
     public class MabiVersion
     {
+        public ObservableCollection<MabiVersion> ObservableVersions => new ObservableCollection<MabiVersion>(Versions);
+
         public static readonly List<MabiVersion> Versions = new List<MabiVersion>(10)
         {
             //new MabiVersion("Japan", "http://patch.mabinogi.jp/patch/patch.txt"),
