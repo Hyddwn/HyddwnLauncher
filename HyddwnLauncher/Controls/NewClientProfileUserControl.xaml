@@ -14,12 +14,12 @@
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="The nick name for this instance of Mabinogi.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Nick Name" />
-                <TextBox Margin="61 0 0 0" Width="180"
+                <TextBox Margin="61 0 0 0" Width="180" ToolTip="A Friendly Name for your Client Profile"
                          Text="{Binding ElementName=This, Path=ClientProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="Location of Mabinogi's Client.exe">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Path to Client" />
-                <TextBox Margin="48 0 0 0" Width="180"
+                <TextBox Margin="48 0 0 0" Width="180" ToolTip="The File Path to Client.exe"
                          Text="{Binding ElementName=This, Path=ClientProfile.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Button Margin="5 0 0 0" Content=". . ." Click="BrowseButtonOnClick" />
             </StackPanel>

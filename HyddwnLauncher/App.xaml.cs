@@ -61,7 +61,7 @@ namespace HyddwnLauncher
             launcherContext.Settings.RequiresAdmin = false;
             launcherContext.Settings.FirstRun = true;
 #endif
-            CheckForAdmin(launcherContext);
+            //CheckForAdmin(launcherContext);
             ServicePointManager.DefaultConnectionLimit = launcherContext.Settings.ConnectionLimit;
             Log.Info("Application initialized, loading main window.");
             var mainWindow = new MainWindow(launcherContext);
@@ -90,7 +90,7 @@ namespace HyddwnLauncher
                     var files = Directory.GetFiles(packPath);
                     foreach (var file in from file in files
                         let fileName = Path.GetFileName(file)
-                        where fileName.Contains("hyd")
+                        where fileName.Contains("hy_")
                         select file)
                         File.Delete(file);
                     Shutdown();

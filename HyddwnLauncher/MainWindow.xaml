@@ -8,7 +8,6 @@
                       xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
                       xmlns:ctrl="clr-namespace:HyddwnLauncher.Controls"
-                      xmlns:patching="clr-namespace:HyddwnLauncher.Patching"
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
@@ -24,9 +23,6 @@
             <Setter Property="NonActiveWindowTitleBrush" Value="#FF272626" />
         </Style>
     </FrameworkElement.Style>
-    <Window.Resources>
-        <patching:MabiVersion x:Key="MabiVersion" />
-    </Window.Resources>
     <Grid>
         <simpleChildWindow:ChildWindow
             x:Name="Loading" IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
@@ -35,337 +31,6 @@
                 <wpf:LoadingIndicator HorizontalAlignment="Left" Margin="10,0,0,0"
                                       Style="{StaticResource LoadingIndicatorArcsStyle}" />
                 <TextBlock x:Name="Text" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="70,0,0,0" />
-            </Grid>
-        </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow
-            x:Name="ChangesWindow" Control.HorizontalContentAlignment="Center"
-            Control.VerticalContentAlignment="Center" Title="Change Log"
-            TitleBarBackground="#FF272626"
-            IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ChildWindowWidth="320"
-            ChildWindowHeight="300">
-            <Grid>
-                <ScrollViewer Margin="10">
-                    <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" HorizontalAlignment="Center">
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Version 0.5.2.5" />
-                        </Span>
-                        <LineBreak />
-                        <Run Foreground="White" FontWeight="Bold" Text="Fix:" TextDecorations="Underline" />
-                        <Run Foreground="White" FontWeight="Bold" Text=" " />
-                        <Run Foreground="White" Text="Options tab background was black where it should not have been." />
-                        <LineBreak />
-                        <Run Foreground="White" FontWeight="Bold" Text="Fix:" TextDecorations="Underline" />
-                        <Run Foreground="White" FontWeight="Bold" Text=" " />
-                        <Run Foreground="White" Text="Log's text view had a board when focused, this was not intended." />
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Version 0.5.2.4" />
-                        </Span>
-                        <LineBreak />
-                        <Run Foreground="White" FontWeight="Bold" Text="Fix:" TextDecorations="Underline" />
-                        <Run Foreground="White"
-                             Text=" An issue where the launcher would not update the client even when a newer version was detected." />
-                        <LineBreak />
-                        <Run Foreground="White" FontWeight="Bold" Text="New:" TextDecorations="Underline" />
-                        <Run Foreground="White" FontWeight="Bold" Text=" " />
-                        <Run Foreground="White"
-                             Text="The launcher can now detect of the server's pack file is up to date based of settings from the server profile." />
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Version 0.5.2.2" />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Adds ability to delete Hyddwn Launcher's pack files through the Options Menu" />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Holding down the CTRL button allows you to rebuild the server pack file instead of launching. (Follows the packfile version rule)" />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Potential crash when a profile has an invalid &amp;quot;Path to Client&amp;quot; specified." />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Hyddwn Launcher now properly uses the server profile protocol, this means that when a new update comes, to prevent crashing, Hyddwn Launcher will automatically remove any pack files it generated, once the pack file is updated it will automatically start using it." />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" An issue where launch function was not properly preventing launches in the case where a client or server profile was unselected." />
-                        </Span>
-                        <LineBreak /><LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Version 0.5.1.7" />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Normal">
-                            <Run Text=" A regression to a fix to the layout applied in 0.5.1.5" />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Normal">
-                            <Run
-                                Text=" An error that would make updates cancel even when all the information need available." />
-                        </Span>
-                        <LineBreak /><LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Versrion 0.5.1.6" />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Normal">
-                            <Run
-                                Text=" An issue where failing to launch would leave the popup active, forcing you to close the launcher to retry." />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Normal">
-                            <Run
-                                Text=" An issue for first time users where the launcher would loop through the &amp;quot;New Client Profile&amp;quot; flow even though it was completed successfully the first time." />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Normal">
-                            <Run
-                                Text=" An issue for first time users where if they forgot to set their client location and the message box pops up asking for a location, the user's input is not saved causing a crash the next time the launcher is ran." />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Normal">
-                            <Run
-                                Text=" On launch, if there is not both a Client and Server Profile available the launch is canceled and you are actually notified." />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Another layout issue in Profile Editor" />
-                        </Span>
-                        <LineBreak /><LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Version 0.5.1.5" />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Changes in how Change Log is handled so you can better understand it." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Log view so you can see some of the more advanced things that are happening in the background." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Bug where the updater thread is never subscribe to, making the launcher never able to update Mabinogi." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Possible issue where not all failure to launcher reported anything to you." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Possible bug where launching when no Client or Server profile was active would result in a crash." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Version 0.5.1.4" />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Layout issue in profile editor." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text="Fix: Bug where launcher tried to update when a client profile was not active resulting in immediate crash." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Version 0.5.1.3" />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Bug where launcher would crash if not connected to the internet." />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Issue where launcher would try to do anything before first checking for an update." />
-                        </Span>
-                        <LineBreak /><LineBreak />
-                        <Span Foreground="White" TextDecorations="Underline">
-                            <Run Text="Version 0.5.1.1" />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Bug where launcher would try to set itself up before use finished creating a user profile." />
-                        </Span>
-                        <LineBreak />
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Fix:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Crash where issues occur while downloading language pack." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="Version 0.5.1.0" />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Launcher now tries to manage the information for Hyddwn for you." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Launcher can now automatically create pack files for servers." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run
-                                Text=" Now you can place the launcher anywhere and manage more than one instance of Mabinogi though Client Profiles." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Options can now be changed!" />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <Span Foreground="White" FontWeight="Bold" TextDecorations="Underline">
-                            <Run Text="New:" />
-                        </Span>
-                        <Span Foreground="White">
-                            <Run Text=" Replace webpage with random image for now." />
-                        </Span>
-                        <Span Foreground="White" FontSize="12" FontFamily="Segoe UI">
-                            <LineBreak />
-                        </Span>
-                        <LineBreak />
-                    </TextBlock>
-                </ScrollViewer>
             </Grid>
         </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow
@@ -380,10 +45,10 @@
         </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow
             x:Name="NxAuthLogin" IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
-            ChildWindowWidth="350" ChildWindowHeight="340" CloseByEscape="False">
+            ChildWindowWidth="350" ChildWindowHeight="300" CloseByEscape="False">
             <Grid>
                 <StackPanel Margin="0 10 0 0">
-                    <TextBlock Text="NXID Login" HorizontalAlignment="Center" FontSize="36" />
+                    <TextBlock Text="Nexon Passport" HorizontalAlignment="Center" FontSize="36" />
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
                         <Run
                             Text="Please log in using your Nexon Username and Password. All Information used is immediately discarded for your protection." />
@@ -392,11 +57,11 @@
                              Text="Do not enter your username or password into closed sourced launchers without verifying they are safe to use." />
                     </TextBlock>
                 </StackPanel>
-                <StackPanel VerticalAlignment="Center" Margin="15 0">
+                <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
                     <TextBox x:Name="NxAuthLoginUsername" controls:TextBoxHelper.UseFloatingWatermark="True"
                              Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Userame" />
                     <PasswordBox x:Name="NxAuthLoginPassword" controls:TextBoxHelper.UseFloatingWatermark="True"
-                                 Margin="0 15 0 2" controls:TextBoxHelper.Watermark="Password" />
+                                 Margin="0 5 0 2" controls:TextBoxHelper.Watermark="Password" />
                     <TextBlock x:Name="NxAuthLoginNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>
@@ -404,21 +69,13 @@
                     <wpf:LoadingIndicator HorizontalAlignment="Center" Margin="0,0,0,5"
                                           x:Name="NxAuthLoginLoadingIndicator"
                                           Style="{StaticResource LoadingIndicatorArcsStyle}" IsActive="False" />
-                    <Button x:Name="NxAuthLoginSubmit" VerticalAlignment="Center" Margin="25 5" Content="Login"
-                            Click="NxAuthLoginOnSubmit" />
-                    <Button x:Name="NxAuthLoginCancel" VerticalAlignment="Center" Margin="25 0" Content="Cancel"
-                            Click="NxAuthLoginOnCancel" />
+                    <DockPanel VerticalAlignment="Bottom">
+                        <Button DockPanel.Dock="Left" IsDefault="True" x:Name="NxAuthLoginSubmit" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Login"
+                                Click="NxAuthLoginOnSubmit" />
+                        <Button DockPanel.Dock="Right" IsCancel="True" x:Name="NxAuthLoginCancel" Width="100" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Cancel"
+                                Click="NxAuthLoginOnCancel" />
+                    </DockPanel>
                 </StackPanel>
-            </Grid>
-        </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow
-            x:Name="SpecialThanks" HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center" Title="ImportWorker" IsModal="true"
-            ShowTitleBar="false"
-            ShowCloseButton="false" ChildWindowWidth="300" ChildWindowHeight="80">
-            <Grid>
-                <TextBlock FontWeight="Bold" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Stretch"
-                           TextAlignment="Center" Text="Special Thanks to cursey" />
             </Grid>
         </simpleChildWindow:ChildWindow>
         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Height="16" Width="50" Margin="516,374,0,0"
@@ -434,11 +91,11 @@
                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                 </Grid>
             </controls:MetroTabItem>
-            <controls:MetroTabItem Header="Update">
+            <controls:MetroTabItem Header="Log">
                 <Grid>
-                    <ScrollViewer>
-                        <ItemsControl ItemsSource="{Binding Reporters, ElementName=This}" />
-                    </ScrollViewer>
+                    <TextBox BorderBrush="Transparent" FocusVisualStyle="{x:Null}" BorderThickness="0"
+                             IsReadOnly="True" IsReadOnlyCaretVisible="False" x:Name="LogView"
+                             VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" />
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Options">
@@ -450,25 +107,11 @@
                                 <TextBlock Margin="5 2.5" Text="Advanced Options" FontWeight="Bold" />
                                 <StackPanel Margin="5 2.5">
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
-                                        <TextBlock TextWrapping="Wrap" VerticalAlignment="Center"
-                                                   Text="Set Version Number" />
-                                        <controls:NumericUpDown x:Name="VersionUpDown"
-                                                                Margin="4 0 0 0"
-                                                                Maximum="{Binding MaxVersion, ElementName=This}"
-                                                                Minimum="{Binding MinVersion, ElementName=This}" />
-                                        <Button x:Name="VersionButton" Content="Set" Margin="4 0 0 0"
-                                                Click="VersionButtonClick" />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="5">
-                                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
-                                                   Text="Redownload Language Pack" />
-                                        <Button x:Name="ReLangPackButton" Content="Download" Margin="4 0 0 0"
-                                                Click="ReLangPackButtonOnClick" />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="5">
-                                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
                                                    Text="Delete Custom Server Pack Files" />
-                                        <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />
+                                            <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Margin="5" Text="Profile Options" FontWeight="Bold" />
@@ -479,34 +122,14 @@
                                                   IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.WarnIfRootIsNotMabiRoot}" />
                                     </StackPanel>
                                 </StackPanel>
-                                <TextBlock Margin="5" Text="Patch Options" FontWeight="Bold" />
-                                <StackPanel Margin="5">
-                                    <StackPanel Margin="5 2.5">
-                                        <StackPanel Orientation="Horizontal" Margin="5 2.5">
-                                            <TextBlock VerticalAlignment="Center" Text="Max Download Connections" />
-                                            <controls:NumericUpDown Margin="4 0 0 0"
-                                                                    Value="{Binding ElementName=This, Path=LauncherContext.Settings.ConnectionLimit}"
-                                                                    Minimum="2"
-                                                                    Maximum="{Binding ElementName=This, Path=LauncherContext.Settings.MaxConnectionLimit, Mode=OneWay}" />
-                                        </StackPanel>
-                                        <CheckBox Margin="2.5" Content="Delete Part Files"
-                                                  IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.DeletePartFiles}" />
-                                        <CheckBox Margin="2.5" Content="Delete Zip Files"
-                                                  IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.DeleteZips}" />
-                                        <CheckBox Margin="2.5" Content="Delete Content Files"
-                                                  IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.DeleteContent}" />
-                                    </StackPanel>
-                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </controls:MetroTabItem>
-            <controls:MetroTabItem Header="Log">
+            <controls:MetroTabItem Header="About">
                 <Grid>
-                    <TextBox BorderBrush="Transparent" FocusVisualStyle="{x:Null}" BorderThickness="0"
-                             IsReadOnly="True" IsReadOnlyCaretVisible="False" x:Name="LogView"
-                             VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" />
+                    
                 </Grid>
             </controls:MetroTabItem>
         </controls:MetroAnimatedSingleRowTabControl>
@@ -514,8 +137,6 @@
                    FontSize="8" />
         <Button Click="LaunchButton_Click" x:Name="LaunchButton" Content="Launch" HorizontalAlignment="Left"
                 Margin="704,374,0,0" VerticalAlignment="Top" Width="112" Height="45" />
-        <Button Click="UpdateButton_Click" x:Name="ActionButton" Content="Check for Updates"
-                HorizontalAlignment="Left" Margin="703,334,0,0" VerticalAlignment="Top" Width="112" Height="35" />
         <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="291,374,0,0"
                                      VerticalAlignment="Top" Width="408" Height="44" />
         <ComboBox x:Name="ClientProfileComboBox" DisplayMemberPath="Name"
@@ -528,10 +149,6 @@
                   SelectedIndex="{Binding ElementName=This, Path=LauncherContext.Settings.ServerProfileSelectedIndex}"
                   SelectionChanged="ServerProfileComboBox_OnSelectionChanged"
                   HorizontalAlignment="Left" Margin="13,374,0,0" VerticalAlignment="Top" Width="167" />
-        <ComboBox SelectionChanged="MabiVersionComboBox_SelectionChanged" x:Name="MabiVersionComboBox"
-                  HorizontalAlignment="Left"
-                  ItemsSource="{Binding Source={StaticResource MabiVersion}, Path=ObservableVersions}"
-                  Margin="13,409,0,0" VerticalAlignment="Top" Width="272" />
         <TextBlock HorizontalAlignment="Left" Margin="464,419,0,0" TextWrapping="Wrap"
                    Text="Launcher Version:" VerticalAlignment="Top" Width="102" />
         <TextBlock HorizontalAlignment="Left" Height="16" Margin="333,419,0,0" TextWrapping="Wrap"

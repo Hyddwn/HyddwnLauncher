@@ -147,26 +147,12 @@
     <Compile Include="ExceptionReporter.xaml.cs">
       <DependentUpon>ExceptionReporter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\FileCopier.xaml.cs">
-      <DependentUpon>FileCopier.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FileDownloader.xaml.cs">
-      <DependentUpon>FileDownloader.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Patching\IProgressReporter.cs" />
     <Compile Include="Util\LauncherContext.cs" />
     <Compile Include="Util\LauncherSettings.cs" />
-    <Compile Include="Patching\MabiVersion.cs" />
     <Compile Include="Controls\NewServerProfileUserControl.xaml.cs">
       <DependentUpon>NewServerProfileUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Patching\OfficialPatchInfo.cs" />
     <Compile Include="Util\PackEngine.cs" />
-    <Compile Include="Patching\Patcher.cs" />
-    <Compile Include="Patching\PatchFileInfo.cs" />
-    <Compile Include="Patching\PatchInfo.cs" />
-    <Compile Include="Patching\PatchSequenceNotFoundException.cs" />
-    <Compile Include="Patching\PatchSequences.cs" />
     <Compile Include="Controls\ProfileEditor.xaml.cs">
       <DependentUpon>ProfileEditor.xaml</DependentUpon>
     </Compile>
@@ -187,14 +173,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ExceptionReporter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\FileCopier.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\FileDownloader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

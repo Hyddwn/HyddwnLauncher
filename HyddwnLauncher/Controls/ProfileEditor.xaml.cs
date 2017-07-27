@@ -56,7 +56,7 @@ namespace HyddwnLauncher.Controls
             {
                 await
                     this.ShowMessageAsync("No Client Profile",
-                        "You have been taken to this window because you do not have a profile configured for Mabinogi. A Client Profile represents an instace of Mabinogi that you installed. At lease one profile must be available in order to use this launcher. Once you are finished, select the profile you would like to use then close the window.");
+                        "You have been taken to this window because you do not have a profile configured for Mabinogi. Please configure a profile representing where your Client.exe is to use this launcher.");
 
                 AddItem();
             }

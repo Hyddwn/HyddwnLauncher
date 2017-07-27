@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using HyddwnLauncher.Patching;
 using Ionic.Zip;
 using MabinogiResource;
 
@@ -15,7 +14,7 @@ namespace HyddwnLauncher.Util
         private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
 
         /// <exception cref="ArgumentNullException"><paramref name="serverProfile" /> is <see langword="null" />.</exception>
-        public bool BuildServerPack(ServerProfile serverProfile)
+        public bool BuildServerPack(ServerProfile serverProfile, int mabiVersion)
         {
             if (serverProfile == null) throw new ArgumentNullException(nameof(serverProfile));
 
@@ -26,7 +25,6 @@ namespace HyddwnLauncher.Util
             var serverPackDataFile = $"{Assemblypath}\\PackData\\{serverProfile.Guid}.zip";
             var serverPackDataPath = extractDirectory + "\\data";
             var packFileName = $"package\\hl_{serverProfile.Name}-{serverProfile.Guid}.pack";
-
 
             if (!Directory.Exists(extractDirectory))
                 Directory.CreateDirectory(extractDirectory);
@@ -93,7 +91,7 @@ namespace HyddwnLauncher.Util
                 return false;
             }
 
-            var version = (uint) Patcher.ReadVersion();
+            var version = (uint)mabiVersion;
 
             Pack(serverPackDataPath, packFileName, ++version);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -8,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +14,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using HyddwnLauncher.Controls;
 using HyddwnLauncher.Network;
-using HyddwnLauncher.Patching;
 using HyddwnLauncher.Util;
 using Ionic.Zip;
 using MahApps.Metro.Controls.Dialogs;
@@ -47,12 +44,10 @@ namespace HyddwnLauncher
             }
 
             InitializeComponent();
-            MinVersion = 0;
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
-            _disableWhilePatching = new[]
+            _disableWhilePatching = new Control[]
             {
-                (Control) LaunchButton,
-                MabiVersionComboBox,
+                LaunchButton,
                 NewProfileButton,
                 ClientProfileComboBox,
                 ServerProfileComboBox
@@ -78,28 +73,9 @@ namespace HyddwnLauncher
         public ProfileManager ProfileManager { get; private set; }
         public ServerProfile ActiveServerProfile { get; set; }
         public ClientProfile ActiveClientProfile { get; set; }
-
-        public ObservableCollection<IProgressReporter> Reporters { get; private set; } =
-            new ObservableCollection<IProgressReporter>();
-
         public LauncherContext LauncherContext { get; private set; }
-
         // Very bad, will need to adjust the method of access.
         public static MainWindow Instance { get; private set; }
-
-        public CancellationTokenSource TokenSource { get; private set; }
-
-        public int MaxVersion
-        {
-            get => (int) GetValue(MaxVersionProperty);
-            set => SetValue(MaxVersionProperty, value);
-        }
-
-        public int MinVersion
-        {
-            get => (int) GetValue(MinVersionProperty);
-            set => SetValue(MinVersionProperty, value);
-        }
 
         public bool IsPatching
         {
@@ -111,21 +87,6 @@ namespace HyddwnLauncher
                     _patching = value;
                     foreach (var uiElement in _disableWhilePatching)
                         uiElement.IsEnabled = !value;
-                    ActionButton.Content = value ? "Cancel" : "Check For Updates";
-                    if (value)
-                    {
-                        ActionButton.Click -= UpdateButton_Click;
-                        ActionButton.Click += MainCancelButton_Click;
-                    }
-                    else
-                    {
-                        ActionButton.IsEnabled = true;
-                        ActionButton.Click -= MainCancelButton_Click;
-                        ActionButton.Click += UpdateButton_Click;
-                    }
-
-                    TokenSource?.Dispose();
-                    TokenSource = new CancellationTokenSource();
                 });
             }
         }
@@ -143,13 +104,10 @@ namespace HyddwnLauncher
         private readonly BackgroundWorker _backgroundWorker2 = new BackgroundWorker();
         private readonly Control[] _disableWhilePatching;
         private readonly Dictionary<string, string> _updateInfo = new Dictionary<string, string>();
-        private Patcher _patcher;
         private volatile bool _patching;
         private bool _updateClose;
         private bool _settingUpProfile;
-        private bool _configured;
-
-        internal ClientAuth ClientAuth;
+        private ClientAuth _clientAuth;
 
         #endregion
 
@@ -184,9 +142,6 @@ namespace HyddwnLauncher
             // Trick to get the UI to display
             await Task.Delay(2000);
 
-            ImporterTextBlock.SetTextBlockSafe("Self Update Check..");
-            if (await SelfUpdate()) return;
-
             ImporterTextBlock.SetTextBlockSafe("Check Client Profiles...");
             CheckClientProfiles();
 
@@ -202,70 +157,20 @@ namespace HyddwnLauncher
             LauncherVersion.SetTextBlockSafe(mblVersion);
 
             ImporterTextBlock.SetTextBlockSafe("Getting mabinogi version...");
-            var mabiVers = Patcher.ReadVersion();
-            MaxVersion = mabiVers;
-            VersionUpDown.Value = mabiVers;
+            var mabiVers = ReadVersion();
             Log.Info("Mabinogi Version {0}", mabiVers);
             ClientVersion.SetTextBlockSafe(mabiVers.ToString());
-
-            MabiVersionComboBox.SelectedIndex =
-                MabiVersion.Versions.IndexOf(
-                    MabiVersion.Versions.FirstOrDefault(v => v.ToString() == LauncherContext.Settings.Locale) ??
-                    MabiVersion.Versions.FirstOrDefault(v => v.Name.StartsWith("North Am")) ??
-                    MabiVersion.Versions.First());
-
 
             ImporterTextBlock.Text = "Updating server profiles...";
             await Task.Run(() => ProfileManager.UpdateProfiles());
 
             ImportWindow.IsOpen = false;
-            if (!LauncherContext.Settings.FirstRun)
-                return;
-
-            ChangesWindow.IsOpen = true;
-            LauncherContext.Settings.FirstRun = false;
-
-            _backgroundWorker2.DoWork += _backgroundWorker2_DoWork;
-
-            if (ClientProfileComboBox.SelectedIndex == -1) return;
-
-            _backgroundWorker2.RunWorkerAsync();
-        }
-
-        private void UpdateButton_Click(object sender, RoutedEventArgs e)
-        {
-            _backgroundWorker2.RunWorkerAsync();
-        }
-
-        private void MainCancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            ActionButton.Content = "Cancelling...";
-            ActionButton.IsEnabled = false;
-            TokenSource.Cancel();
+            IsPatching = false;
         }
 
         private void Updater_Closing(object sender, CancelEventArgs e)
         {
             e.Cancel = true;
-        }
-
-        private async void MabiVersionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var comboBox = sender as ComboBox;
-            if (comboBox != null)
-                try
-                {
-                    _patcher = new Patcher(this, ((MabiVersion) comboBox.SelectedItem).GetPatchInfo());
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, "Unable to fetch patch info updates, failing as mabi is offline.");
-
-                    _patcher = new Patcher(this, OfficialPatchInfo.OfflinePatchInfo);
-                }
-            if (_patcher.PatchInfo["patch_accept"] == "1")
-                return;
-            await this.ShowMessageAsync("Notice", "Mabinogi is currently offline or unreachable!");
         }
 
         private async void LaunchButton_Click(object sender, RoutedEventArgs e)
@@ -284,13 +189,13 @@ namespace HyddwnLauncher
                 }
 
                 var arguments =
-                    $"code:1622 ver:{Patcher.ReadVersion()} logip:{_patcher.PatchInfo["login"]} logport:11000 {_patcher.PatchInfo["arg"]}";
+                    $"code:1622 ver:{ReadVersion()} logip:208.85.109.35 logport:11000 chatip:208.85.109.37 chatport:8002 setting:file://data/features.xml";
 
                 var ipAddress = ActiveServerProfile.LoginIp;
                 IPAddress address;
                 if (ipAddress != null && IPAddress.TryParse(ipAddress, out address))
                 {
-                    arguments = arguments.Replace(_patcher.PatchInfo["login"], address.ToString());
+                    arguments = arguments.Replace("208.85.109.35", address.ToString());
                     arguments = Regex.Replace(arguments, ChatIpAddressPattern,
                         $"chatip:{address}");
 
@@ -333,13 +238,6 @@ namespace HyddwnLauncher
             }
         }
 
-        private void VersionButtonClick(object sender, RoutedEventArgs e)
-        {
-            if (VersionUpDown.Value != null) Patcher.WriteVersion((int) VersionUpDown.Value);
-            MaxVersion = Patcher.ReadVersion();
-            ClientVersion.Text = MaxVersion.ToString();
-        }
-
         private void ServerProfileComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ActiveServerProfile = ((ComboBox) sender).SelectedItem as ServerProfile;
@@ -358,13 +256,6 @@ namespace HyddwnLauncher
             var editor = new ProfileEditor(ProfileManager);
             editor.ShowDialog();
             ConfigureLauncher();
-        }
-
-        private void ReLangPackButtonOnClick(object sender, RoutedEventArgs e)
-        {
-            IsPatching = true;
-            _patcher.RedownloadLanugagePack();
-            IsPatching = false;
         }
 
         private void LogViewOnTextChanged(object sender, TextChangedEventArgs e)
@@ -443,47 +334,6 @@ namespace HyddwnLauncher
             }
         }
 
-        private async void _backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                if (ActiveClientProfile == null || !_configured) return;
-                IsPatching = true;
-                //Force NA
-                MabiVersionComboBox.SelectedItem =
-                    MabiVersion.Versions.FirstOrDefault(v => v.Name.StartsWith("North Am"));
-            });
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-            if (_patcher.PatchInfo.MainVersion > Patcher.ReadVersion())
-                try
-                {
-                    await Task.Run(() => { _patcher.Patch(_patcher.FindSequence()); });
-                }
-                catch (PatchSequenceNotFoundException ex)
-                {
-                    await
-                        this.ShowMessageAsync("Can't Fine Patch",
-                            ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    await Dispatcher.Invoke(async () =>
-                    {
-                        Log.Warning("Failed to patch to version: {0}", ex.ToString());
-                        await
-                            this.ShowMessageAsync("Update Failed",
-                                "Failed to patch Mabinogi. (See the log for more details)");
-                    });
-                }
-
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                Dispatcher.Invoke(() => MaxVersion = Patcher.ReadVersion());
-                IsPatching = false;
-            });
-        }
-
         private async void NxAuthLoginOnSubmit(object sender, RoutedEventArgs e)
         {
             if (NxAuthLoginNotice.Visibility == Visibility.Visible)
@@ -499,11 +349,11 @@ namespace HyddwnLauncher
 
             NxAuthLoginPassword.Password = "";
 
-            ClientAuth = new ClientAuth();
+            _clientAuth = new ClientAuth();
 
-            ClientAuth.HashPassword(ref password);
+            _clientAuth.HashPassword(ref password);
 
-            var passport = await ClientAuth.GetNxAuthHash(username, password);
+            var passport = await _clientAuth.GetNxAuthHash(username, password);
 
             if (passport == ClientAuth.LoginFailed)
             {
@@ -527,9 +377,10 @@ namespace HyddwnLauncher
 
             NxAuthLogin.IsOpen = false;
 
-            SpecialThanks.IsOpen = true;
+            ImporterTextBlock.SetTextBlockSafe("Special thanks to cursey");
+            ImportWindow.IsOpen = true;
             await Task.Delay(2000);
-            SpecialThanks.IsOpen = false;
+            ImportWindow.IsOpen = false;
 
             Text.Text = "Launching...";
             Loading.IsOpen = true;
@@ -537,7 +388,7 @@ namespace HyddwnLauncher
 
             var launchArgs =
                 "code:1622 verstr:248 ver:248 locale:USA env:Regular setting:file://data/features.xml " +
-                $"logip:{_patcher.PatchInfo["login"]} logport:11000 chatip:208.85.109.37 chatport:8002 /P:{passport} -bgloader";
+                $"logip:208.85.109.35 logport:11000 chatip:208.85.109.37 chatport:8002 /P:{passport} -bgloader";
 
             try
             {
@@ -653,8 +504,6 @@ namespace HyddwnLauncher
 
         private async void ConfigureLauncher()
         {
-            _configured = false;
-
             if (_settingUpProfile || ActiveClientProfile == null) return;
 
             var newWorkingDir = Path.GetDirectoryName(ActiveClientProfile.Location);
@@ -665,8 +514,6 @@ namespace HyddwnLauncher
                     newWorkingDir ?? throw new Exception("Error in \"Path to Client\" specification.");
 
                 Log.Info("Setting Current Working Direcotry to {0}", newWorkingDir);
-
-                _configured = true;
             }
             catch (Exception ex)
             {
@@ -691,18 +538,9 @@ namespace HyddwnLauncher
 
             if (IsInitialized)
             {
-                var mabiVers = Patcher.ReadVersion();
-                MaxVersion = mabiVers;
-                VersionUpDown.Value = mabiVers;
+                var mabiVers = ReadVersion();
                 Log.Info("Mabinogi Version {0}", mabiVers);
                 ClientVersion.SetTextBlockSafe(mabiVers.ToString());
-
-                //while (_backgroundWorker2.IsBusy)
-                //{
-                //    await Task.Delay(200);
-                //}
-
-                //_backgroundWorker2.RunWorkerAsync();
             }
         }
 
@@ -736,16 +574,16 @@ namespace HyddwnLauncher
 
             var maxVersion = 0;
 
-            Application.Current.Dispatcher.Invoke(() => { maxVersion = MaxVersion; });
+            Application.Current.Dispatcher.Invoke(() => { maxVersion = ReadVersion(); });
 
             if (LauncherContext.Settings.UsePackFiles &&
                 ActiveServerProfile.PackVersion == maxVersion)
             {
                 var packEngine = new PackEngine();
-                packEngine.BuildServerPack(ActiveServerProfile);
+                packEngine.BuildServerPack(ActiveServerProfile, ReadVersion());
             }
 
-            if (ActiveServerProfile.PackVersion != MaxVersion)
+            if (ActiveServerProfile.PackVersion != maxVersion)
                 await DeletePackFiles();
 
             Loading.IsOpen = false;
@@ -782,8 +620,10 @@ namespace HyddwnLauncher
 
         private async Task<bool> SelfUpdate()
         {
+            IsPatching = true;
             Closing += Updater_Closing;
             ImporterTextBlock.SetTextBlockSafe("Self Update Check...");
+            ImportWindow.IsOpen = true;
             if (await CheckForUpdates())
             {
                 IsPatching = false;
@@ -831,18 +671,17 @@ namespace HyddwnLauncher
             }
         }
 
-        public FileCopier CreateCopierInstance(string source, string destination)
-        {
-            FileCopier copier = null;
-            Dispatcher.Invoke(() => { copier = new FileCopier(source, destination, TokenSource.Token); });
-            return copier;
-        }
 
-        public FileDownloader CreateDownloaderInstance(string remote, string local, int size)
+        public int ReadVersion()
         {
-            FileDownloader downloader = null;
-            Dispatcher.Invoke(() => { downloader = new FileDownloader(remote, local, size, TokenSource.Token); });
-            return downloader;
+            try
+            {
+                return BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         #endregion
