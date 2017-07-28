@@ -23,6 +23,9 @@
             <Setter Property="NonActiveWindowTitleBrush" Value="#FF272626" />
         </Style>
     </FrameworkElement.Style>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
     <Grid>
         <simpleChildWindow:ChildWindow
             x:Name="Loading" IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
@@ -166,6 +169,8 @@
         <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="185,374,0,0"
                   VerticalAlignment="Top"
                   IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.UsePackFiles}" Height="26" />
+        <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0" TextWrapping="Wrap"
+            Text="Update Available!" Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" FontWeight="Bold" VerticalAlignment="Top" />
     </Grid>
 
 </controls:MetroWindow>

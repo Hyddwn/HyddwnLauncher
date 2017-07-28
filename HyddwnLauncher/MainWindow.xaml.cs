@@ -60,11 +60,8 @@ namespace HyddwnLauncher
 
         #region DependancyProperties
 
-        public static readonly DependencyProperty MaxVersionProperty = DependencyProperty.Register("MaxVersion",
-            typeof(int), typeof(MainWindow), new PropertyMetadata(0));
-
-        public static readonly DependencyProperty MinVersionProperty = DependencyProperty.Register("MinVersion",
-            typeof(int), typeof(MainWindow), new PropertyMetadata(0));
+        public static readonly DependencyProperty IsUpdateAvailableProperty = DependencyProperty.Register(
+            "IsUpdateAvailable", typeof(bool), typeof(MainWindow), new PropertyMetadata(default(bool)));
 
         #endregion
 
@@ -76,6 +73,12 @@ namespace HyddwnLauncher
         public LauncherContext LauncherContext { get; private set; }
         // Very bad, will need to adjust the method of access.
         public static MainWindow Instance { get; private set; }
+
+        public bool IsUpdateAvailable
+        {
+            get { return (bool)GetValue(IsUpdateAvailableProperty); }
+            set { SetValue(IsUpdateAvailableProperty, value); }
+        }
 
         public bool IsPatching
         {
@@ -141,6 +144,8 @@ namespace HyddwnLauncher
 
             // Trick to get the UI to display
             await Task.Delay(2000);
+            ImporterTextBlock.SetTextBlockSafe("Update Check...");
+            IsUpdateAvailable = await CheckForUpdates();
 
             ImporterTextBlock.SetTextBlockSafe("Check Client Profiles...");
             CheckClientProfiles();
