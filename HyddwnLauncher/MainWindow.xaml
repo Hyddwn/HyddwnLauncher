@@ -62,7 +62,7 @@
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
                     <TextBox x:Name="NxAuthLoginUsername" controls:TextBoxHelper.UseFloatingWatermark="True"
-                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Userame" />
+                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Username" />
                     <PasswordBox x:Name="NxAuthLoginPassword" controls:TextBoxHelper.UseFloatingWatermark="True"
                                  Margin="0 5 0 2" controls:TextBoxHelper.Watermark="Password" />
                     <TextBlock x:Name="NxAuthLoginNotice" VerticalAlignment="Center" Visibility="Collapsed"
