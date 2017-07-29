@@ -142,8 +142,6 @@
     <Compile Include="Util\ByteSizeHelper.cs" />
     <Compile Include="Util\ClientAuth.cs" />
     <Compile Include="Util\CustomPackFileMode.cs" />
-    <Compile Include="Data\Database.cs" />
-    <Compile Include="Data\DataExceptions.cs" />
     <Compile Include="ExceptionReporter.xaml.cs">
       <DependentUpon>ExceptionReporter.xaml</DependentUpon>
     </Compile>
@@ -253,9 +251,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Database\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Images\bangor.png" />
     <Resource Include="Images\damage.png" />
