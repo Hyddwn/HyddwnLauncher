@@ -139,8 +139,33 @@
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="About">
-                <Grid>
-                    
+                <Grid Background="{DynamicResource WindowBackgroundBrush}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="180"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Source="Icon_Internal_a.ico" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="1">
+                        <TextBlock FontWeight="Bold" TextAlignment="Center" Text="Hyddwn Launcher"/>
+                        <TextBlock TextAlignment="Center" Text="{Binding ElementName=LauncherVersion, Path=Text, StringFormat={}Version: {0}}"></TextBlock>
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Author: ImaBrokeDude"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink></TextBlock>
+                    </StackPanel>
+                    <ScrollViewer Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+                        <StackPanel>
+                            <GroupBox Header="GPL License" VerticalAlignment="Top" >
+                                <TextBlock Margin="5" TextWrapping="Wrap" ><Run Text="This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version."/><LineBreak/><Run/><LineBreak/><Run Text="This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details."/><LineBreak/><Run/><LineBreak/><Run Text="You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;"/><Hyperlink NavigateUri="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</Hyperlink><Run Text="&gt;."/></TextBlock>
+                            </GroupBox>
+                            <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks"/>
+                            <TextBlock><Run FontWeight="Bold" Text="cursey"/><Run Text=" - NXAuth Login Method"/></TextBlock>
+                            <TextBlock><Run FontWeight="Bold" Text="Xcelled194"/><Run Text=" - PowerPatcher (What the launcher was originally based on)"/></TextBlock>
+                            <TextBlock><Run FontWeight="Bold" Text="Playtime"/><Run Text=" - Reminds me that all Apple products suck"/></TextBlock>
+                            <TextBlock><Run FontWeight="Bold" Text="Pie"/><Run Text=" - The best thing a man can eat"/></TextBlock>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Grid>
             </controls:MetroTabItem>
         </controls:MetroAnimatedSingleRowTabControl>
