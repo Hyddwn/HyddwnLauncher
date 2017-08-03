@@ -15,7 +15,7 @@
                       NonActiveGlowBrush="Red"
                       Icon="Icon_Internal_a.ico"
                       Closed="OnClose" Loaded="OnLoaded"
-                      x:Name="This" Title="Hyddwn Launcher" Height="481" Width="831.5" KeyDown="This_KeyDown"
+                      x:Name="This" Title="Hyddwn Launcher" Height="480" Width="830" KeyDown="This_KeyDown"
                       KeyUp="This_KeyUp">
     <FrameworkElement.Style>
         <Style TargetType="{x:Type controls:MetroWindow}">
