@@ -160,6 +160,7 @@
     <Compile Include="Util\Log.cs" />
     <Compile Include="Util\MoreLinq.cs" />
     <Compile Include="Util\RequestLimitExceededException.cs" />
+    <Compile Include="Util\Validation\LocationValidationRule.cs" />
     <Page Include="Controls\NewClientProfileUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
