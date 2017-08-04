@@ -151,9 +151,6 @@
       <DependentUpon>NewServerProfileUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\PackEngine.cs" />
-    <Compile Include="Controls\ProfileEditor.xaml.cs">
-      <DependentUpon>ProfileEditor.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Util\ProfileManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -187,10 +184,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Controls\NewServerProfileUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\ProfileEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
