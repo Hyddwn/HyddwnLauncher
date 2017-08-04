@@ -3,12 +3,11 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:local="clr-namespace:HyddwnLauncher"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
-                      xmlns:ctrl="clr-namespace:HyddwnLauncher.Controls"
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
+                      xmlns:util="clr-namespace:HyddwnLauncher.Util"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}" WindowTransitionsEnabled="true"
@@ -27,8 +26,47 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
     <Grid>
-        <simpleChildWindow:ChildWindow
-            x:Name="NxAuthLogin" IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
+        <simpleChildWindow:ChildWindow x:Name="ProfileEditor"
+            TitleBarBackground="{DynamicResource WindowBackgroundBrush}" Title="Profile Editor" IsOpenChanged="ProfileEditorIsOpenChanged"
+            IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ClosingFinished="ProfileEditorOnProfileCLosingFinished" ChildWindowWidth="560" ChildWindowHeight="440">
+            <simpleChildWindow:ChildWindow.Resources>
+                <DataTemplate x:Key="ClientProfileDataTemplate" DataType="util:ClientProfile">
+                    <Grid>
+                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
+                    </Grid>
+                </DataTemplate>
+            </simpleChildWindow:ChildWindow.Resources>
+            <controls:MetroAnimatedSingleRowTabControl>
+                <TabItem Header="Clients">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="37" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddButtonCLick" />
+                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveButtonCLick" />
+                        </StackPanel>
+                        <ListBox x:Name="ClientProfileListBox" Grid.Row="1" Grid.Column="0"
+                                 ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
+                                 ItemTemplate="{DynamicResource ClientProfileDataTemplate}"
+                                 SelectionChanged="ProfileEditorOnClientFrofileListBoxSelectionChanged" />
+                        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                            <ScrollViewer>
+                                <controls1:NewClientProfileUserControl VerticalAlignment="Top"
+                                                                       ClientProfile="{Binding ElementName=ClientProfileListBox, Path=SelectedItem}" />
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+            </controls:MetroAnimatedSingleRowTabControl>
+        </simpleChildWindow:ChildWindow>
+        <simpleChildWindow:ChildWindow x:Name="NxAuthLogin" 
+            IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
             ChildWindowWidth="350" ChildWindowHeight="300" CloseByEscape="False">
             <Grid>
                 <StackPanel Margin="0 10 0 0">
@@ -62,16 +100,16 @@
                 </StackPanel>
             </Grid>
         </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow
-            x:Name="NoticeWindow" HorizontalContentAlignment="Center"
+        <simpleChildWindow:ChildWindow x:Name="NoticeWindow"
+            HorizontalContentAlignment="Center"
             VerticalContentAlignment="Center" Title=""
             TitleBarBackground="#FF272626"
             IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ChildWindowWidth="320"
             ChildWindowHeight="300">
             
         </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow
-            x:Name="Loading" IsModal="true" ShowTitleBar="false" ShowCloseButton="false" 
+        <simpleChildWindow:ChildWindow x:Name="Loading" 
+            IsModal="true" ShowTitleBar="false" ShowCloseButton="false" 
             ChildWindowWidth="300" ChildWindowHeight="80" CloseByEscape="false">
             <Grid>
                 <wpf:LoadingIndicator HorizontalAlignment="Left" Margin="10,0,0,0"
@@ -79,8 +117,8 @@
                 <TextBlock x:Name="Text" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="70,0,0,0" />
             </Grid>
         </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow
-            x:Name="ImportWindow" HorizontalContentAlignment="Center"
+        <simpleChildWindow:ChildWindow x:Name="ImportWindow"
+            HorizontalContentAlignment="Center"
             VerticalContentAlignment="Center" Title="ImportWorker" IsModal="true"
             ShowTitleBar="false"
             ShowCloseButton="false" ChildWindowWidth="300" ChildWindowHeight="80">
@@ -153,12 +191,12 @@
         <ComboBox x:Name="ClientProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
                   SelectedIndex="{Binding ElementName=This, Path=LauncherContext.Settings.ClientProfileSelectedIndex}"
-                  SelectionChanged="ClientProfileComboBox_OnSelectionChanged"
+                  SelectionChanged="ClientProfileComboBoxOnSelectionChanged"
                   HorizontalAlignment="Left" Margin="13,331,0,0" VerticalAlignment="Top" Width="167" />
         <ComboBox x:Name="ServerProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
                   SelectedIndex="{Binding ElementName=This, Path=LauncherContext.Settings.ServerProfileSelectedIndex}"
-                  SelectionChanged="ServerProfileComboBox_OnSelectionChanged"
+                  SelectionChanged="ServerProfileComboBoxOnSelectionChanged"
                   HorizontalAlignment="Left" Margin="13,374,0,0" VerticalAlignment="Top" Width="167" />
         <TextBlock HorizontalAlignment="Left" Margin="464,419,0,0" TextWrapping="Wrap"
                    Text="Launcher Version:" VerticalAlignment="Top" Width="102" />

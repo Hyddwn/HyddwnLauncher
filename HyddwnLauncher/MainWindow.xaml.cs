@@ -115,7 +115,6 @@ namespace HyddwnLauncher
         #endregion
 
         #region Events
-
         private void OnClose(object sender, EventArgs e)
         {
             if (_updateClose)
@@ -148,7 +147,11 @@ namespace HyddwnLauncher
             IsUpdateAvailable = await CheckForUpdates();
 
             ImporterTextBlock.SetTextBlockSafe("Check Client Profiles...");
+            _settingUpProfile = true;
             CheckClientProfiles();
+
+            while (_settingUpProfile)
+                await Task.Delay(250);
 
             ImporterTextBlock.SetTextBlockSafe("Loading settings...");
             LauncherContext.Settings.Load();
@@ -243,13 +246,13 @@ namespace HyddwnLauncher
             }
         }
 
-        private void ServerProfileComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ServerProfileComboBoxOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ActiveServerProfile = ((ComboBox) sender).SelectedItem as ServerProfile;
             ActiveServerProfile?.GetUpdates();
         }
 
-        private void ClientProfileComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ClientProfileComboBoxOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ActiveClientProfile = ((ComboBox) sender).SelectedItem as ClientProfile;
             if (IsInitialized && IsLoaded)
@@ -258,9 +261,7 @@ namespace HyddwnLauncher
 
         private void ProfilesButton_Click(object sender, RoutedEventArgs e)
         {
-            var editor = new ProfileEditor(ProfileManager);
-            editor.ShowDialog();
-            ConfigureLauncher();
+            ProfileEditor.IsOpen = true;
         }
 
         private void LogViewOnTextChanged(object sender, TextChangedEventArgs e)
@@ -424,9 +425,65 @@ namespace HyddwnLauncher
             NxAuthLogin.IsOpen = false;
         }
 
+        private async void ProfileEditorIsOpenChanged(object sender, RoutedEventArgs e)
+        {
+            if (ProfileEditor.IsOpen && ProfileManager.ClientProfiles.Count == 0 && _settingUpProfile)
+            {
+                ImportWindow.IsOpen = false;
+
+                await this.ShowMessageAsync("No Client Profile",
+                    "You have been taken to this window because you do not have a profile configured for Mabinogi. " +
+                    "Please configure a profile representing where your Client.exe is to use this launcher.");
+
+                AddItem();
+                return;
+            }
+
+            if (!ProfileEditor.IsOpen && _settingUpProfile)
+            {                
+                var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem).Location;
+                if (string.IsNullOrWhiteSpace(selectedProfileLocation) || !File.Exists(selectedProfileLocation))
+                {
+                    await this.ShowMessageAsync("Valid File or Path",
+                        "The path you have entered is invalid.");
+                }
+
+                ImportWindow.IsOpen = true;
+                await Task.Delay(250);
+                _settingUpProfile = false;
+            }
+        }
+
+        private void ProfileEditorOnClientFrofileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ProfileManager.SaveClientProfiles();
+        }
+
+        private void ProfileEditorOnAddButtonCLick(object sender, RoutedEventArgs e)
+        {
+            AddItem();
+        }
+
+        private void ProfileEditorOnRemoveButtonCLick(object sender, RoutedEventArgs e)
+        {
+            if (ClientProfileListBox.SelectedIndex == -1) return;
+            ProfileManager.ClientProfiles.RemoveAt(ClientProfileListBox.SelectedIndex);
+        }
+
+        private void ProfileEditorOnProfileCLosingFinished(object sender, RoutedEventArgs e)
+        {
+            ConfigureLauncher();
+        }
+
         #endregion
 
         #region Methods
+        private void AddItem()
+        {
+            var newItem = new ClientProfile { Name = "New Profile" };
+            ProfileManager.ClientProfiles.Add(newItem);
+            ClientProfileListBox.SelectedItem = newItem;
+        }
 
         public void AddToLog(string text)
         {
@@ -438,73 +495,123 @@ namespace HyddwnLauncher
             AddToLog(string.Format(format, args));
         }
 
-        private void ToggleLoginControls()
+        private async Task BuildServerPackFile()
         {
-            NxAuthLoginUsername.IsEnabled = !NxAuthLoginUsername.IsEnabled;
-            NxAuthLoginPassword.IsEnabled = !NxAuthLoginPassword.IsEnabled;
-            NxAuthLoginSubmit.IsEnabled = !NxAuthLoginSubmit.IsEnabled;
-            NxAuthLoginCancel.IsEnabled = !NxAuthLoginCancel.IsEnabled;
+            Text.Text = "Building server pack file...";
+            Loading.IsOpen = true;
+            await Task.Delay(300);
 
-            NxAuthLoginLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
+            var maxVersion = 0;
+
+            Application.Current.Dispatcher.Invoke(() => { maxVersion = ReadVersion(); });
+
+            if (LauncherContext.Settings.UsePackFiles &&
+                ActiveServerProfile.PackVersion == maxVersion)
+            {
+                var packEngine = new PackEngine();
+                packEngine.BuildServerPack(ActiveServerProfile, ReadVersion());
+            }
+
+            if (ActiveServerProfile.PackVersion != maxVersion)
+                await DeletePackFiles();
+
+            Loading.IsOpen = false;
         }
 
         private async void CheckClientProfiles()
         {
-            _settingUpProfile = true;
-
             if (ProfileManager.ClientProfiles.Count == 0)
             {
+                ProfileEditor.IsOpen = true;
+                return;
                 ProfileEditor pe;
                 while (_settingUpProfile)
                 {
-                    pe = new ProfileEditor(ProfileManager, true);
-                    pe.ShowDialog();
-                    if (
-                        string.IsNullOrWhiteSpace(
-                            ((ClientProfile) pe.ClientProfileListBox.SelectedItem).Location))
-                        while (
-                            string.IsNullOrWhiteSpace(
-                                ((ClientProfile) pe.ClientProfileListBox.SelectedItem).Location))
-                        {
-                            //TODO: REALLY NEED TO CHANGE THIS!!!
-                            var output =
-                                await
-                                    this.ShowInputAsync("Profile Error",
-                                        "Each profile must have a location. Without a location your Mabinogi instance cannot be managed. Please set your location (client.exe) now.");
+                    
 
-                            ((ClientProfile) pe.ClientProfileListBox.SelectedItem).Location = output;
-                            ProfileManager.SaveClientProfiles();
-                        }
+                    //pe = new ProfileEditor(ProfileManager, true);
+                    //pe.ShowDialog();
+                    //if (
+                    //    string.IsNullOrWhiteSpace(
+                    //        ((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location))
+                    //    while (
+                    //        string.IsNullOrWhiteSpace(
+                    //            ((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location))
+                    //    {
+                    //        //TODO: REALLY NEED TO CHANGE THIS!!!
+                    //        var output =
+                    //            await
+                    //                this.ShowInputAsync("Profile Error",
+                    //                    "Each profile must have a location. Without a location your Mabinogi instance cannot be managed. Please set your location (client.exe) now.");
 
-                    if (!File.Exists(((ClientProfile) pe.ClientProfileListBox.SelectedItem).Location))
-                    {
-                        var fileOkay = false;
+                    //        ((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location = output;
+                    //        ProfileManager.SaveClientProfiles();
+                    //    }
 
-                        while (!fileOkay)
-                        {
-                            var output =
-                                await
-                                    this.ShowInputAsync("Profile Error",
-                                        "The file could not be found at this location, please specify the correct location.");
+                    //if (!File.Exists(((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location))
+                    //{
+                    //    var fileOkay = false;
 
-                            if (!File.Exists(output))
-                                continue;
+                    //    while (!fileOkay)
+                    //    {
+                    //        var output =
+                    //            await
+                    //                this.ShowInputAsync("Profile Error",
+                    //                    "The file could not be found at this location, please specify the correct location.");
 
-                            ((ClientProfile) pe.ClientProfileListBox.SelectedItem).Location = output;
-                            ProfileManager.SaveClientProfiles();
+                    //        if (!File.Exists(output))
+                    //            continue;
 
-                            fileOkay = true;
-                        }
-                    }
+                    //        ((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location = output;
+                    //        ProfileManager.SaveClientProfiles();
+
+                    //        fileOkay = true;
+                    //    }
+                    //}
 
                     _settingUpProfile = false;
 
-                    LauncherContext.Settings.ClientProfileSelectedIndex =
-                        pe.ClientProfileListBox.SelectedIndex;
+                    //LauncherContext.Settings.ClientProfileSelectedIndex =
+                    //    pe.ClientProfileListBox.SelectedIndex;
                 }
             }
 
             _settingUpProfile = false;
+        }
+
+
+        private async Task<bool> CheckForUpdates()
+        {
+            try
+            {
+                await Task.Delay(100);
+                var webClient = new WebClient();
+                var current = Assembly.GetExecutingAssembly().GetName().Version;
+                using (
+                    var fileReader =
+                        new FileReader(
+                            webClient.OpenRead(
+                                "http://launcher.hyddwnproject.com/version")))
+                {
+                    foreach (var str in fileReader)
+                    {
+                        int length;
+                        if ((length = str.IndexOf(':')) >= 0)
+                            _updateInfo[str.Substring(0, length).Trim()] = str.Substring(length + 1).Trim();
+                    }
+                }
+                _updateInfo["Current"] = current.ToString();
+                var version2 = new Version(_updateInfo["Version"]);
+                var updateAvailable = current < version2;
+
+                return updateAvailable;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Unable to check for updates.");
+                IsPatching = false;
+                return false;
+            }
         }
 
         private async void ConfigureLauncher()
@@ -571,27 +678,57 @@ namespace HyddwnLauncher
             Loading.IsOpen = false;
         }
 
-        private async Task BuildServerPackFile()
+        private bool DependencyObjectIsValid(DependencyObject node)
         {
-            Text.Text = "Building server pack file...";
-            Loading.IsOpen = true;
-            await Task.Delay(300);
+            if (node == null)
+                return LogicalTreeHelper.GetChildren(node).OfType<DependencyObject>().All(DependencyObjectIsValid);
+            if (!Validation.GetHasError(node))
+                return LogicalTreeHelper.GetChildren(node).OfType<DependencyObject>().All(DependencyObjectIsValid);
+            var element = node as IInputElement;
+            if (element != null)
+                Keyboard.Focus(element);
+            return false;
+        }
 
-            var maxVersion = 0;
-
-            Application.Current.Dispatcher.Invoke(() => { maxVersion = ReadVersion(); });
-
-            if (LauncherContext.Settings.UsePackFiles &&
-                ActiveServerProfile.PackVersion == maxVersion)
+        public int ReadVersion()
+        {
+            try
             {
-                var packEngine = new PackEngine();
-                packEngine.BuildServerPack(ActiveServerProfile, ReadVersion());
+                return BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0);
             }
+            catch
+            {
+                return 0;
+            }
+        }
 
-            if (ActiveServerProfile.PackVersion != maxVersion)
-                await DeletePackFiles();
+        private async Task<bool> SelfUpdate()
+        {
+            IsPatching = true;
+            Closing += Updater_Closing;
+            ImporterTextBlock.SetTextBlockSafe("Self Update Check...");
+            ImportWindow.IsOpen = true;
+            if (await CheckForUpdates())
+            {
+                IsPatching = false;
+                ImportWindow.IsOpen = false;
+                _backgroundWorker.DoWork += _backgroundWorker_DoWork;
+                _backgroundWorker.RunWorkerAsync();
+                return true;
+            }
+            IsPatching = false;
+            Closing -= Updater_Closing;
+            return false;
+        }
 
-            Loading.IsOpen = false;
+        private void ToggleLoginControls()
+        {
+            NxAuthLoginUsername.IsEnabled = !NxAuthLoginUsername.IsEnabled;
+            NxAuthLoginPassword.IsEnabled = !NxAuthLoginPassword.IsEnabled;
+            NxAuthLoginSubmit.IsEnabled = !NxAuthLoginSubmit.IsEnabled;
+            NxAuthLoginCancel.IsEnabled = !NxAuthLoginCancel.IsEnabled;
+
+            NxAuthLoginLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
         }
 
         private async void UpdaterUpdate()
@@ -622,73 +759,6 @@ namespace HyddwnLauncher
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
             MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
         }
-
-        private async Task<bool> SelfUpdate()
-        {
-            IsPatching = true;
-            Closing += Updater_Closing;
-            ImporterTextBlock.SetTextBlockSafe("Self Update Check...");
-            ImportWindow.IsOpen = true;
-            if (await CheckForUpdates())
-            {
-                IsPatching = false;
-                ImportWindow.IsOpen = false;
-                _backgroundWorker.DoWork += _backgroundWorker_DoWork;
-                _backgroundWorker.RunWorkerAsync();
-                return true;
-            }
-            IsPatching = false;
-            Closing -= Updater_Closing;
-            return false;
-        }
-
-        private async Task<bool> CheckForUpdates()
-        {
-            try
-            {
-                await Task.Delay(100);
-                var webClient = new WebClient();
-                var current = Assembly.GetExecutingAssembly().GetName().Version;
-                using (
-                    var fileReader =
-                        new FileReader(
-                            webClient.OpenRead(
-                                "http://launcher.hyddwnproject.com/version")))
-                {
-                    foreach (var str in fileReader)
-                    {
-                        int length;
-                        if ((length = str.IndexOf(':')) >= 0)
-                            _updateInfo[str.Substring(0, length).Trim()] = str.Substring(length + 1).Trim();
-                    }
-                }
-                _updateInfo["Current"] = current.ToString();
-                var version2 = new Version(_updateInfo["Version"]);
-                var updateAvailable = current < version2;
-
-                return updateAvailable;
-            }
-            catch (Exception ex)
-            {
-                Log.Exception(ex, "Unable to check for updates.");
-                IsPatching = false;
-                return false;
-            }
-        }
-
-
-        public int ReadVersion()
-        {
-            try
-            {
-                return BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0);
-            }
-            catch
-            {
-                return 0;
-            }
-        }
-
         #endregion
     }
 }
