@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:HyddwnLauncher.Controls"
+             xmlns:validation="clr-namespace:HyddwnLauncher.Util.Validation"
              mc:Ignorable="d" d:DesignWidth="400" Height="102.762">
     <Grid>
         <StackPanel Margin="5">
@@ -19,8 +20,13 @@
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="Location of Mabinogi's Client.exe">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Path to Client" />
-                <TextBox Margin="48 0 0 0" Width="180" ToolTip="The File Path to Client.exe"
-                         Text="{Binding ElementName=This, Path=ClientProfile.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Margin="48 0 0 0" Width="180" ToolTip="The File Path to Client.exe">
+                    <Binding Path="ClientProfile.Location" ElementName="This" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validation:LocationValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
                 <Button Margin="5 0 0 0" Content=". . ." Click="BrowseButtonOnClick" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The Locale for this instance of Mabinogi." />
