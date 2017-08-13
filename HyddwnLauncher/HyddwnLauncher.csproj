@@ -122,6 +122,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\IProgressIndicator.cs" />
     <Compile Include="Controls\NewClientProfileUserControl.xaml.cs">
       <DependentUpon>NewClientProfileUserControl.xaml</DependentUpon>
     </Compile>
