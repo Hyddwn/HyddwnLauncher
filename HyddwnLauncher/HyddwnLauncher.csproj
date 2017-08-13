@@ -139,13 +139,13 @@
     <Compile Include="ExceptionReporter.xaml.cs">
       <DependentUpon>ExceptionReporter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Util\LauncherContext.cs" />
-    <Compile Include="Util\LauncherSettings.cs" />
+    <Compile Include="Core\LauncherContext.cs" />
+    <Compile Include="Core\LauncherSettings.cs" />
     <Compile Include="Controls\NewServerProfileUserControl.xaml.cs">
       <DependentUpon>NewServerProfileUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Util\PackEngine.cs" />
-    <Compile Include="Util\ProfileManager.cs" />
+    <Compile Include="Core\PackEngine.cs" />
+    <Compile Include="Core\ProfileManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Util\Extensions.cs" />
