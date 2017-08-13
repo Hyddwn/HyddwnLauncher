@@ -315,7 +315,7 @@ namespace HyddwnLauncher
                 UpdaterUpdate();
                 MainProgressReporter.SetProgressBar(0.0);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-                await AsyncDownloader.DownloadWithCallbackAsync(
+                await AsyncDownloader.DownloadFileWithCallbackAsync(
                     _updateInfo["Link"],
                     _updateInfo["File"],
                     (d, s) =>
@@ -738,7 +738,7 @@ namespace HyddwnLauncher
             MainProgressReporter.SetProgressBar(0);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
             await
-                AsyncDownloader.DownloadWithCallbackAsync("http://www.imabrokedude.com/Updater.zip", "Updater.zip",
+                AsyncDownloader.DownloadFileWithCallbackAsync("http://www.imabrokedude.com/Updater.zip", "Updater.zip",
                     (d, s) =>
                     {
                         MainProgressReporter.SetProgressBar(d);

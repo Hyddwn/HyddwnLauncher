@@ -8,7 +8,7 @@ namespace HyddwnLauncher.Network
 {
     public static class AsyncDownloader
     {
-        public static async Task DownloadWithCallbackAsync(string url, string file,
+        public static async Task DownloadFileWithCallbackAsync(string url, string file,
             Action<double, string> callback)
         {
             // Clears async warning, hack, need something better.
