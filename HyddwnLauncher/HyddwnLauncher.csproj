@@ -91,6 +91,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceModel" />
@@ -128,6 +129,7 @@
     <Compile Include="Controls\ProgressIndicator.xaml.cs">
       <DependentUpon>ProgressIndicator.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\PluginHost.cs" />
     <Compile Include="Network\AsyncDownloader.cs" />
     <Compile Include="Network\Rest\ParameterType.cs" />
     <Compile Include="Network\Rest\RestClient.cs" />
