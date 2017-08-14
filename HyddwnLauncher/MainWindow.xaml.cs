@@ -649,6 +649,11 @@ namespace HyddwnLauncher
                     };
                     pluginContext.GetNexonApi += () => NexonApi.Instance;
                     pluginContext.GetPackEngine += () => new PackEngine();
+                    pluginContext.RequestUserLogin += action =>
+                    {
+                        LoginSuccess += action;
+                        NxAuthLogin.IsOpen = true;
+                    };
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
 
                     var pluginUi = plugin.GetPluginUi();
@@ -672,8 +677,6 @@ namespace HyddwnLauncher
 
         private async void LaunchOfficial()
         {
-            LoginSuccess -= LaunchOfficial;
-
             var passport = await NexonApi.Instance.GetNxAuthHash();
 
             ImporterTextBlock.SetTextBlockSafe("Special thanks to cursey");
@@ -718,6 +721,11 @@ namespace HyddwnLauncher
         public void OnLoginSuccess()
         {
             LoginSuccess?.Raise();
+            if (LoginSuccess == null) return;
+            foreach (var d in LoginSuccess.GetInvocationList())
+            {
+                LoginSuccess -= d as Action;
+            }
         }
 
         private void PluginMainUpdator(string leftText, string rightText, double value, bool isIntermediate, bool isVisible)
