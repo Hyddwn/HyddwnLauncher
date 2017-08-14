@@ -47,7 +47,10 @@
     <Compile Include="IClientProfile.cs" />
     <Compile Include="IGuiPlugin.cs" />
     <Compile Include="INexonApi.cs" />
+    <Compile Include="IPackEngine.cs" />
     <Compile Include="IProgressIndicator.cs" />
+    <Compile Include="IServerProfile.cs" />
+    <Compile Include="Primitives\IPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
