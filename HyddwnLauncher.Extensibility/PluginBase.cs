@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Extensibility.Primitives;
 
@@ -45,6 +46,11 @@ namespace HyddwnLauncher.Extensibility
         public virtual void PostLaunch()
         {
             
+        }
+
+        public virtual UserControl GetPluginUi()
+        {
+            return null;
         }
     }
 }
