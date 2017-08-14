@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HyddwnLauncher.Extensibility.Interfaces;
 
 namespace HyddwnLauncher.Extensibility.Primitives
@@ -13,16 +9,17 @@ namespace HyddwnLauncher.Extensibility.Primitives
         string Name { get; }
 
         // The void Main for this plugin
-        void Initialize(PluginContext pluginContext, IClientProfile activeClientProfile, IServerProfile activeServerProfile);
+        void Initialize(PluginContext pluginContext, IClientProfile activeClientProfile,
+            IServerProfile activeServerProfile);
 
         /// <summary>
-        /// Guid used to identify this application
+        ///     Guid used to identify this application
         /// </summary>
         /// <returns></returns>
         Guid GetGuid();
 
         /// <summary>
-        /// Launcher is updating
+        ///     Launcher is updating
         /// </summary>
         void Shutdown();
 
