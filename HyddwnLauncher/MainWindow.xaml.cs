@@ -483,56 +483,6 @@ namespace HyddwnLauncher
             {
                 ProfileEditor.IsOpen = true;
                 return;
-                ProfileEditor pe;
-                while (_settingUpProfile)
-                {
-                    
-
-                    //pe = new ProfileEditor(ProfileManager, true);
-                    //pe.ShowDialog();
-                    //if (
-                    //    string.IsNullOrWhiteSpace(
-                    //        ((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location))
-                    //    while (
-                    //        string.IsNullOrWhiteSpace(
-                    //            ((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location))
-                    //    {
-                    //        //TODO: REALLY NEED TO CHANGE THIS!!!
-                    //        var output =
-                    //            await
-                    //                this.ShowInputAsync("Profile Error",
-                    //                    "Each profile must have a location. Without a location your Mabinogi instance cannot be managed. Please set your location (client.exe) now.");
-
-                    //        ((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location = output;
-                    //        ProfileManager.SaveClientProfiles();
-                    //    }
-
-                    //if (!File.Exists(((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location))
-                    //{
-                    //    var fileOkay = false;
-
-                    //    while (!fileOkay)
-                    //    {
-                    //        var output =
-                    //            await
-                    //                this.ShowInputAsync("Profile Error",
-                    //                    "The file could not be found at this location, please specify the correct location.");
-
-                    //        if (!File.Exists(output))
-                    //            continue;
-
-                    //        ((ClientProfile)pe.ClientProfileListBox.SelectedItem).Location = output;
-                    //        ProfileManager.SaveClientProfiles();
-
-                    //        fileOkay = true;
-                    //    }
-                    //}
-
-                    _settingUpProfile = false;
-
-                    //LauncherContext.Settings.ClientProfileSelectedIndex =
-                    //    pe.ClientProfileListBox.SelectedIndex;
-                }
             }
 
             _settingUpProfile = false;
