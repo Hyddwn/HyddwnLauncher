@@ -5,10 +5,6 @@ namespace HyddwnLauncher.Extensibility
 {
     public class PluginContext
     {
-        public Func<IProgressIndicator> CreateProgressIndicator;
-
-        public Action<IProgressIndicator> DestroyProgressIndicator;
-
         public Func<INexonApi> GetNexonApi;
 
         public Func<IPackEngine> GetPackEngine;

@@ -102,7 +102,7 @@ namespace HyddwnLauncher.Core
             return true;
         }
 
-        private void Pack(string inputDir, string outputFile, uint version, int level = 9)
+        public void Pack(string inputDir, string outputFile, uint version, int level = 9)
         {
             if (File.Exists(outputFile))
                 File.Delete(outputFile);

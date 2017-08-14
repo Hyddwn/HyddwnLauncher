@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Controls;
 using HyddwnLauncher.Extensibility.Interfaces;
 
 namespace HyddwnLauncher.Extensibility.Primitives
@@ -30,5 +31,7 @@ namespace HyddwnLauncher.Extensibility.Primitives
         void PreLaunch();
 
         void PostLaunch();
+
+        UserControl GetPluginUi();
     }
 }

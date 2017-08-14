@@ -14,9 +14,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using HyddwnLauncher.Controls;
 using HyddwnLauncher.Core;
+using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Network;
 using HyddwnLauncher.Util;
 using Ionic.Zip;
+using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 
 namespace HyddwnLauncher
@@ -67,7 +69,7 @@ namespace HyddwnLauncher
         #endregion
 
         #region Properties
-
+        private PluginHost PluginHost { get; set; }
         public ProfileManager ProfileManager { get; private set; }
         public ServerProfile ActiveServerProfile { get; set; }
         public ClientProfile ActiveClientProfile { get; set; }
@@ -112,7 +114,7 @@ namespace HyddwnLauncher
         private bool _updateClose;
         private bool _settingUpProfile;
 
-        public Action LoginSuccess;
+        public event Action LoginSuccess;
 
         #endregion
 
@@ -121,6 +123,8 @@ namespace HyddwnLauncher
         {
             if (_updateClose)
             {
+
+
                 var processinfo = new ProcessStartInfo
                 {
                     Arguments =
@@ -132,6 +136,9 @@ namespace HyddwnLauncher
                 // It launches the process as it's own process instead of a child process.
                 Process.Start(processinfo);
             }
+
+            PluginHost.ShutdownPlugins();
+
             Application.Current.Shutdown();
         }
 
@@ -174,6 +181,9 @@ namespace HyddwnLauncher
             ImporterTextBlock.Text = "Updating server profiles...";
             await Task.Run(() => ProfileManager.UpdateProfiles());
 
+            ImporterTextBlock.Text = "Initializing Plugins...";
+            InitializePlugins();
+
             ImportWindow.IsOpen = false;
             IsPatching = false;
         }
@@ -185,6 +195,8 @@ namespace HyddwnLauncher
 
         private async void LaunchButton_Click(object sender, RoutedEventArgs e)
         {
+            PluginHost.PreLaunch();
+
             try
             {
                 if (ActiveClientProfile == null || ActiveServerProfile == null)
@@ -193,6 +205,8 @@ namespace HyddwnLauncher
                 if (ActiveServerProfile.IsOfficial)
                 {
                     await DeletePackFiles();
+
+                    LoginSuccess += LaunchOfficial;
                     NxAuthLogin.IsOpen = true;
 
                     return;
@@ -230,6 +244,7 @@ namespace HyddwnLauncher
                 try
                 {
                     Process.Start(ActiveClientProfile.Location, arguments);
+                    PluginHost.PostLaunch();
                 }
                 catch (Exception ex)
                 {
@@ -238,6 +253,9 @@ namespace HyddwnLauncher
                 }
                 Log.Info("Client start success");
                 LauncherContext.Settings.Save();
+
+                PluginHost.ShutdownPlugins();
+
                 Application.Current.Shutdown();
             }
             catch (ApplicationException ex)
@@ -252,13 +270,16 @@ namespace HyddwnLauncher
         {
             ActiveServerProfile = ((ComboBox) sender).SelectedItem as ServerProfile;
             ActiveServerProfile?.GetUpdates();
+            if (!IsInitialized || !IsLoaded) return;
+            PluginHost.ServerProfileChanged(ActiveServerProfile);
         }
 
         private void ClientProfileComboBoxOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ActiveClientProfile = ((ComboBox) sender).SelectedItem as ClientProfile;
-            if (IsInitialized && IsLoaded)
-                ConfigureLauncher();
+            if (!IsInitialized || !IsLoaded) return;
+            ConfigureLauncher();
+            PluginHost.ClientProfileChanged(ActiveClientProfile);
         }
 
         private void ProfilesButton_Click(object sender, RoutedEventArgs e)
@@ -566,6 +587,8 @@ namespace HyddwnLauncher
             }
         }
 
+
+
         private async Task DeletePackFiles()
         {
             Text.Text = "Cleaning generated pack files...";
@@ -600,9 +623,113 @@ namespace HyddwnLauncher
             return false;
         }
 
+        private void InitializePlugins()
+        {
+            PluginHost = new PluginHost();
+            foreach (var plugin in PluginHost.Plugins)
+            {
+                try
+                {
+                    var pluginContext = new PluginContext();
+                    pluginContext.MainUpdater += PluginMainUpdator;
+                    pluginContext.SetPatcherState += isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
+                    pluginContext.LogException += async (exception, b) =>
+                    {
+                        Log.Exception(exception);
+                        if (b)
+                            await Dispatcher.Invoke(async () =>
+                                await this.ShowMessageAsync("Error", exception.Message));
+
+                    };
+                    pluginContext.LogString += async (s, b) =>
+                    {
+                        Log.Info(s);
+                        if (b)
+                            await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
+                    };
+                    pluginContext.GetNexonApi += () => NexonApi.Instance;
+                    pluginContext.GetPackEngine += () => new PackEngine();
+                    plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
+
+                    var pluginUi = plugin.GetPluginUi();
+                   
+                    var pluginTabItem = new MetroTabItem
+                    {
+                        Header = plugin.Name,
+                        Content = pluginUi,
+                        Tag = plugin.GetGuid()
+                    };
+
+                    MainTabControl.Items.Add(pluginTabItem);
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"Error occured when loading plugin: {plugin.Name}");
+                    MessageBox.Show($"Error loading {plugin.Name}, {ex.GetType().Name}: {ex.Message}", "Error");
+                }
+            }
+        }
+
+        private async void LaunchOfficial()
+        {
+            LoginSuccess -= LaunchOfficial;
+
+            var passport = await NexonApi.Instance.GetNxAuthHash();
+
+            ImporterTextBlock.SetTextBlockSafe("Special thanks to cursey");
+            ImportWindow.IsOpen = true;
+            await Task.Delay(2000);
+            ImportWindow.IsOpen = false;
+
+            Text.Text = "Launching...";
+            Loading.IsOpen = true;
+            await Task.Delay(500);
+
+            var launchArgs =
+                "code:1622 verstr:248 ver:248 locale:USA env:Regular setting:file://data/features.xml " +
+                $"logip:208.85.109.35 logport:11000 chatip:208.85.109.37 chatport:8002 /P:{passport} -bgloader";
+
+            try
+            {
+                try
+                {
+                    Log.Info($"Starting client with the following parameters: {launchArgs}");
+                    Process.Start(ActiveClientProfile.Location, launchArgs);
+                    PluginHost.PostLaunch();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Cannot start Mabbinogi: {0}", ex.ToString());
+                    throw new IOException();
+                }
+                Log.Info("Client start success");
+                LauncherContext.Settings.Save();
+                PluginHost.ShutdownPlugins();
+                Application.Current.Shutdown();
+            }
+            catch (IOException ex)
+            {
+                Loading.IsOpen = false;
+                await this.ShowMessageAsync("Launch Failed", "Cannot start Mabinogi: " + ex.Message);
+                Log.Exception(ex, "Client start finished with errors");
+            }
+        }
+
         public void OnLoginSuccess()
         {
             LoginSuccess?.Raise();
+        }
+
+        private void PluginMainUpdator(string leftText, string rightText, double value, bool isIntermediate, bool isVisible)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MainProgressReporter.LeftTextBlock.SetTextBlockSafe(leftText);
+                MainProgressReporter.RighTextBlock.SetTextBlockSafe(rightText);
+                MainProgressReporter.ReporterProgressBar.SetMetroProgressSafe(value);
+                MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(isIntermediate);
+                MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(isVisible ? Visibility.Visible : Visibility.Hidden);
+            });
         }
 
         public int ReadVersion()

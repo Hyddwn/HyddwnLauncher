@@ -35,7 +35,6 @@ namespace HyddwnLauncher.UOTiara
         {
             _pluginContext = pluginContext;
             _clientProfile = clientProfile;
-            _serverProfile = serverProfile;
 
             InitializeComponent();
         }

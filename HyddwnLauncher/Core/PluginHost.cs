@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using HyddwnLauncher.Extensibility.Primitives;
 using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher.Core
@@ -36,17 +37,17 @@ namespace HyddwnLauncher.Core
 
         public void PreLaunch()
         {
-            foreach (var plugin in Plugins.Where(p => p.GetType().GetInterfaces().Contains(typeof(IPreLaunch))))
+            foreach (var plugin in Plugins)
             {
-                ((IPreLaunch)plugin).PreLaunch();
+                plugin.PreLaunch();
             }
         }
 
         public void PostLaunch()
         {
-            foreach (var plugin in Plugins.Where(p => p.GetType().GetInterfaces().Contains(typeof(IPostLaunch))))
+            foreach (var plugin in Plugins)
             {
-                ((IPostLaunch)plugin).PostLaunch();
+                plugin.PostLaunch();
             }
         }
 
