@@ -139,6 +139,8 @@
     <Compile Include="Network\Rest\RestResponse.cs" />
     <Compile Include="Util\ByteSizeHelper.cs" />
     <Compile Include="Network\NexonApi.cs" />
+    <Compile Include="Util\ByteSizeMode.cs" />
+    <Compile Include="Util\ByteSizeSystem.cs" />
     <Compile Include="Util\CustomPackFileMode.cs" />
     <Compile Include="ExceptionReporter.xaml.cs">
       <DependentUpon>ExceptionReporter.xaml</DependentUpon>
@@ -152,10 +154,11 @@
     <Compile Include="Core\ProfileManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Util\Extentions.cs" />
     <Compile Include="Util\FileReader.cs" />
     <Compile Include="Util\Log.cs" />
-    <Compile Include="Util\MoreLinq.cs" />
+    <Compile Include="Util\LogLevel.cs" />
+    <Compile Include="Util\MoreEnumerable.cs" />
     <Compile Include="Util\RequestLimitExceededException.cs" />
     <Compile Include="Util\Validation\LocationValidationRule.cs" />
     <Page Include="Controls\NewClientProfileUserControl.xaml">
