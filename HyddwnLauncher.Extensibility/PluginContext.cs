@@ -10,10 +10,13 @@ namespace HyddwnLauncher.Extensibility
         public Func<IPackEngine> GetPackEngine;
 
         public Action<Exception, bool> LogException;
+
         public Action<string, bool> LogString;
 
         public Action<string, string, double, bool, bool> MainUpdater;
 
         public Action<bool> SetPatcherState;
+
+        public Action<Action> RequestUserLogin;
     }
 }
