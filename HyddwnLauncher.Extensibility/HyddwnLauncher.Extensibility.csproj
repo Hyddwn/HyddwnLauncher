@@ -50,6 +50,7 @@
     <Compile Include="Interfaces\IPackEngine.cs" />
     <Compile Include="Interfaces\IProgressIndicator.cs" />
     <Compile Include="Interfaces\IServerProfile.cs" />
+    <Compile Include="PluginBase.cs" />
     <Compile Include="Primitives\IPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
