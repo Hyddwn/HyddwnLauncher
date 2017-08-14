@@ -4,12 +4,13 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using HyddwnLauncher.Network.Rest;
 using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Util
 {
-    internal class ClientAuth
+    internal class NexonApi
     {
         private static readonly SHA512Managed Sha512 = new SHA512Managed();
         private static readonly string BodyClientId = "7853644408";
