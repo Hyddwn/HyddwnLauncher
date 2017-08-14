@@ -7,7 +7,7 @@ namespace HyddwnLauncher.Extensibility
 {
     public abstract class PluginBase : IPlugin
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
         public virtual void Initialize(PluginContext pluginContext, IClientProfile activeClientProfile,
             IServerProfile activeServerProfile)
