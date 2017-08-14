@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\IClientProfile.cs" />
-    <Compile Include="Interfaces\IGuiPlugin.cs" />
     <Compile Include="Interfaces\INexonApi.cs" />
     <Compile Include="Interfaces\IPackEngine.cs" />
     <Compile Include="Interfaces\IProgressIndicator.cs" />
