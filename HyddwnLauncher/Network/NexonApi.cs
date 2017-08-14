@@ -10,7 +10,7 @@ using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Network.Rest;
 using Newtonsoft.Json;
 
-namespace HyddwnLauncher.Util
+namespace HyddwnLauncher.Network
 {
     public class NexonApi : INexonApi
     {

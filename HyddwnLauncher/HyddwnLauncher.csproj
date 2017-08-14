@@ -134,7 +134,7 @@
     <Compile Include="Network\Rest\RestRequest.cs" />
     <Compile Include="Network\Rest\RestResponse.cs" />
     <Compile Include="Util\ByteSizeHelper.cs" />
-    <Compile Include="Util\NexonApi.cs" />
+    <Compile Include="Network\NexonApi.cs" />
     <Compile Include="Util\CustomPackFileMode.cs" />
     <Compile Include="ExceptionReporter.xaml.cs">
       <DependentUpon>ExceptionReporter.xaml</DependentUpon>
