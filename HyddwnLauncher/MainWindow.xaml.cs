@@ -477,7 +477,7 @@ namespace HyddwnLauncher
             Loading.IsOpen = false;
         }
 
-        private async void CheckClientProfiles()
+        private void CheckClientProfiles()
         {
             if (ProfileManager.ClientProfiles.Count == 0)
             {
