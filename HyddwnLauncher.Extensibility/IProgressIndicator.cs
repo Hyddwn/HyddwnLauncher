@@ -1,4 +1,4 @@
-﻿namespace HyddwnLauncher.Core
+﻿namespace HyddwnLauncher.Extensibility
 {
     public interface IProgressIndicator
     {

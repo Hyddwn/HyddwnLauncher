@@ -6,12 +6,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Network.Rest;
 using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Util
 {
-    internal class NexonApi
+    public class NexonApi : INexonApi
     {
         private static readonly SHA512Managed Sha512 = new SHA512Managed();
         private static readonly string BodyClientId = "7853644408";

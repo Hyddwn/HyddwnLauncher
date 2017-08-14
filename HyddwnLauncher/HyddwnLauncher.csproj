@@ -122,7 +122,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Core\IProgressIndicator.cs" />
     <Compile Include="Controls\NewClientProfileUserControl.xaml.cs">
       <DependentUpon>NewClientProfileUserControl.xaml</DependentUpon>
     </Compile>
@@ -240,7 +239,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\HyddwnLauncher.Extensibility\HyddwnLauncher.Extensibility.csproj">
+      <Project>{FC944C15-6479-444A-8FA5-00A967DD0600}</Project>
+      <Name>HyddwnLauncher.Extensibility</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\bangor.png" />
     <Resource Include="Images\damage.png" />
