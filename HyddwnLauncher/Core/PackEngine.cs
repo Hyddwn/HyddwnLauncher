@@ -4,10 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using HyddwnLauncher.Extensibility.Interfaces;
+using HyddwnLauncher.Util;
 using Ionic.Zip;
 using MabinogiResource;
 
-namespace HyddwnLauncher.Util
+namespace HyddwnLauncher.Core
 {
     public class PackEngine : IPackEngine
     {

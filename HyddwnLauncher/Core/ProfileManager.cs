@@ -8,9 +8,10 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using HyddwnLauncher.Properties;
+using HyddwnLauncher.Util;
 using Newtonsoft.Json;
 
-namespace HyddwnLauncher.Util
+namespace HyddwnLauncher.Core
 {
     public class ProfileManager
     {

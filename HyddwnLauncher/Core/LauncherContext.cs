@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace HyddwnLauncher.Util
+namespace HyddwnLauncher.Core
 {
     public class LauncherContext
     {

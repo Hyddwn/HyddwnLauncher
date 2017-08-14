@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Windows;
+using HyddwnLauncher.Core;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using HyddwnLauncher.Core;
 using HyddwnLauncher.Util;
 using Microsoft.Win32;
 

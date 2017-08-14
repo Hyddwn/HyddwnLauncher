@@ -8,6 +8,7 @@
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
                       xmlns:util="clr-namespace:HyddwnLauncher.Util"
+                      xmlns:core="clr-namespace:HyddwnLauncher.Core"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}" WindowTransitionsEnabled="true"
@@ -30,7 +31,7 @@
             TitleBarBackground="{DynamicResource WindowBackgroundBrush}" Title="Profile Editor" IsOpenChanged="ProfileEditorIsOpenChanged"
             IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ClosingFinished="ProfileEditorOnProfileCLosingFinished" ChildWindowWidth="560" ChildWindowHeight="440">
             <simpleChildWindow:ChildWindow.Resources>
-                <DataTemplate x:Key="ClientProfileDataTemplate" DataType="util:ClientProfile">
+                <DataTemplate x:Key="ClientProfileDataTemplate" DataType="core:ClientProfile">
                     <Grid>
                         <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
                     </Grid>

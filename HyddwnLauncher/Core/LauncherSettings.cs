@@ -3,7 +3,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using HyddwnLauncher.Properties;
 
-namespace HyddwnLauncher.Util
+namespace HyddwnLauncher.Core
 {
     // A wrapper around the .NET Settings system 
     // that supports INotifyPropertyChanged and Binding
