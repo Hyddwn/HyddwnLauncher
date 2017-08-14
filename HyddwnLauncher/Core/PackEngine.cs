@@ -3,12 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using HyddwnLauncher.Extensibility.Interfaces;
 using Ionic.Zip;
 using MabinogiResource;
 
 namespace HyddwnLauncher.Util
 {
-    public class PackEngine
+    public class PackEngine : IPackEngine
     {
         private static readonly string Assembly = System.Reflection.Assembly.GetExecutingAssembly().Location;
         private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
