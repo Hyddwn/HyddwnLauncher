@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using HyddwnLauncher.Extensibility;
+using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Network.Rest;
 using Newtonsoft.Json;
 

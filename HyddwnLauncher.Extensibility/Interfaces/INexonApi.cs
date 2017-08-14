@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace HyddwnLauncher.Extensibility
+namespace HyddwnLauncher.Extensibility.Interfaces
 {
     public interface INexonApi
     {
