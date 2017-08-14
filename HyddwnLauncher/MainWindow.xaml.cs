@@ -110,7 +110,8 @@ namespace HyddwnLauncher
         private volatile bool _patching;
         private bool _updateClose;
         private bool _settingUpProfile;
-        private ClientAuth _clientAuth;
+
+        public Action LoginSuccess;
 
         #endregion
 
@@ -355,69 +356,27 @@ namespace HyddwnLauncher
 
             NxAuthLoginPassword.Password = "";
 
-            _clientAuth = new ClientAuth();
+            NexonApi.Instance.HashPassword(ref password);
 
-            _clientAuth.HashPassword(ref password);
+            var success = await NexonApi.Instance.GetAccessToken(username, password);
 
-            var passport = await _clientAuth.GetNxAuthHash(username, password);
-
-            if (passport == ClientAuth.LoginFailed)
+            if (!success)
             {
                 ToggleLoginControls();
 
                 NxAuthLoginNotice.Text = "Username or Password is Incorrect";
                 NxAuthLoginNotice.Visibility = Visibility.Visible;
-
-                return;
-            }
-
-            if (passport == ClientAuth.DevError)
-            {
-                ToggleLoginControls();
-
-                NxAuthLoginNotice.Text = "Error Retrieving Data";
-                NxAuthLoginNotice.Visibility = Visibility.Visible;
-
                 return;
             }
 
             NxAuthLogin.IsOpen = false;
 
-            ImporterTextBlock.SetTextBlockSafe("Special thanks to cursey");
-            ImportWindow.IsOpen = true;
-            await Task.Delay(2000);
-            ImportWindow.IsOpen = false;
+            ToggleLoginControls();
 
-            Text.Text = "Launching...";
-            Loading.IsOpen = true;
-            await Task.Delay(500);
+            NxAuthLoginNotice.Visibility = Visibility.Collapsed;
+            NxAuthLoginNotice.Text = "";
 
-            var launchArgs =
-                "code:1622 verstr:248 ver:248 locale:USA env:Regular setting:file://data/features.xml " +
-                $"logip:208.85.109.35 logport:11000 chatip:208.85.109.37 chatport:8002 /P:{passport} -bgloader";
-
-            try
-            {
-                try
-                {
-                    Log.Info($"Starting client with the following parameters: {launchArgs}");
-                    Process.Start(ActiveClientProfile.Location, launchArgs);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("Cannot start Mabbinogi: {0}", ex.ToString());
-                    throw new IOException();
-                }
-                Log.Info("Client start success");
-                LauncherContext.Settings.Save();
-                Application.Current.Shutdown();
-            }
-            catch (IOException ex)
-            {
-                Loading.IsOpen = false;
-                await this.ShowMessageAsync("Launch Failed", "Cannot start Mabinogi: " + ex.Message);
-                Log.Exception(ex, "Client start finished with errors");
-            }
+            OnLoginSuccess();
         }
 
         private void NxAuthLoginOnCancel(object sender, RoutedEventArgs e)
@@ -688,6 +647,11 @@ namespace HyddwnLauncher
             if (element != null)
                 Keyboard.Focus(element);
             return false;
+        }
+
+        public void OnLoginSuccess()
+        {
+            LoginSuccess?.Raise();
         }
 
         public int ReadVersion()
