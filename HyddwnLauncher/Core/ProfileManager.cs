@@ -7,6 +7,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 using Newtonsoft.Json;
@@ -117,7 +118,7 @@ namespace HyddwnLauncher.Core
         }
     }
 
-    public class ClientProfile : INotifyPropertyChanged
+    public class ClientProfile : INotifyPropertyChanged, IClientProfile
     {
         private string _location;
         private string _name;
@@ -165,7 +166,7 @@ namespace HyddwnLauncher.Core
         }
     }
 
-    public class ServerProfile : INotifyPropertyChanged
+    public class ServerProfile : INotifyPropertyChanged, IServerProfile
     {
         private string _arguments;
         private string _chatIp;
