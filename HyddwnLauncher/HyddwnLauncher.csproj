@@ -222,9 +222,6 @@
   <ItemGroup>
     <Content Include="Libs\ImaBrokeDude.Controls.dll" />
     <Content Include="Libs\Ionic.Zip.Reduced.dll" />
-    <Content Include="Libs\MahApps.Metro.dll" />
-    <Content Include="Libs\MahApps.Metro.SimpleChildWindow.dll" />
-    <Content Include="Libs\System.Windows.Interactivity.dll" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon_External_a.ico" />
@@ -242,7 +239,6 @@
     <None Include="Tao.DevIl.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Libs\Newtonsoft.Json.dll" />
     <None Include="MabinogiResource.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

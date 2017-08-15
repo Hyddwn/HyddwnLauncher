@@ -95,9 +95,9 @@ namespace HyddwnLauncher
                         uiElement.IsEnabled = !value;
 
                     if (!value)
-                        PluginHost.PatchEnd();
+                        PluginHost?.PatchEnd();
                     else
-                        PluginHost.PatchBegin();
+                        PluginHost?.PatchBegin();
                 });
             }
         }
