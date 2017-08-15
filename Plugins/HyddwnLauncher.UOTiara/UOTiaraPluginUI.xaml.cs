@@ -103,7 +103,10 @@ namespace HyddwnLauncher.UOTiara
 
         public void PreLaunch()
         {
-
+            // Create the pack here :D
+            // var packer = _pluginContext.GetPackEngine();
+            // blah set up data folder for pack blah
+            // packer.Pack("path to data folder", "packfile name", version, [optional] compresstionLevel);
         }
 
         public void ClientProfileChanged(IClientProfile clientProfile) => _clientProfile = clientProfile;
