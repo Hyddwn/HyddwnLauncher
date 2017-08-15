@@ -33,5 +33,9 @@ namespace HyddwnLauncher.Extensibility.Primitives
         void PostLaunch();
 
         UserControl GetPluginUi();
+
+        void PatchBegin();
+
+        void PatchEnd();
     }
 }

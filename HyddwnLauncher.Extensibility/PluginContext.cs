@@ -5,6 +5,8 @@ namespace HyddwnLauncher.Extensibility
 {
     public class PluginContext
     {
+        public Func<bool> GetPatcherState;
+
         public Func<INexonApi> GetNexonApi;
 
         public Func<IPackEngine> GetPackEngine;

@@ -43,5 +43,15 @@ namespace HyddwnLauncher.Extensibility
         {
             return null;
         }
+
+        public virtual void PatchBegin()
+        {
+            
+        }
+
+        public virtual void PatchEnd()
+        {
+            
+        }
     }
 }

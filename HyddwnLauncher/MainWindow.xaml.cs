@@ -93,6 +93,11 @@ namespace HyddwnLauncher
                     _patching = value;
                     foreach (var uiElement in _disableWhilePatching)
                         uiElement.IsEnabled = !value;
+
+                    if (!value)
+                        PluginHost.PatchEnd();
+                    else
+                        PluginHost.PatchBegin();
                 });
             }
         }
@@ -123,8 +128,6 @@ namespace HyddwnLauncher
         {
             if (_updateClose)
             {
-
-
                 var processinfo = new ProcessStartInfo
                 {
                     Arguments =
@@ -654,6 +657,7 @@ namespace HyddwnLauncher
                         LoginSuccess += action;
                         NxAuthLogin.IsOpen = true;
                     };
+                    pluginContext.GetPatcherState += () => IsPatching;
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
 
                     var pluginUi = plugin.GetPluginUi();

@@ -35,6 +35,36 @@ namespace HyddwnLauncher.Core
             }
         }
 
+        public void PatchBegin()
+        {
+            foreach (var plugin in Plugins)
+            {
+                try
+                {
+                    plugin.PatchBegin();
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"Error calling PatchBegin {plugin.Name}");
+                }
+            }
+        }
+
+        public void PatchEnd()
+        {
+            foreach (var plugin in Plugins)
+            {
+                try
+                {
+                    plugin.PatchEnd();
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"Error called PatchEnd {plugin.Name}");
+                }
+            }
+        }
+
         public void PreLaunch()
         {
             foreach (var plugin in Plugins)
