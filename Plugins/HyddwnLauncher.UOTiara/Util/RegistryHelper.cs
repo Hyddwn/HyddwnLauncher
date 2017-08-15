@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Win32;
 
@@ -274,6 +276,14 @@ namespace HyddwnLauncher.UOTiara.Util
                 // AAAAAAAAAAARGH, an error!
                 return 0;
             }
+        }
+
+        public IEnumerable<string> GetSubKeyNames()
+        {
+            var rk = BaseRegistryKey;
+            var sk1 = rk.OpenSubKey(SubKey);
+
+            return sk1?.GetSubKeyNames();
         }
 
         /// <summary>
