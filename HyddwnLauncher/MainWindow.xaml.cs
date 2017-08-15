@@ -456,7 +456,6 @@ namespace HyddwnLauncher
             ConfigureLauncher();
             ProfileManager.SaveClientProfiles();
         }
-
         #endregion
 
         #region Methods
