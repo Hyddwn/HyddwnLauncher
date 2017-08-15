@@ -454,6 +454,7 @@ namespace HyddwnLauncher
         private void ProfileEditorOnProfileCLosingFinished(object sender, RoutedEventArgs e)
         {
             ConfigureLauncher();
+            ProfileManager.SaveClientProfiles();
         }
 
         #endregion
