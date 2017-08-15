@@ -30,7 +30,7 @@ namespace HyddwnLauncher.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, $"Error shuttings down {plugin.Name}");
+                    Log.Exception(ex, $"Error shutting down {plugin.Name}");
                 }
             }
         }
