@@ -582,12 +582,10 @@ namespace HyddwnLauncher
             }
 
 
-            if (IsInitialized)
-            {
-                var mabiVers = ReadVersion();
-                Log.Info("Mabinogi Version {0}", mabiVers);
-                ClientVersion.SetTextBlockSafe(mabiVers.ToString());
-            }
+            if (!IsInitialized) return;
+            var mabiVers = ReadVersion();
+            Log.Info("Mabinogi Version {0}", mabiVers);
+            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
         }
 
 
