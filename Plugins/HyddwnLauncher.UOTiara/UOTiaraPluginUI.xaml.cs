@@ -59,26 +59,28 @@ namespace HyddwnLauncher.UOTiara
             if (_clientProfile == null) return;
 
             _pluginContext.MainUpdater("Loading Mods...", "Retrieving local config", 0, true, true);
+
             try
             {
                 ModInfoList.Clear();
 
                 var registryHelper = new RegistryHelper();
-                double count = registryHelper.ReadInt("MODS");
-                var subkeyTemp = registryHelper.SubKey;
+                var subkeyTemp = registryHelper.SubKey + "\\Components";
+                registryHelper.SubKey = subkeyTemp;
 
-                for (var i = 1; i <= count; i++)
+                foreach (var subkeyName in registryHelper.GetSubKeyNames())
                 {
-                    registryHelper.SubKey = $"{subkeyTemp}\\Components\\MOD{i}";
-                    _pluginContext.MainUpdater("Adding Mods to List...", $"{i}/{count}", i / count * 100, false, true);
+                    registryHelper.SubKey = $"{subkeyTemp}\\{subkeyName}";
 
                     var isEnabled = Convert.ToBoolean(registryHelper.Read<int>("Installed"));
                     var modName = registryHelper.Read();
                     var fileCount = registryHelper.ReadInt("FILES");
 
+                    if (string.IsNullOrWhiteSpace(modName)) continue;
+
                     var modInfo = new ModInfo(isEnabled, modName);
 
-                    for (int x = 1; x <= fileCount; x++)
+                    for (var x = 1; x <= fileCount; x++)
                     {
                         var filename = registryHelper.Read($"FILE{x}");
 
@@ -93,11 +95,7 @@ namespace HyddwnLauncher.UOTiara
             }
             catch (Exception ex)
             {
-                //_pluginContext.LogString("UO Tiara: Error loading frontend.ini data: " + ex.Message, false);
-                //using (WebClient wc = new WebClient())
-                //{
-                //    wc.DownloadFile("http://hoggshobbies.com/shaggyze/Frontend.ini", Path.Combine(MabiRoot, "/AutoBot/Frontend.ini"));
-                //}
+                _pluginContext.LogString($"Failed to read data for an entry: {ex.Message}" , false);
             }
         }
 
