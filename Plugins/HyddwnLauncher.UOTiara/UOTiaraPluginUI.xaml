@@ -2,28 +2,95 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              x:Name="This"
-             mc:Ignorable="d" d:DesignHeight="320" Width="785.671" HorizontalAlignment="Stretch">
+             mc:Ignorable="d" d:DesignHeight="280" d:DesignWidth="795" HorizontalAlignment="Stretch">
     <UserControl.Resources>
-        <ContextMenu x:Key="ContextMenu1" AllowDrop="True" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <ContextMenu x:Key="ContextMenu1" AllowDrop="True" />
+                </ResourceDictionary>
+
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="9*"/>
-            <RowDefinition Height="1*" />
-        </Grid.RowDefinitions>
-        <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" ItemsSource="{Binding ElementName=This, Path=ModInfoList}" DataContext="{Binding}" SelectionMode="Multiple" SelectionChanged="listView1_SelectionChanged" ContextMenu="{StaticResource ContextMenu1}">
-            <ListView.View>
-                <GridView >
-                    <GridView.ColumnHeaderContextMenu>
-                        <ContextMenu AllowDrop="True" />
-                    </GridView.ColumnHeaderContextMenu>
-                    <GridViewColumn Header="Mod Name" Width="280" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn Header="Enabled" Width="70" DisplayMemberBinding="{Binding IsEnabled}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <Button Content="Refresh List" Grid.Row="1" HorizontalAlignment="Left"  Name="button3" VerticalAlignment="Top" Click="button3_Click" Margin="10,6,0,0" />
-    </Grid>
+    <controls:MetroAnimatedSingleRowTabControl
+        TabStripPlacement="Bottom">
+        <controls:MetroTabItem Header="Main">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="64*"/>
+                    <ColumnDefinition Width="67*"/>
+                </Grid.ColumnDefinitions>
+                <ListView 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" 
+                    Height="189"
+                    Margin="10 10 0 0"
+                    ItemsSource="{Binding ElementName=This, Path=ModInfoList}"
+                    DataContext="{Binding}"
+                    SelectionMode="Multiple" 
+                    SelectionChanged="listView1_SelectionChanged" 
+                    ContextMenu="{StaticResource ContextMenu1}">
+                    <ListView.View>
+                        <GridView >
+                            <GridView.ColumnHeaderContextMenu>
+                                <ContextMenu AllowDrop="True" />
+                            </GridView.ColumnHeaderContextMenu>
+                            <GridViewColumn Header="Mod Name" Width="280" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="Enabled" Width="70" DisplayMemberBinding="{Binding IsEnabled}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <Button Grid.Column="0" Content="Refresh List" HorizontalAlignment="Left"  Name="button3" VerticalAlignment="Top" Click="button3_Click" Margin="10,204,0,0" Width="76" />
+                <GroupBox Grid.Column="1" Header="Mod Info" HorizontalAlignment="Left" Height="90" Margin="10,10,0,0" VerticalAlignment="Top" Width="382">
+                    <Grid>
+                        <StackPanel>
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock FontWeight="Bold">Author(s):</TextBlock>
+                                <TextBlock Margin="5 0 0 0"></TextBlock>
+                            </StackPanel>
+                            <StackPanel Margin="5" Orientation="Horizontal">
+                                <TextBlock FontWeight="Bold">Description:</TextBlock>
+                                <TextBlock Margin="5 0 0 0"></TextBlock>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </controls:MetroTabItem>
+        <controls:MetroTabItem Header="Settings">
+
+        </controls:MetroTabItem>
+        <controls:MetroTabItem Header="About">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="151"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="Unofficial_Tiara_Image.bmp" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Height="80" Margin="0,5">
+                    <TextBlock FontWeight="Bold" TextAlignment="Center" Text="UOTiara Plugin"/>
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Author: Sven"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink></TextBlock>
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Author: ShaggyZE"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=1886">MabiMods Profile</Hyperlink></TextBlock>
+                </StackPanel>
+                <ScrollViewer Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+                    <StackPanel>
+                        <GroupBox Header="GPL License" VerticalAlignment="Top" >
+                            <TextBlock Margin="5" TextWrapping="Wrap" ><Run Text="This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version."/><LineBreak/><Run/><LineBreak/><Run Text="This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details."/><LineBreak/><Run/><LineBreak/><Run Text="You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;"/><Hyperlink NavigateUri="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</Hyperlink><Run Text="&gt;."/></TextBlock>
+                        </GroupBox>
+                        <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks"/>
+                        <TextBlock><Run FontWeight="Bold" Text="ShaggyZE"/><Run Text=" - Maintains UOTiara, the logo, the advice, testing."/></TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </controls:MetroTabItem>
+    </controls:MetroAnimatedSingleRowTabControl>
 </UserControl>
