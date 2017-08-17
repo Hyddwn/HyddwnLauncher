@@ -128,8 +128,6 @@
                            VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" />
             </Grid>
         </simpleChildWindow:ChildWindow>
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Height="16" Width="50" Margin="516,374,0,0"
-                   Text="{Binding IsPatching, StringFormat={}}" />
         <controls:MetroAnimatedSingleRowTabControl Name="MainTabControl"
                                                    TabStripPlacement="Bottom"
                                                    Margin="0,0,0,130">
