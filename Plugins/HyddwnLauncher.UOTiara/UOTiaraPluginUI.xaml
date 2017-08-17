@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:design="clr-namespace:HyddwnLauncher.UOTiara.Design"
              x:Name="This"
              mc:Ignorable="d" d:DesignHeight="280" d:DesignWidth="795" HorizontalAlignment="Stretch">
     <UserControl.Resources>
@@ -12,7 +13,16 @@
                 <ResourceDictionary>
                     <ContextMenu x:Key="ContextMenu1" AllowDrop="True" />
                 </ResourceDictionary>
-
+                <design:DesignTimeResourceDictionary>
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml"/>
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/cobalt.xaml" />
+                    </ResourceDictionary.MergedDictionaries>
+                </design:DesignTimeResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 
