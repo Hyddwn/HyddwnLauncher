@@ -174,7 +174,7 @@
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="About">
-                <Grid Background="{DynamicResource WindowBackgroundBrush}">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="180"/>
                         <RowDefinition Height="*"/>
