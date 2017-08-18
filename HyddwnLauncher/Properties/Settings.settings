@@ -1,21 +1,7 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Hyddwn_Launcher.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HyddwnLauncher.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="FirstRun" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="DeleteZips" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="DeletePartFiles" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="DeleteContent" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="RequireAdmin" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -36,9 +22,6 @@
     </Setting>
     <Setting Name="MaxConnectionLimit" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">10</Value>
-    </Setting>
-    <Setting Name="Locale" Type="System.String" Scope="User">
-      <Value Profile="(Default)">North America</Value>
     </Setting>
     <Setting Name="HyddwnProfileUpgrade" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

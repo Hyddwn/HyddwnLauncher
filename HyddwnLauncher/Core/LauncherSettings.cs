@@ -11,12 +11,8 @@ namespace HyddwnLauncher.Core
     {
         private int _clientProfileSelectedIndex;
         private int _connectionLimit;
-        private bool _deleteContent;
-        private bool _deletePartFiles;
-        private bool _deleteZips;
         private bool _firstRun;
         private bool _hyddwnProfileUpgrade;
-        private string _locale;
         private bool _requiresAdmin;
         private int _serverProfileSelectedIndex;
 
@@ -36,39 +32,6 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _usePackFiles) return;
                 _usePackFiles = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool DeletePartFiles
-        {
-            get => _deletePartFiles;
-            set
-            {
-                if (value == _deletePartFiles) return;
-                _deletePartFiles = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool DeleteZips
-        {
-            get => _deleteZips;
-            set
-            {
-                if (value == _deleteZips) return;
-                _deleteZips = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool DeleteContent
-        {
-            get => _deleteContent;
-            set
-            {
-                if (value == _deleteContent) return;
-                _deleteContent = value;
                 OnPropertyChanged();
             }
         }
@@ -102,17 +65,6 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _firstRun) return;
                 _firstRun = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string Locale
-        {
-            get => _locale;
-            set
-            {
-                if (value == _locale) return;
-                _locale = value;
                 OnPropertyChanged();
             }
         }
@@ -179,13 +131,8 @@ namespace HyddwnLauncher.Core
         public void Load()
         {
             UsePackFiles = Settings.Default.UsePackFiles;
-            DeletePartFiles = Settings.Default.DeletePartFiles;
-            DeleteContent = Settings.Default.DeleteContent;
-            DeleteZips = Settings.Default.DeleteZips;
             RequiresAdmin = Settings.Default.RequireAdmin;
             WarnIfRootIsNotMabiRoot = Settings.Default.WarnIfNotInMabiDir;
-            FirstRun = Settings.Default.FirstRun;
-            Locale = Settings.Default.Locale;
             ClientProfileSelectedIndex = Settings.Default.ClientProfileSelectedIndex;
             ServerProfileSelectedIndex = Settings.Default.ServerProfileSelectedIndex;
             ConnectionLimit = Settings.Default.DefaultConnectionLimit;
@@ -213,13 +160,8 @@ namespace HyddwnLauncher.Core
         public void Save()
         {
             Settings.Default.UsePackFiles = UsePackFiles;
-            Settings.Default.DeletePartFiles = DeletePartFiles;
-            Settings.Default.DeleteContent = DeleteContent;
-            Settings.Default.DeleteZips = DeleteZips;
             Settings.Default.RequireAdmin = RequiresAdmin;
             Settings.Default.WarnIfNotInMabiDir = WarnIfRootIsNotMabiRoot;
-            Settings.Default.FirstRun = FirstRun;
-            Settings.Default.Locale = Locale;
             Settings.Default.ClientProfileSelectedIndex = ClientProfileSelectedIndex;
             Settings.Default.ServerProfileSelectedIndex = ServerProfileSelectedIndex;
             Settings.Default.DefaultConnectionLimit = ConnectionLimit;

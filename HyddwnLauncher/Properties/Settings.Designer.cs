@@ -26,54 +26,6 @@ namespace HyddwnLauncher.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool FirstRun {
-            get {
-                return ((bool)(this["FirstRun"]));
-            }
-            set {
-                this["FirstRun"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool DeleteZips {
-            get {
-                return ((bool)(this["DeleteZips"]));
-            }
-            set {
-                this["DeleteZips"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool DeletePartFiles {
-            get {
-                return ((bool)(this["DeletePartFiles"]));
-            }
-            set {
-                this["DeletePartFiles"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool DeleteContent {
-            get {
-                return ((bool)(this["DeleteContent"]));
-            }
-            set {
-                this["DeleteContent"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool RequireAdmin {
             get {
                 return ((bool)(this["RequireAdmin"]));
@@ -149,18 +101,6 @@ namespace HyddwnLauncher.Properties {
         public int MaxConnectionLimit {
             get {
                 return ((int)(this["MaxConnectionLimit"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("North America")]
-        public string Locale {
-            get {
-                return ((string)(this["Locale"]));
-            }
-            set {
-                this["Locale"] = value;
             }
         }
         

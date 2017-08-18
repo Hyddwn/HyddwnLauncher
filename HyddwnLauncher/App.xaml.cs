@@ -59,7 +59,7 @@ namespace HyddwnLauncher
             }
 
 #if DEBUG
-            //launcherContext.Settings.RequiresAdmin = false;
+            launcherContext.Settings.RequiresAdmin = false;
             launcherContext.Settings.FirstRun = true;
 #endif
             CheckForAdmin(launcherContext);
