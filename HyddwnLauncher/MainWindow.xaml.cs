@@ -210,9 +210,26 @@ namespace HyddwnLauncher
                 {
                     await DeletePackFiles();
 
-                    LoginSuccess += LaunchOfficial;
-                    NxAuthLogin.IsOpen = true;
+                    if (!NexonApi.Instance.IsAccessTokenValid())
+                    {
+                        if (LauncherContext.Settings.RememberLogin)
+                        {
+                            var success = await NexonApi.Instance.GetAccessToken(LauncherContext.Settings.NxUsername,
+                                LauncherContext.Settings.NxPassword);
+                            if (success)
+                            {
+                                LaunchOfficial();
+                                return;
+                            }
+                        }
 
+                        LoginSuccess += LaunchOfficial;
+                        NxAuthLogin.IsOpen = true;
+
+                        return;
+                    }
+
+                    LaunchOfficial();
                     return;
                 }
 
@@ -383,6 +400,14 @@ namespace HyddwnLauncher
             NxAuthLoginPassword.Password = "";
 
             NexonApi.Instance.HashPassword(ref password);
+
+            // Store username and Hash
+            if (LauncherContext.Settings.RememberLogin)
+            {
+                LauncherContext.Settings.NxUsername = username;
+                LauncherContext.Settings.NxPassword = password;
+                LauncherContext.Settings.Save();
+            }
 
             var success = await NexonApi.Instance.GetAccessToken(username, password);
 
@@ -582,7 +607,6 @@ namespace HyddwnLauncher
                     "Warning", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
-
             if (!IsInitialized) return;
             var mabiVers = ReadVersion();
             Log.Info("Mabinogi Version {0}", mabiVers);
@@ -652,8 +676,16 @@ namespace HyddwnLauncher
                     };
                     pluginContext.GetNexonApi += () => NexonApi.Instance;
                     pluginContext.GetPackEngine += () => new PackEngine();
-                    pluginContext.RequestUserLogin += action =>
+                    pluginContext.RequestUserLogin += async action =>
                     {
+                        if (LauncherContext.Settings.RememberLogin)
+                        {
+                            var success = await NexonApi.Instance.GetAccessToken(LauncherContext.Settings.NxUsername,
+                                LauncherContext.Settings.NxPassword);
+                            if (success) action.Raise();
+                            return;
+                        }
+
                         LoginSuccess += action;
                         NxAuthLogin.IsOpen = true;
                     };
@@ -688,6 +720,9 @@ namespace HyddwnLauncher
                     MessageBox.Show($"Error loading {plugin.Name}, {ex.GetType().Name}: {ex.Message}", "Error");
                 }
             }
+
+            PluginHost.ClientProfileChanged(ActiveClientProfile);
+            PluginHost.ServerProfileChanged(ActiveServerProfile);
         }
 
         private async void LaunchOfficial()
