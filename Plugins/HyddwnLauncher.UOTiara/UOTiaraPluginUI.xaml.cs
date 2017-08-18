@@ -39,9 +39,9 @@ namespace HyddwnLauncher.UOTiara
             InitializeComponent();
         }
 
-        private void button3_Click(object sender, RoutedEventArgs e)
+        private async void button3_Click(object sender, RoutedEventArgs e)
         {
-            LoadUOTiaraTOList();
+            await LoadModList();
         }
 
         private void button4_Click(object sender, RoutedEventArgs e)
@@ -54,49 +54,74 @@ namespace HyddwnLauncher.UOTiara
 
         }
 
-        public void LoadUOTiaraTOList()
+        public async Task LoadModList()
         {
             if (_clientProfile == null) return;
 
-            _pluginContext.MainUpdater("Loading Mods...", "Retrieving local config", 0, true, true);
-
-            try
+            Dispatcher.Invoke(() =>
             {
                 ModInfoList.Clear();
+                LoadingOverlayText.Text = "Loading Mod List...";
+                _pluginContext.SetPatcherState(true);
+                LoadingOverlay.IsOpen = true;
+            });
 
-                var registryHelper = new RegistryHelper();
-                var subkeyTemp = registryHelper.SubKey + "\\Components";
-                registryHelper.SubKey = subkeyTemp;
+            await Task.Delay(250);
 
-                foreach (var subkeyName in registryHelper.GetSubKeyNames())
-                {
-                    registryHelper.SubKey = $"{subkeyTemp}\\{subkeyName}";
-
-                    var isEnabled = Convert.ToBoolean(registryHelper.Read<int>("Installed"));
-                    var modName = registryHelper.Read();
-                    var fileCount = registryHelper.ReadInt("FILES");
-
-                    if (string.IsNullOrWhiteSpace(modName)) continue;
-
-                    var modInfo = new ModInfo(isEnabled, modName);
-
-                    for (var x = 1; x <= fileCount; x++)
-                    {
-                        var filename = registryHelper.Read($"FILE{x}");
-
-                        var modFileInfo = new ModFileInfo(modName, filename);
-                        modInfo.ModFiles.Add(modFileInfo);
-                    }
-
-                    ModInfoList.Add(modInfo);
-                }
-
-                _pluginContext.MainUpdater("Loaded Mods!", "", 0, false, false);
-            }
-            catch (Exception ex)
+            await Task.Run(() =>
             {
-                _pluginContext.LogString($"Failed to read data for an entry: {ex.Message}" , false);
-            }
+                try
+                {
+
+                    var registryHelper = new RegistryHelper();
+                    var subkeyTemp = registryHelper.SubKey + "\\Components";
+                    registryHelper.SubKey = subkeyTemp;
+
+                    List<ModInfo> list = new List<ModInfo>();
+
+                    foreach (var subkeyName in registryHelper.GetSubKeyNames())
+                    {
+                        registryHelper.SubKey = $"{subkeyTemp}\\{subkeyName}";
+                        
+                        var modName = registryHelper.Read();
+                        var creator = registryHelper.Read("CREATOR");
+                        var description = registryHelper.Read("DESCRIPTION");
+                        var fileCount = registryHelper.ReadInt("FILES");
+                        var isEnabled = Convert.ToBoolean(registryHelper.Read<int>("Installed"));
+
+                        if (string.IsNullOrWhiteSpace(modName)) continue;
+
+                        var modInfo = new ModInfo(isEnabled, modName, creator, description);
+
+                        for (var x = 1; x <= fileCount; x++)
+                        {
+                            var filename = registryHelper.Read($"FILE{x}");
+
+                            var modFileInfo = new ModFileInfo(modName, filename);
+                            modInfo.ModFiles.Add(modFileInfo);
+                        }
+
+                        list.Add(modInfo);
+
+
+
+                        //ParseModInfo to build the structure
+
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _pluginContext.LogString($"Failed to read data for an entry: {ex.Message}", false);
+                }
+            });
+
+            Dispatcher.Invoke(() =>
+            {
+                LoadingOverlayText.Text = "";
+                _pluginContext.SetPatcherState(false);
+                LoadingOverlay.IsOpen = false;
+            });
         }
 
         public void PreLaunch()
