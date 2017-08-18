@@ -118,6 +118,7 @@ namespace HyddwnLauncher
         private volatile bool _patching;
         private bool _updateClose;
         private bool _settingUpProfile;
+        private Dictionary<string, MetroTabItem> _pluginTabs;
 
         public event Action LoginSuccess;
 
@@ -627,6 +628,7 @@ namespace HyddwnLauncher
         private void InitializePlugins()
         {
             PluginHost = new PluginHost();
+            _pluginTabs = new Dictionary<string, MetroTabItem>();
             foreach (var plugin in PluginHost.Plugins)
             {
                 try
@@ -656,16 +658,27 @@ namespace HyddwnLauncher
                         NxAuthLogin.IsOpen = true;
                     };
                     pluginContext.GetPatcherState += () => IsPatching;
+                    pluginContext.SetActiveTab += guid =>
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            if (_pluginTabs.TryGetValue($"{guid}", out var tab))
+                                MainTabControl.SelectedItem = tab;
+                        });
+                    };
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
 
                     var pluginUi = plugin.GetPluginUi();
+
+                    if (pluginUi == null) return;
                    
                     var pluginTabItem = new MetroTabItem
                     {
                         Header = plugin.Name,
                         Content = pluginUi,
-                        Tag = plugin.GetGuid()
                     };
+
+                    _pluginTabs.Add($"{plugin.GetGuid()}", pluginTabItem);
 
                     MainTabControl.Items.Add(pluginTabItem);
                 }

@@ -17,8 +17,10 @@ namespace HyddwnLauncher.Extensibility
 
         public Action<string, string, double, bool, bool> MainUpdater;
 
+        public Action<Action> RequestUserLogin;
+
         public Action<bool> SetPatcherState;
 
-        public Action<Action> RequestUserLogin;
+        public Action<Guid> SetActiveTab;
     }
 }
