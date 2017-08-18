@@ -652,6 +652,9 @@ namespace HyddwnLauncher
         {
             PluginHost = new PluginHost();
             _pluginTabs = new Dictionary<string, MetroTabItem>();
+
+            if (PluginHost.Plugins == null) return;
+
             foreach (var plugin in PluginHost.Plugins)
             {
                 try
