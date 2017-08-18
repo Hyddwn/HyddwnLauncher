@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyddwnLauncher", "HyddwnLau
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyddwnUpdater", "HyddwnUpdater\HyddwnUpdater.csproj", "{39F71E88-1285-48F1-9228-F14823EEBC99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyddwnLauncher.Extensibility", "HyddwnLauncher.Extensibility\HyddwnLauncher.Extensibility.csproj", "{FC944C15-6479-444A-8FA5-00A967DD0600}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{5AB5CA7D-141F-41A1-9093-DFA1E3D7E2B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyddwnLauncher.UOTiara", "Plugins\HyddwnLauncher.UOTiara\HyddwnLauncher.UOTiara.csproj", "{31E3135D-8853-4F12-A006-D70DCD4AE505}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,8 +37,27 @@ Global
 		{39F71E88-1285-48F1-9228-F14823EEBC99}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39F71E88-1285-48F1-9228-F14823EEBC99}.Release|x86.ActiveCfg = Release|Any CPU
 		{39F71E88-1285-48F1-9228-F14823EEBC99}.Release|x86.Build.0 = Release|Any CPU
+		{FC944C15-6479-444A-8FA5-00A967DD0600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC944C15-6479-444A-8FA5-00A967DD0600}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC944C15-6479-444A-8FA5-00A967DD0600}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FC944C15-6479-444A-8FA5-00A967DD0600}.Debug|x86.Build.0 = Debug|Any CPU
+		{FC944C15-6479-444A-8FA5-00A967DD0600}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC944C15-6479-444A-8FA5-00A967DD0600}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC944C15-6479-444A-8FA5-00A967DD0600}.Release|x86.ActiveCfg = Release|Any CPU
+		{FC944C15-6479-444A-8FA5-00A967DD0600}.Release|x86.Build.0 = Release|Any CPU
+		{31E3135D-8853-4F12-A006-D70DCD4AE505}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31E3135D-8853-4F12-A006-D70DCD4AE505}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31E3135D-8853-4F12-A006-D70DCD4AE505}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{31E3135D-8853-4F12-A006-D70DCD4AE505}.Debug|x86.Build.0 = Debug|Any CPU
+		{31E3135D-8853-4F12-A006-D70DCD4AE505}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31E3135D-8853-4F12-A006-D70DCD4AE505}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31E3135D-8853-4F12-A006-D70DCD4AE505}.Release|x86.ActiveCfg = Release|Any CPU
+		{31E3135D-8853-4F12-A006-D70DCD4AE505}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{31E3135D-8853-4F12-A006-D70DCD4AE505} = {5AB5CA7D-141F-41A1-9093-DFA1E3D7E2B8}
 	EndGlobalSection
 EndGlobal

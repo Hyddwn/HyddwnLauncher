@@ -3,13 +3,17 @@ using System.Management;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Threading;
+using HyddwnLauncher.Extensibility;
+using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Network.Rest;
 using Newtonsoft.Json;
 
-namespace HyddwnLauncher.Util
+namespace HyddwnLauncher.Network
 {
-    internal class ClientAuth
+    public class NexonApi : INexonApi
     {
         private static readonly SHA512Managed Sha512 = new SHA512Managed();
         private static readonly string BodyClientId = "7853644408";
@@ -18,10 +22,82 @@ namespace HyddwnLauncher.Util
         public static readonly string LoginFailed = "LOGINFAILED";
         public static readonly string DevError = "DEVERROR_HEHEHE";
 
+        public static readonly NexonApi Instance = new NexonApi();
+
         private RestClient _restClient;
 
-        internal async Task<string> GetNxAuthHash(string username, string password)
+        //Tokens
+        private string _accessToken;
+
+        //Token Expiry Timer
+        private int _accessTokenExpiration;
+        private bool _accessTokenIsExpired;
+        private DispatcherTimer _accessTokenExpiryTimer;
+
+        public bool IsAccessTokenValid()
         {
+            return _accessToken != null && !_accessTokenIsExpired && (_accessToken != LoginFailed || _accessToken != DevError);
+        }
+
+        public async Task<string> GetNxAuthHash()
+        {
+            if (!IsAccessTokenValid())
+                return _accessToken;
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+
+            var request = _restClient.Create("/users/me/passport");
+
+            var response = await request.ExecuteGet<string>();
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+                return DevError;
+
+            //TODO: Error checking yo
+            var data = await response.GetContent();
+
+            var body = JsonConvert.DeserializeObject<dynamic>(data);
+
+            return body["passport"];
+        }
+
+        public async Task<int> GetLatestVersion()
+        {
+            if (_accessToken == null || _accessTokenIsExpired)
+                throw new Exception("Invalid or expired access token!");
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+
+            var request = _restClient.Create("/products/10200");
+
+            var response = await request.ExecuteGet<string>();
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+                return -1;
+
+            //TODO: Error checking yo
+            var data = await response.GetContent();
+
+            var body = JsonConvert.DeserializeObject<dynamic>(data);
+
+            var manifestUrl = body["product_details"]["manifestUrl"].Value;
+
+            var versionSearch = "([\\d]*R)";
+
+            string match = Regex.Match(manifestUrl, versionSearch).Value;
+
+            int version;
+
+            int.TryParse(match.Replace('R', ' '), out version);
+
+            return version;
+        }
+
+        public async Task<bool> GetAccessToken(string username, string password)
+        {
+            if (_accessToken != null && !_accessTokenIsExpired)
+                return true;
+
             _restClient = new RestClient(new Uri("https://accounts.nexon.net"), null);
 
             var request = _restClient.Create("/account/login/launcher");
@@ -47,27 +123,26 @@ namespace HyddwnLauncher.Util
             var ps = password;
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
-                return LoginFailed;
+                return false;
 
             var data = await response.GetContent();
             var body = JsonConvert.DeserializeObject<dynamic>(data);
-            string token = body["access_token"];
+            _accessToken = body["access_token"];
+            _accessTokenExpiration = body["access_token_expires_in"];
 
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), token);
+            _accessTokenIsExpired = false;
+            StartAccessTokenExpiryTimer(_accessTokenExpiration);
 
-            request = _restClient.Create("/users/me/passport");
+            return true;
+        }
 
-            response = await request.ExecuteGet<string>();
+        private void StartAccessTokenExpiryTimer(int timeout = 7200)
+        {
+            _accessTokenExpiryTimer?.Stop();
 
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-                return DevError;
-
-            //TODO: Error checking yo
-            data = await response.GetContent();
-
-            body = JsonConvert.DeserializeObject<dynamic>(data);
-
-            return body["passport"];
+            _accessTokenExpiryTimer = new DispatcherTimer();
+            _accessTokenExpiryTimer.Interval = TimeSpan.FromSeconds(timeout);
+            _accessTokenExpiryTimer.Tick += (sender, args) => _accessTokenIsExpired = true;
         }
 
         /// <summary>

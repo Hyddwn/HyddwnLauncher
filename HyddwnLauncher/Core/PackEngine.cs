@@ -3,12 +3,14 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using HyddwnLauncher.Extensibility.Interfaces;
+using HyddwnLauncher.Util;
 using Ionic.Zip;
 using MabinogiResource;
 
-namespace HyddwnLauncher.Util
+namespace HyddwnLauncher.Core
 {
-    public class PackEngine
+    public class PackEngine : IPackEngine
     {
         private static readonly string Assembly = System.Reflection.Assembly.GetExecutingAssembly().Location;
         private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
@@ -100,7 +102,7 @@ namespace HyddwnLauncher.Util
             return true;
         }
 
-        private void Pack(string inputDir, string outputFile, uint version, int level = 9)
+        public void Pack(string inputDir, string outputFile, uint version, int level = 9)
         {
             if (File.Exists(outputFile))
                 File.Delete(outputFile);

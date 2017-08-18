@@ -83,16 +83,4 @@
             return returnStatement;
         }
     }
-
-    public enum ByteSizeSystem
-    {
-        Binary,
-        Decimal
-    }
-
-    public enum ByteSizeMode
-    {
-        Storage,
-        Network
-    }
 }

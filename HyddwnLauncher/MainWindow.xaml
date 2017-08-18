@@ -8,6 +8,7 @@
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
                       xmlns:util="clr-namespace:HyddwnLauncher.Util"
+                      xmlns:core="clr-namespace:HyddwnLauncher.Core"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}" WindowTransitionsEnabled="true"
@@ -18,8 +19,8 @@
                       KeyUp="This_KeyUp">
     <FrameworkElement.Style>
         <Style TargetType="{x:Type controls:MetroWindow}">
-            <Setter Property="WindowTitleBrush" Value="#FF272626" />
-            <Setter Property="NonActiveWindowTitleBrush" Value="#FF272626" />
+            <Setter Property="WindowTitleBrush" Value="{DynamicResource WindowBackgroundBrush}" />
+            <Setter Property="NonActiveWindowTitleBrush" Value="{DynamicResource WindowBackgroundBrush}" />
         </Style>
     </FrameworkElement.Style>
     <Window.Resources>
@@ -30,7 +31,7 @@
             TitleBarBackground="{DynamicResource WindowBackgroundBrush}" Title="Profile Editor" IsOpenChanged="ProfileEditorIsOpenChanged"
             IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ClosingFinished="ProfileEditorOnProfileCLosingFinished" ChildWindowWidth="560" ChildWindowHeight="440">
             <simpleChildWindow:ChildWindow.Resources>
-                <DataTemplate x:Key="ClientProfileDataTemplate" DataType="util:ClientProfile">
+                <DataTemplate x:Key="ClientProfileDataTemplate" DataType="core:ClientProfile">
                     <Grid>
                         <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
                     </Grid>
@@ -106,7 +107,7 @@
             TitleBarBackground="#FF272626"
             IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ChildWindowWidth="320"
             ChildWindowHeight="300">
-            
+
         </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow x:Name="Loading" 
             IsModal="true" ShowTitleBar="false" ShowCloseButton="false" 
@@ -127,10 +128,6 @@
                            VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" />
             </Grid>
         </simpleChildWindow:ChildWindow>
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Height="16" Width="50" Margin="516,374,0,0"
-                   Text="{Binding IsPatching, StringFormat={}}" />
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Height="16" Width="50" Margin="516,374,0,0"
-                   Text="{Binding IsPatching, StringFormat={}}" />
         <controls:MetroAnimatedSingleRowTabControl Name="MainTabControl"
                                                    TabStripPlacement="Bottom"
                                                    Margin="0,0,0,130">
@@ -177,7 +174,7 @@
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="About">
-                <Grid Background="{DynamicResource WindowBackgroundBrush}">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="180"/>
                         <RowDefinition Height="*"/>
@@ -190,7 +187,7 @@
                     <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="1">
                         <TextBlock FontWeight="Bold" TextAlignment="Center" Text="Hyddwn Launcher"/>
                         <TextBlock TextAlignment="Center" Text="{Binding ElementName=LauncherVersion, Path=Text, StringFormat={}Version: {0}}"></TextBlock>
-                        <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Author: ImaBrokeDude"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink></TextBlock>
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Author: Sven"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink></TextBlock>
                     </StackPanel>
                     <ScrollViewer Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                         <StackPanel>
@@ -211,8 +208,8 @@
                    FontSize="8" />
         <Button Click="LaunchButton_Click" x:Name="LaunchButton" Content="Launch" HorizontalAlignment="Left"
                 Margin="704,374,0,0" VerticalAlignment="Top" Width="112" Height="45" />
-        <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="291,374,0,0"
-                                     VerticalAlignment="Top" Width="408" Height="44" />
+        <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="185,374,0,0"
+                                     VerticalAlignment="Top" Width="514" Height="44" />
         <ComboBox x:Name="ClientProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
                   SelectedIndex="{Binding ElementName=This, Path=LauncherContext.Settings.ClientProfileSelectedIndex}"
@@ -237,7 +234,7 @@
                    Text="Client Profile" />
         <TextBlock HorizontalAlignment="Left" Margin="13,359,0,0" TextWrapping="Wrap" Text="Server Profile"
                    VerticalAlignment="Top" />
-        <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="185,374,0,0"
+        <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="291,331,0,0"
                   VerticalAlignment="Top"
                   IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.UsePackFiles}" Height="26" />
         <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0" TextWrapping="Wrap"

@@ -81,16 +81,16 @@
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MahApps.Metro.SimpleChildWindow, Version=1.4.0.0, Culture=neutral, PublicKeyToken=bbbfdff7f500a992, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MahApps.Metro.SimpleChildWindow.1.4.0\lib\net45\MahApps.Metro.SimpleChildWindow.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MahApps.Metro.SimpleChildWindow, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.SimpleChildWindow.1.2.0.0\lib\net45\MahApps.Metro.SimpleChildWindow.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceModel" />
@@ -128,30 +128,36 @@
     <Compile Include="Controls\ProgressIndicator.xaml.cs">
       <DependentUpon>ProgressIndicator.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\ClientProfile.cs" />
+    <Compile Include="Core\PluginHost.cs" />
+    <Compile Include="Core\ServerProfile.cs" />
     <Compile Include="Network\AsyncDownloader.cs" />
     <Compile Include="Network\Rest\ParameterType.cs" />
     <Compile Include="Network\Rest\RestClient.cs" />
     <Compile Include="Network\Rest\RestRequest.cs" />
     <Compile Include="Network\Rest\RestResponse.cs" />
     <Compile Include="Util\ByteSizeHelper.cs" />
-    <Compile Include="Util\ClientAuth.cs" />
+    <Compile Include="Network\NexonApi.cs" />
+    <Compile Include="Util\ByteSizeMode.cs" />
+    <Compile Include="Util\ByteSizeSystem.cs" />
     <Compile Include="Util\CustomPackFileMode.cs" />
     <Compile Include="ExceptionReporter.xaml.cs">
       <DependentUpon>ExceptionReporter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Util\LauncherContext.cs" />
-    <Compile Include="Util\LauncherSettings.cs" />
+    <Compile Include="Core\LauncherContext.cs" />
+    <Compile Include="Core\LauncherSettings.cs" />
     <Compile Include="Controls\NewServerProfileUserControl.xaml.cs">
       <DependentUpon>NewServerProfileUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Util\PackEngine.cs" />
-    <Compile Include="Util\ProfileManager.cs" />
+    <Compile Include="Core\PackEngine.cs" />
+    <Compile Include="Core\ProfileManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Util\Extentions.cs" />
     <Compile Include="Util\FileReader.cs" />
     <Compile Include="Util\Log.cs" />
-    <Compile Include="Util\MoreLinq.cs" />
+    <Compile Include="Util\LogLevel.cs" />
+    <Compile Include="Util\MoreEnumerable.cs" />
     <Compile Include="Util\RequestLimitExceededException.cs" />
     <Compile Include="Util\Validation\LocationValidationRule.cs" />
     <Page Include="Controls\NewClientProfileUserControl.xaml">
@@ -214,9 +220,6 @@
   <ItemGroup>
     <Content Include="Libs\ImaBrokeDude.Controls.dll" />
     <Content Include="Libs\Ionic.Zip.Reduced.dll" />
-    <Content Include="Libs\MahApps.Metro.dll" />
-    <Content Include="Libs\MahApps.Metro.SimpleChildWindow.dll" />
-    <Content Include="Libs\System.Windows.Interactivity.dll" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon_External_a.ico" />
@@ -234,12 +237,16 @@
     <None Include="Tao.DevIl.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Libs\Newtonsoft.Json.dll" />
     <None Include="MabinogiResource.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\HyddwnLauncher.Extensibility\HyddwnLauncher.Extensibility.csproj">
+      <Project>{FC944C15-6479-444A-8FA5-00A967DD0600}</Project>
+      <Name>HyddwnLauncher.Extensibility</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\bangor.png" />
     <Resource Include="Images\damage.png" />

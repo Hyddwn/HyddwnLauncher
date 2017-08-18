@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Windows;
+using HyddwnLauncher.Core;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 
@@ -61,7 +62,7 @@ namespace HyddwnLauncher
             launcherContext.Settings.RequiresAdmin = false;
             launcherContext.Settings.FirstRun = true;
 #endif
-            //CheckForAdmin(launcherContext);
+            CheckForAdmin(launcherContext);
             ServicePointManager.DefaultConnectionLimit = launcherContext.Settings.ConnectionLimit;
             Log.Info("Application initialized, loading main window.");
             var mainWindow = new MainWindow(launcherContext);
