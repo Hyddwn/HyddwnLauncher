@@ -187,7 +187,7 @@
                     <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="1">
                         <TextBlock FontWeight="Bold" TextAlignment="Center" Text="Hyddwn Launcher"/>
                         <TextBlock TextAlignment="Center" Text="{Binding ElementName=LauncherVersion, Path=Text, StringFormat={}Version: {0}}"></TextBlock>
-                        <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Author: ImaBrokeDude"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink></TextBlock>
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Author: Sven"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink></TextBlock>
                     </StackPanel>
                     <ScrollViewer Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                         <StackPanel>
