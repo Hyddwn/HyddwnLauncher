@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace HyddwnLauncher.Core
 {
     public class PluginHost
     {
-        private readonly string _pluginRoot = Environment.CurrentDirectory + "\\Plugins";
+        private readonly string _pluginRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Plugins";
 
         [ImportMany]
         public Collection<IPlugin> Plugins { get; protected set; }
