@@ -82,7 +82,7 @@ namespace HyddwnLauncher.UOTiara
                     foreach (var subkeyName in registryHelper.GetSubKeyNames())
                     {
                         registryHelper.SubKey = $"{subkeyTemp}\\{subkeyName}";
-                        
+
                         var modName = registryHelper.Read();
                         var creator = registryHelper.Read("CREATOR");
                         var description = registryHelper.Read("DESCRIPTION");
