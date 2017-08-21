@@ -703,6 +703,13 @@ namespace HyddwnLauncher
                                 MainTabControl.SelectedItem = tab;
                         });
                     };
+                    pluginContext.ShowDialog += (title, message) =>
+                    {
+                        var result = Task.Run(async () =>
+                            await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative));
+
+                        return result.Result == MessageDialogResult.Affirmative;
+                    };
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
 
                     var pluginUi = plugin.GetPluginUi();
