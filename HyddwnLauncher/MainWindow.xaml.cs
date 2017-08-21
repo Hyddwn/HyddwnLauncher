@@ -809,7 +809,7 @@ namespace HyddwnLauncher
         {
             try
             {
-                return BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0);
+                return File.Exists("version.dat") ? BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0) : 0;
             }
             catch
             {
