@@ -66,7 +66,7 @@
                 </TabItem>
             </controls:MetroAnimatedSingleRowTabControl>
         </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow x:Name="NxAuthLogin" 
+        <simpleChildWindow:ChildWindow x:Name="NxAuthLogin"
             IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
             ChildWindowWidth="350" ChildWindowHeight="300" CloseByEscape="False">
             <Grid>
@@ -110,8 +110,8 @@
             ChildWindowHeight="300">
 
         </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow x:Name="Loading" 
-            IsModal="true" ShowTitleBar="false" ShowCloseButton="false" 
+        <simpleChildWindow:ChildWindow x:Name="Loading"
+            IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
             ChildWindowWidth="300" ChildWindowHeight="80" CloseByEscape="false">
             <Grid>
                 <wpf:LoadingIndicator HorizontalAlignment="Left" Margin="10,0,0,0"
@@ -151,6 +151,14 @@
                         <StackPanel x:Name="OptionStackPanel" Margin="10">
                             <TextBlock Margin="5" Text="Options" FontWeight="Bold" FontSize="16" />
                             <StackPanel Margin="5">
+                                <TextBlock Margin="5" Text="Profile Options" FontWeight="Bold" />
+                                <StackPanel Margin="5">
+                                    <StackPanel Margin="5 2.5">
+                                        <CheckBox Margin="5 2.5"
+                                                  Content="Warn if the directory of the active Client Profile does not appear to be the root folder for Mabinogi."
+                                                  IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.WarnIfRootIsNotMabiRoot}" />
+                                    </StackPanel>
+                                </StackPanel>
                                 <TextBlock Margin="5 2.5" Text="Advanced Options" FontWeight="Bold" />
                                 <StackPanel Margin="5 2.5">
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
@@ -159,14 +167,6 @@
                                                    Text="Delete Custom Server Pack Files" />
                                             <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />
                                         </StackPanel>
-                                    </StackPanel>
-                                </StackPanel>
-                                <TextBlock Margin="5" Text="Profile Options" FontWeight="Bold" />
-                                <StackPanel Margin="5">
-                                    <StackPanel Margin="5 2.5">
-                                        <CheckBox Margin="5 2.5"
-                                                  Content="Warn if the directory of the active Client Profile does not appear to be the root folder for Mabinogi."
-                                                  IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.WarnIfRootIsNotMabiRoot}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -239,7 +239,9 @@
                   VerticalAlignment="Top"
                   IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.UsePackFiles}" Height="26" />
         <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0" TextWrapping="Wrap"
-            Text="Update Available!" Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" FontWeight="Bold" VerticalAlignment="Top" />
+                   Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" FontWeight="Bold" VerticalAlignment="Top">
+            <Hyperlink Foreground="{DynamicResource AccentColorBrush}" Click="UpdateAvailableLinkClick">Update Available!</Hyperlink>
+        </TextBlock>
     </Grid>
 
 </controls:MetroWindow>

@@ -120,6 +120,7 @@ namespace HyddwnLauncher
         private Dictionary<string, MetroTabItem> _pluginTabs;
 
         public event Action LoginSuccess;
+        public event Action LoginCancel;
 
         #endregion
 
@@ -432,6 +433,7 @@ namespace HyddwnLauncher
         private void NxAuthLoginOnCancel(object sender, RoutedEventArgs e)
         {
             NxAuthLogin.IsOpen = false;
+            OnLoginCancel();
         }
 
         private async void ProfileEditorIsOpenChanged(object sender, RoutedEventArgs e)
@@ -449,7 +451,7 @@ namespace HyddwnLauncher
             }
 
             if (!ProfileEditor.IsOpen && _settingUpProfile)
-            {                
+            {
                 var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem).Location;
                 if (string.IsNullOrWhiteSpace(selectedProfileLocation) || !File.Exists(selectedProfileLocation))
                 {
@@ -678,17 +680,18 @@ namespace HyddwnLauncher
                     };
                     pluginContext.GetNexonApi += () => NexonApi.Instance;
                     pluginContext.GetPackEngine += () => new PackEngine();
-                    pluginContext.RequestUserLogin += async action =>
+                    pluginContext.RequestUserLogin += async (successAction, cancelAction) =>
                     {
                         if (LauncherContext.Settings.RememberLogin)
                         {
                             var success = await NexonApi.Instance.GetAccessToken(LauncherContext.Settings.NxUsername,
                                 LauncherContext.Settings.NxPassword);
-                            if (success) action.Raise();
+                            if (success) successAction.Raise();
                             return;
                         }
 
-                        LoginSuccess += action;
+                        LoginSuccess += successAction;
+                        LoginCancel += cancelAction;
                         NxAuthLogin.IsOpen = true;
                     };
                     pluginContext.GetPatcherState += () => IsPatching;
@@ -705,7 +708,7 @@ namespace HyddwnLauncher
                     var pluginUi = plugin.GetPluginUi();
 
                     if (pluginUi == null) return;
-                   
+
                     var pluginTabItem = new MetroTabItem
                     {
                         Header = plugin.Name,
@@ -770,6 +773,16 @@ namespace HyddwnLauncher
             }
         }
 
+        public void OnLoginCancel()
+        {
+            LoginCancel?.Raise();
+            if (LoginCancel == null) return;
+            foreach (var d in LoginCancel.GetInvocationList())
+            {
+                LoginCancel -= d as Action;
+            }
+        }
+
         public void OnLoginSuccess()
         {
             LoginSuccess?.Raise();
@@ -831,6 +844,22 @@ namespace HyddwnLauncher
             NxAuthLoginCancel.IsEnabled = !NxAuthLoginCancel.IsEnabled;
 
             NxAuthLoginLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
+        }
+
+        private async void UpdateAvailableLinkClick(object sender, RoutedEventArgs e)
+        {
+            var response = await this.ShowMessageAsync("Update Available",
+                "A new version of Hyddwn Launcher is available." +
+                "\r\n" +
+                "\r\n" +
+                $"Current Version: {Assembly.GetExecutingAssembly().GetName().Version}\r\n" +
+                $"New Version: {_updateInfo["Version"]}", MessageDialogStyle.AffirmativeAndNegative);
+
+            if (response != MessageDialogResult.Affirmative) return;
+
+            _backgroundWorker.DoWork += _backgroundWorker_DoWork;
+
+            _backgroundWorker.RunWorkerAsync();
         }
 
         private async void UpdaterUpdate()

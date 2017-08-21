@@ -17,7 +17,7 @@ namespace HyddwnLauncher.Extensibility
 
         public Action<string, string, double, bool, bool> MainUpdater;
 
-        public Action<Action> RequestUserLogin;
+        public Action<Action, Action> RequestUserLogin;
 
         public Action<bool> SetPatcherState;
 
