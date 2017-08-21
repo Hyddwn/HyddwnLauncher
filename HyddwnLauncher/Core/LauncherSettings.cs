@@ -15,10 +15,12 @@ namespace HyddwnLauncher.Core
         private bool _hyddwnProfileUpgrade;
         private bool _requiresAdmin;
         private int _serverProfileSelectedIndex;
-
+        private bool _rememberLogin;
         private bool _usePackFiles;
         private string _uuid;
         private bool _warnIfRootIsNotMabiRoot;
+        private string _nxUsername;
+        private string _nxPassword;
 
         public LauncherSettings()
         {
@@ -91,6 +93,17 @@ namespace HyddwnLauncher.Core
             }
         }
 
+        public bool RememberLogin
+        {
+            get => _rememberLogin;
+            set
+            {
+                if (value == _rememberLogin) return;
+                _rememberLogin = value;
+                OnPropertyChanged();
+            }
+        }
+
         public int ConnectionLimit
         {
             get => _connectionLimit;
@@ -124,6 +137,28 @@ namespace HyddwnLauncher.Core
             }
         }
 
+        public string NxUsername
+        {
+            get => _nxUsername;
+            set
+            {
+                if (value == _nxUsername) return;
+                _nxUsername = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string NxPassword
+        {
+            get => _nxPassword;
+            set
+            {
+                if (value == _nxPassword) return;
+                _nxPassword = value;
+                OnPropertyChanged();
+            }
+        }
+
         public int MaxConnectionLimit => Settings.Default.MaxConnectionLimit;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -137,7 +172,10 @@ namespace HyddwnLauncher.Core
             ServerProfileSelectedIndex = Settings.Default.ServerProfileSelectedIndex;
             ConnectionLimit = Settings.Default.DefaultConnectionLimit;
             HyddwnProfileUpgrade = Settings.Default.HyddwnProfileUpgrade;
+            RememberLogin = Settings.Default.RememberLogin;
             Uuid = Settings.Default.UUID;
+            NxUsername = Settings.Default.NxUsername;
+            NxPassword = Settings.Default.NxPassword;
             if (PropertyChanged == null)
                 PropertyChanged += SaveOnChanged;
         }
@@ -167,6 +205,9 @@ namespace HyddwnLauncher.Core
             Settings.Default.DefaultConnectionLimit = ConnectionLimit;
             Settings.Default.HyddwnProfileUpgrade = HyddwnProfileUpgrade;
             Settings.Default.UUID = Uuid;
+            Settings.Default.RememberLogin = RememberLogin;
+            Settings.Default.NxUsername = NxUsername;
+            Settings.Default.NxPassword = NxPassword;
             Settings.Default.Save();
         }
 

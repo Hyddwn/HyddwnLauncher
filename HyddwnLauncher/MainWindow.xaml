@@ -85,6 +85,7 @@
                              Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Username" />
                     <PasswordBox x:Name="NxAuthLoginPassword" controls:TextBoxHelper.UseFloatingWatermark="True"
                                  Margin="0 5 0 2" controls:TextBoxHelper.Watermark="Password" />
+                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember Login Details" Margin="0 5 0 2" IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.RememberLogin}"/>
                     <TextBlock x:Name="NxAuthLoginNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>

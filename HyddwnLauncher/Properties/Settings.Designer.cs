@@ -127,5 +127,41 @@ namespace HyddwnLauncher.Properties {
                 this["UUID"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RememberLogin {
+            get {
+                return ((bool)(this["RememberLogin"]));
+            }
+            set {
+                this["RememberLogin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NxUsername {
+            get {
+                return ((string)(this["NxUsername"]));
+            }
+            set {
+                this["NxUsername"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NxPassword {
+            get {
+                return ((string)(this["NxPassword"]));
+            }
+            set {
+                this["NxPassword"] = value;
+            }
+        }
     }
 }
