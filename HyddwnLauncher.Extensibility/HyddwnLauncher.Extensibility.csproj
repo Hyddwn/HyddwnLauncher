@@ -56,8 +56,6 @@
     <Compile Include="PluginContext.cs" />
     <Compile Include="Primitives\IPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\ISettingsReader.cs" />
-    <Compile Include="Settings\SettingReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
