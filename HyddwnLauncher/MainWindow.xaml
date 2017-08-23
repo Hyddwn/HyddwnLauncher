@@ -68,7 +68,7 @@
         </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow x:Name="NxAuthLogin"
             IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
-            ChildWindowWidth="350" ChildWindowHeight="300" CloseByEscape="False">
+            ChildWindowWidth="350" ChildWindowHeight="350" CloseByEscape="False">
             <Grid>
                 <StackPanel Margin="0 10 0 0">
                     <TextBlock Text="Nexon Passport" HorizontalAlignment="Center" FontSize="36" />
