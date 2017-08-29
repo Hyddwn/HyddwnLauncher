@@ -11,7 +11,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Hyddwn Launcher")]
-[assembly: AssemblyCopyright("Copyright © 2016-2017 ImaBrokeDude")]
+[assembly: AssemblyCopyright("Copyright © 2016-2017 Sven (formally ImaBrokeDude)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
