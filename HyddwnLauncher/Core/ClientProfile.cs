@@ -9,7 +9,7 @@ namespace HyddwnLauncher.Core
     {
         private string _location;
         private string _name;
-        private string _nameAndStatus;
+        private string _guid;
 
         public string Name
         {
@@ -33,13 +33,13 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public string NameAndStatus
+        public string Guid
         {
-            get => _nameAndStatus;
+            get => _guid;
             set
             {
-                if (value == _nameAndStatus) return;
-                _nameAndStatus = value;
+                if (value == _guid) return;
+                _guid = value;
                 OnPropertyChanged();
             }
         }
