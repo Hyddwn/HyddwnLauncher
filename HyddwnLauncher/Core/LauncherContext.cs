@@ -35,9 +35,9 @@ namespace HyddwnLauncher.Core
 
         public LauncherSettings Settings { get; }
 
-        private ImageSource GetImage(string channel)
+        private static ImageSource GetImage(string imageName)
         {
-            var sri = Application.GetResourceStream(new Uri("pack://application:,,,/Images/" + channel));
+            var sri = Application.GetResourceStream(new Uri("pack://application:,,,/Images/" + imageName));
             var bmp = new BitmapImage();
             bmp.BeginInit();
             bmp.StreamSource = sri.Stream;
