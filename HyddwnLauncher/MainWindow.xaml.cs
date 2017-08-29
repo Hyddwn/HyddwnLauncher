@@ -537,6 +537,9 @@ namespace HyddwnLauncher
                 return;
             }
 
+            foreach (var clientProfile in ProfileManager.ClientProfiles.Where(p => string.IsNullOrWhiteSpace(p.Guid)))
+                clientProfile.Guid = Guid.NewGuid().ToString();
+
             _settingUpProfile = false;
         }
 
