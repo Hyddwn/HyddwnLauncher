@@ -28,7 +28,6 @@ namespace HyddwnLauncher
     public partial class MainWindow
     {
         #region ctor
-
         public MainWindow(LauncherContext launcherContext)
         {
             Instance = this;
@@ -494,6 +493,24 @@ namespace HyddwnLauncher
         {
             ConfigureLauncher();
             ProfileManager.SaveClientProfiles();
+        }
+
+        private void ResetOptionsResetBottonOnClick(object sender, RoutedEventArgs e)
+        {
+            if (ResetCredentialsCheckBox.IsChecked != null && (bool)ResetCredentialsCheckBox.IsChecked)
+                CredentialsStorage.Instance.Reset();
+
+            if (ResetClietProfilesCheckBox.IsChecked != null && (bool)ResetClietProfilesCheckBox.IsChecked)
+                ProfileManager.ResetClientProfiles();
+
+            if (ResetServerProfilesCheckBox.IsChecked != null && (bool)ResetServerProfilesCheckBox.IsChecked)
+                ProfileManager.ResetServerProfiles();
+
+            if (ResetLauncherConfigurationCheckBox.IsChecked != null && (bool)ResetLauncherConfigurationCheckBox.IsChecked)
+                Settings.Reset();
+
+            ResetCredentialsCheckBox.IsChecked = ResetClietProfilesCheckBox.IsChecked =
+                ResetServerProfilesCheckBox.IsChecked = ResetLauncherConfigurationCheckBox.IsChecked = false;
         }
         #endregion
 

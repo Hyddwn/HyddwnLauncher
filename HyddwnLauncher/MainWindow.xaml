@@ -145,7 +145,7 @@
                              VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" />
                 </Grid>
             </controls:MetroTabItem>
-            <controls:MetroTabItem Header="Options">
+            <controls:MetroTabItem Header="Options" >
                 <Grid>
                     <ScrollViewer>
                         <StackPanel x:Name="OptionStackPanel" Margin="10">
@@ -156,7 +156,17 @@
                                     <StackPanel Margin="5 2.5">
                                         <CheckBox Margin="5 2.5"
                                                   Content="Warn if the directory of the active Client Profile does not appear to be the root folder for Mabinogi."
-                                                  IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.WarnIfRootIsNotMabiRoot}" />
+                                                  IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.WarnIfRootIsNotMabiRoot}" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Margin="5" Text="Reset Options" FontWeight="Bold" />
+                                <StackPanel Margin="5 2.5">
+                                    <CheckBox x:Name="ResetCredentialsCheckBox" Content="Reset Credential Storage" Margin="0 1"/>
+                                    <CheckBox x:Name="ResetClietProfilesCheckBox" Content="Reset Client Profiles" Margin="0 1"/>
+                                    <CheckBox x:Name="ResetServerProfilesCheckBox" Content="Reset Server Profiles" Margin="0 1"/>
+                                    <CheckBox x:Name="ResetLauncherConfigurationCheckBox" Content="Reset Launcher Configuration" Margin="0 1"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0 2.5">
+                                        <Button  Content="Reset" Click="ResetOptionsResetBottonOnClick" />
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Margin="5 2.5" Text="Advanced Options" FontWeight="Bold" />
