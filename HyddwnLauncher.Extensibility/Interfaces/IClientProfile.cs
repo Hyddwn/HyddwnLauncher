@@ -4,5 +4,6 @@
     {
         string Location { get; set; }
         string Name { get; set; }
+        string Guid { get; }
     }
 }
