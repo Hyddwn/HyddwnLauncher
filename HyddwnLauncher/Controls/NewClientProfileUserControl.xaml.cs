@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using HyddwnLauncher.Core;
-using HyddwnLauncher.Util;
 using Microsoft.Win32;
 
 namespace HyddwnLauncher.Controls
@@ -15,6 +14,10 @@ namespace HyddwnLauncher.Controls
             "ClientProfile", typeof(ClientProfile), typeof(NewClientProfileUserControl),
             new PropertyMetadata(default(ClientProfile)));
 
+        public static readonly DependencyProperty CredentialUsernameProperty = DependencyProperty.Register(
+            "CredentialUsername", typeof(string), typeof(NewClientProfileUserControl), new PropertyMetadata(default(string)));
+
+
         public NewClientProfileUserControl()
         {
             InitializeComponent();
@@ -26,6 +29,12 @@ namespace HyddwnLauncher.Controls
             set => SetValue(ClientProfileProperty, value);
         }
 
+        public string CredentialUsername
+        {
+            get => (string)GetValue(CredentialUsernameProperty);
+            set => SetValue(CredentialUsernameProperty, value);
+        }
+
         private void BrowseButtonOnClick(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
@@ -33,6 +42,12 @@ namespace HyddwnLauncher.Controls
             openFileDialog.InitialDirectory = "C:\\Nexon\\Library\\mabinogi\\appdata\\";
             if (openFileDialog.ShowDialog() == true)
                 ClientProfile.Location = openFileDialog.FileName;
+        }
+
+        private void ClientProfileSavedCredentialsRemoveButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            CredentialsStorage.Instance.Remove(ClientProfile.Guid);
+            CredentialUsername = "";
         }
     }
 }

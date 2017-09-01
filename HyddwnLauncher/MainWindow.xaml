@@ -58,7 +58,7 @@
                                  SelectionChanged="ProfileEditorOnClientFrofileListBoxSelectionChanged" />
                         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                             <ScrollViewer>
-                                <controls1:NewClientProfileUserControl VerticalAlignment="Top"
+                                <controls1:NewClientProfileUserControl x:Name="ClientProfileUserControl" VerticalAlignment="Top"
                                                                        ClientProfile="{Binding ElementName=ClientProfileListBox, Path=SelectedItem}" />
                             </ScrollViewer>
                         </Grid>
@@ -85,7 +85,7 @@
                              Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Username" />
                     <PasswordBox x:Name="NxAuthLoginPassword" controls:TextBoxHelper.UseFloatingWatermark="True"
                                  Margin="0 5 0 2" controls:TextBoxHelper.Watermark="Password" />
-                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember Login Details" Margin="0 5 0 2" IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.RememberLogin}"/>
+                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember Login Details" Margin="0 5 0 2"/>
                     <TextBlock x:Name="NxAuthLoginNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>

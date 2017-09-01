@@ -129,6 +129,7 @@
       <DependentUpon>ProgressIndicator.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\ClientProfile.cs" />
+    <Compile Include="Core\CredentialsStorage.cs" />
     <Compile Include="Core\PluginHost.cs" />
     <Compile Include="Core\ServerProfile.cs" />
     <Compile Include="Network\AsyncDownloader.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="Util\Log.cs" />
     <Compile Include="Util\LogLevel.cs" />
     <Compile Include="Util\MoreEnumerable.cs" />
+    <Compile Include="Util\ObservableDictionary.cs" />
     <Compile Include="Util\RequestLimitExceededException.cs" />
     <Compile Include="Util\Validation\LocationValidationRule.cs" />
     <Page Include="Controls\NewClientProfileUserControl.xaml">

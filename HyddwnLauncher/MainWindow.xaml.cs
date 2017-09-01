@@ -210,12 +210,13 @@ namespace HyddwnLauncher
                 {
                     await DeletePackFiles();
 
-                    if (!NexonApi.Instance.IsAccessTokenValid())
+                    if (!NexonApi.Instance.IsAccessTokenValid(ActiveClientProfile.Guid))
                     {
-                        if (LauncherContext.Settings.RememberLogin)
+                        var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+
+                        if (credentials != null)
                         {
-                            var success = await NexonApi.Instance.GetAccessToken(LauncherContext.Settings.NxUsername,
-                                LauncherContext.Settings.NxPassword);
+                            var success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password, ActiveClientProfile.Guid);
                             if (success)
                             {
                                 LaunchOfficial();
@@ -402,14 +403,12 @@ namespace HyddwnLauncher
             NexonApi.Instance.HashPassword(ref password);
 
             // Store username and Hash
-            if (LauncherContext.Settings.RememberLogin)
+            if (RememberMeCheckBox.IsChecked != null && (bool) RememberMeCheckBox.IsChecked)
             {
-                LauncherContext.Settings.NxUsername = username;
-                LauncherContext.Settings.NxPassword = password;
-                LauncherContext.Settings.Save();
+                CredentialsStorage.Instance.Add(ActiveClientProfile.Guid, username, password);
             }
 
-            var success = await NexonApi.Instance.GetAccessToken(username, password);
+            var success = await NexonApi.Instance.GetAccessToken(username, password, ActiveClientProfile.Guid);
 
             if (!success)
             {
@@ -421,6 +420,8 @@ namespace HyddwnLauncher
             }
 
             NxAuthLogin.IsOpen = false;
+
+            RememberMeCheckBox.IsChecked = false;
 
             ToggleLoginControls();
 
@@ -467,6 +468,16 @@ namespace HyddwnLauncher
 
         private void ProfileEditorOnClientFrofileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ClientProfileUserControl.CredentialUsername = "";
+
+            if (ClientProfileListBox.SelectedItem is ClientProfile clientProfile)
+            {
+                var creds = CredentialsStorage.Instance.GetCredentialsForProfile(clientProfile.Guid);
+
+                if (creds != null)
+                    ClientProfileUserControl.CredentialUsername = creds.Username;
+            }
+
             ProfileManager.SaveClientProfiles();
         }
 
@@ -491,7 +502,7 @@ namespace HyddwnLauncher
         #region Methods
         private void AddItem()
         {
-            var newItem = new ClientProfile { Name = "New Profile" };
+            var newItem = new ClientProfile { Name = "New Profile", Guid = Guid.NewGuid().ToString() };
             ProfileManager.ClientProfiles.Add(newItem);
             ClientProfileListBox.SelectedItem = newItem;
         }
@@ -685,12 +696,16 @@ namespace HyddwnLauncher
                     pluginContext.GetPackEngine += () => new PackEngine();
                     pluginContext.RequestUserLogin += async (successAction, cancelAction) =>
                     {
-                        if (LauncherContext.Settings.RememberLogin)
+                        var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+
+                        if (credentials != null)
                         {
-                            var success = await NexonApi.Instance.GetAccessToken(LauncherContext.Settings.NxUsername,
-                                LauncherContext.Settings.NxPassword);
-                            if (success) successAction.Raise();
-                            return;
+                            var success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password, ActiveClientProfile.Guid);
+                            if (success)
+                            {
+                                successAction.Raise();
+                                return;
+                            }
                         }
 
                         LoginSuccess += successAction;
@@ -852,6 +867,7 @@ namespace HyddwnLauncher
             NxAuthLoginPassword.IsEnabled = !NxAuthLoginPassword.IsEnabled;
             NxAuthLoginSubmit.IsEnabled = !NxAuthLoginSubmit.IsEnabled;
             NxAuthLoginCancel.IsEnabled = !NxAuthLoginCancel.IsEnabled;
+            RememberMeCheckBox.IsEnabled = !RememberMeCheckBox.IsEnabled;
 
             NxAuthLoginLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
         }
