@@ -9,14 +9,17 @@ namespace HyddwnLauncher.Core
 {
     public class ProfileManager
     {
-        private static readonly string Assembly = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
-
-        private readonly string _clientProfileJson = Assemblypath + "\\ClientProfiles.json";
-        private readonly string _serverProfileJson = Assemblypath + "\\ServerProfiles.json";
+        private readonly string _clientProfileJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\clientprofiles.json";
+        private readonly string _serverProfileJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\serverprofiles.json";
 
         public ProfileManager()
         {
+            if (!Directory.Exists(Path.GetDirectoryName(_clientProfileJson)))
+                Directory.CreateDirectory(Path.GetDirectoryName(_clientProfileJson));
+
+            if (!Directory.Exists(Path.GetDirectoryName(_serverProfileJson)))
+                Directory.CreateDirectory(Path.GetDirectoryName(_serverProfileJson));
+
             Load();
         }
 
@@ -108,6 +111,19 @@ namespace HyddwnLauncher.Core
                 Log.Exception(ex, "Unable to save server profile data");
                 MessageBox.Show("Unable to save ServerProfile data.\r\n\r\n" + ex.Message, "Error");
             }
+        }
+
+        public void ResetClientProfiles()
+        {
+            ClientProfiles.Clear();
+            SaveClientProfiles();
+        }
+
+        public void ResetServerProfiles()
+        {
+            ServerProfiles.Clear();
+            ServerProfiles.Add(ServerProfile.OfficialProfile);
+            SaveServerProfiles();
         }
     }
 }
