@@ -20,9 +20,10 @@ namespace HyddwnLauncher.Core
 
         public LauncherContext()
         {
-            Settings = new LauncherSettings();
+            LauncherSettingsManager = new LauncherSettingsManager();
         }
 
+        public LauncherSettingsManager LauncherSettingsManager { get; protected set; }
 
         public ImageSource HostImage
         {
@@ -33,8 +34,6 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public LauncherSettings Settings { get; }
-
         private static ImageSource GetImage(string imageName)
         {
             var sri = Application.GetResourceStream(new Uri("pack://application:,,,/Images/" + imageName));
@@ -44,11 +43,6 @@ namespace HyddwnLauncher.Core
             bmp.EndInit();
 
             return bmp;
-        }
-
-        public void Initialize()
-        {
-            Settings.Load();
         }
     }
 }

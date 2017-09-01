@@ -33,9 +33,10 @@ namespace HyddwnLauncher
         {
             Instance = this;
 #if DEBUG
-            launcherContext.Settings.Reset();
+           launcherContext.LauncherSettingsManager.Reset();
 #endif
             LauncherContext = launcherContext;
+            Settings = new LauncherSettingsManager();
             ProfileManager = new ProfileManager();
             ProfileManager.Load();
             //Populate for the first time
@@ -75,6 +76,7 @@ namespace HyddwnLauncher
         public LauncherContext LauncherContext { get; private set; }
         // Very bad, will need to adjust the method of access.
         public static MainWindow Instance { get; private set; }
+        public LauncherSettingsManager Settings { get; private set; }
 
         public bool IsUpdateAvailable
         {
@@ -165,9 +167,6 @@ namespace HyddwnLauncher
 
             while (_settingUpProfile)
                 await Task.Delay(250);
-
-            ImporterTextBlock.SetTextBlockSafe("Loading settings...");
-            LauncherContext.Settings.Load();
 
             ImporterTextBlock.SetTextBlockSafe("Applying settings...");
             ConfigureLauncher();
@@ -274,7 +273,7 @@ namespace HyddwnLauncher
                     throw new ApplicationException(ex.ToString());
                 }
                 Log.Info("Client start success");
-                LauncherContext.Settings.Save();
+                Settings.SaveLauncherSettings();
 
                 PluginHost.ShutdownPlugins();
 
@@ -527,7 +526,7 @@ namespace HyddwnLauncher
 
             Application.Current.Dispatcher.Invoke(() => { maxVersion = ReadVersion(); });
 
-            if (LauncherContext.Settings.UsePackFiles &&
+            if (Settings.LauncherSettings.UsePackFiles &&
                 ActiveServerProfile.PackVersion == maxVersion)
             {
                 var packEngine = new PackEngine();
@@ -613,7 +612,7 @@ namespace HyddwnLauncher
 
             var testpath = Path.GetDirectoryName(ActiveClientProfile.Location) + "\\eTracer.exe";
 
-            if (LauncherContext.Settings.WarnIfRootIsNotMabiRoot &&
+            if (Settings.LauncherSettings.WarnIfRootIsNotMabiRoot &&
                 !File.Exists(testpath))
             {
                 Log.Warning("The path set for this profile does not appear to be the root folder for Mabinogi.");
@@ -786,7 +785,7 @@ namespace HyddwnLauncher
                     throw new IOException();
                 }
                 Log.Info("Client start success");
-                LauncherContext.Settings.Save();
+                Settings.SaveLauncherSettings();
                 PluginHost.ShutdownPlugins();
                 Application.Current.Shutdown();
             }

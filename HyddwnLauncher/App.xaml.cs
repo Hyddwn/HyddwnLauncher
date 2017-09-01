@@ -31,10 +31,9 @@ namespace HyddwnLauncher
 
             Log.Info("Initialize Launcher Context");
             var launcherContext = new LauncherContext();
-            launcherContext.Initialize();
 
 #if DEBUG
-            launcherContext.Settings.Reset();
+            launcherContext.LauncherSettingsManager.Reset();
 #endif
 
             CmdArgs = Environment.GetCommandLineArgs();
@@ -47,7 +46,7 @@ namespace HyddwnLauncher
                     Environment.Exit(0);
                 }
                 if (e.Args[index].Contains("/noadmin"))
-                    launcherContext.Settings.RequiresAdmin = false;
+                    launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin = false;
                 if (e.Args[index].Contains("/clean"))
                     packFileClean = true;
             }
@@ -59,11 +58,11 @@ namespace HyddwnLauncher
             }
 
 #if DEBUG
-            launcherContext.Settings.RequiresAdmin = false;
-            launcherContext.Settings.FirstRun = true;
+            launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin = false;
+            launcherContext.LauncherSettingsManager.LauncherSettings.FirstRun = true;
 #endif
-            CheckForAdmin(launcherContext);
-            ServicePointManager.DefaultConnectionLimit = launcherContext.Settings.ConnectionLimit;
+            CheckForAdmin(launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin);
+            ServicePointManager.DefaultConnectionLimit = launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit;
             Log.Info("Application initialized, loading main window.");
             var mainWindow = new MainWindow(launcherContext);
             Current.MainWindow = mainWindow;
@@ -125,9 +124,9 @@ namespace HyddwnLauncher
             Environment.CurrentDirectory = Assemblypath;
         }
 
-        private static void CheckForAdmin(LauncherContext context)
+        private static void CheckForAdmin(bool requiresAdmin)
         {
-            if (!context.Settings.RequiresAdmin || IsAdministrator())
+            if (!requiresAdmin || IsAdministrator())
                 return;
             var startInfo = new ProcessStartInfo
             {
