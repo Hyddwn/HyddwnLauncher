@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -30,9 +29,6 @@ namespace HyddwnLauncher.Core
         private bool _usePackFile;
         private string _webHost;
         private int _webPort;
-
-        private JsonSerializer js = new JsonSerializer();
-        private StringWriter sw = new StringWriter();
 
         public ServerProfile()
         {
