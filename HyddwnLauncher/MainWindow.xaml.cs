@@ -450,19 +450,18 @@ namespace HyddwnLauncher
                 return;
             }
 
-            if (!ProfileEditor.IsOpen && _settingUpProfile)
-            {
-                var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem).Location;
-                if (string.IsNullOrWhiteSpace(selectedProfileLocation) || !File.Exists(selectedProfileLocation))
-                {
-                    await this.ShowMessageAsync("Valid File or Path",
-                        "The path you have entered is invalid.");
-                }
+            if (ProfileEditor.IsOpen || !_settingUpProfile) return;
 
-                ImportWindow.IsOpen = true;
-                await Task.Delay(250);
-                _settingUpProfile = false;
+            var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem).Location;
+            if (string.IsNullOrWhiteSpace(selectedProfileLocation) || !File.Exists(selectedProfileLocation))
+            {
+                await this.ShowMessageAsync("Valid File or Path",
+                    "The path you have entered is invalid.");
             }
+
+            ImportWindow.IsOpen = true;
+            await Task.Delay(250);
+            _settingUpProfile = false;
         }
 
         private void ProfileEditorOnClientFrofileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
