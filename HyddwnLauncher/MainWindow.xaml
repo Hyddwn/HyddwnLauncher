@@ -238,6 +238,8 @@
                             <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks"/>
                             <TextBlock><Run FontWeight="Bold" Text="cursey"/><Run Text=" - NXAuth Login Method"/></TextBlock>
                             <TextBlock><Run FontWeight="Bold" Text="Xcelled194"/><Run Text=" - PowerPatcher (What the launcher was originally based on)"/></TextBlock>
+                            <TextBlock><Run FontWeight="Bold" Text="Choko"/><Run Text=" - QA and Testing"/></TextBlock>
+                            <TextBlock><Run FontWeight="Bold" Text="ShaggyZE"/><Run Text=" - QA and Testing"/></TextBlock>
                             <TextBlock><Run FontWeight="Bold" Text="Playtime"/><Run Text=" - Reminds me that all Apple products suck"/></TextBlock>
                             <TextBlock><Run FontWeight="Bold" Text="Pie"/><Run Text=" - The best thing a man can eat"/></TextBlock>
                         </StackPanel>
