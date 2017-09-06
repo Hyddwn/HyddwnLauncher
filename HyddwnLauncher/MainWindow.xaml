@@ -7,7 +7,6 @@
                       xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
-                      xmlns:util="clr-namespace:HyddwnLauncher.Util"
                       xmlns:core="clr-namespace:HyddwnLauncher.Core"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
