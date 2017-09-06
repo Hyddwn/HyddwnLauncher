@@ -232,51 +232,7 @@ namespace HyddwnLauncher
                     return;
                 }
 
-                var arguments =
-                    $"code:1622 ver:{ReadVersion()} logip:208.85.109.35 logport:11000 chatip:208.85.109.37 chatport:8002 setting:file://data/features.xml";
-
-                var ipAddress = ActiveServerProfile.LoginIp;
-                IPAddress address;
-                if (ipAddress != null && IPAddress.TryParse(ipAddress, out address))
-                {
-                    arguments = arguments.Replace("208.85.109.35", address.ToString());
-                    arguments = Regex.Replace(arguments, ChatIpAddressPattern,
-                        $"chatip:{address}");
-
-                    await BuildServerPackFile();
-                }
-                else
-                {
-                    Loading.IsOpen = false;
-
-                    //TODO Replace all instances of ShowMessageAsync with ChildWindow Messages
-                    await
-                        this.ShowMessageAsync("Launch Failed",
-                            "IP address is not valid. Please update you profile with a valid IP address.");
-
-                    return;
-                }
-
-
-                Log.Info("Beginning client launch...");
-
-                Log.Info("Starting client.exe with the following args: {0}", arguments);
-                try
-                {
-                    Process.Start(ActiveClientProfile.Location, arguments);
-                    PluginHost.PostLaunch();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("Cannot start Mabbinogi: {0}", ex.ToString());
-                    throw new ApplicationException(ex.ToString());
-                }
-                Log.Info("Client start success");
-                Settings.SaveLauncherSettings();
-
-                PluginHost.ShutdownPlugins();
-
-                Application.Current.Shutdown();
+                LaunchCustom();
             }
             catch (ApplicationException ex)
             {
@@ -768,6 +724,32 @@ namespace HyddwnLauncher
 
             PluginHost.ClientProfileChanged(ActiveClientProfile);
             PluginHost.ServerProfileChanged(ActiveServerProfile);
+        }
+
+        private async void LaunchCustom()
+        {
+            var arguments =
+                $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ActiveServerProfile.LoginIp} logport:{ActiveServerProfile.LoginPort} chatip:{ActiveServerProfile.ChatIp} chatport:{ActiveServerProfile.ChatPort} locale:USA env:Regular setting:file://data/features.xml";
+
+            Log.Info("Beginning client launch...");
+
+            Log.Info("Starting client.exe with the following args: {0}", arguments);
+            try
+            {
+                Process.Start(ActiveClientProfile.Location, arguments);
+                PluginHost.PostLaunch();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Cannot start Mabbinogi: {0}", ex.ToString());
+                throw new ApplicationException(ex.ToString());
+            }
+            Log.Info("Client start success");
+            Settings.SaveLauncherSettings();
+
+            PluginHost.ShutdownPlugins();
+
+            Application.Current.Shutdown();
         }
 
         private async void LaunchOfficial()
