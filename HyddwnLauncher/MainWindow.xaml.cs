@@ -401,7 +401,7 @@ namespace HyddwnLauncher
                     "You have been taken to this window because you do not have a profile configured for Mabinogi. " +
                     "Please configure a profile representing where your Client.exe is to use this launcher.");
 
-                AddItem();
+                AddClientProfile();
                 return;
             }
 
@@ -434,21 +434,40 @@ namespace HyddwnLauncher
             ProfileManager.SaveClientProfiles();
         }
 
-        private void ProfileEditorOnAddButtonCLick(object sender, RoutedEventArgs e)
+        private void ProfileEditorOnServerFrofileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AddItem();
+            var serverProfile = ServerProfileListBox.SelectedItem as ServerProfile;
+            serverProfile?.GetUpdates();
+            ProfileManager.SaveServerProfiles();
         }
 
-        private void ProfileEditorOnRemoveButtonCLick(object sender, RoutedEventArgs e)
+        private void ProfileEditorOnAddClientProfileButtonCLick(object sender, RoutedEventArgs e)
+        {
+            AddClientProfile();
+        }
+
+        private void ProfileEditorOnRemoveClientProfileButtonCLick(object sender, RoutedEventArgs e)
         {
             if (ClientProfileListBox.SelectedIndex == -1) return;
             ProfileManager.ClientProfiles.RemoveAt(ClientProfileListBox.SelectedIndex);
+        }
+
+        private void ProfileEditorOnAddServerProfileButtonCLick(object sender, RoutedEventArgs e)
+        {
+            AddServerProfile();
+        }
+
+        private void ProfileEditorOnRemoveServerProfileButtonCLick(object sender, RoutedEventArgs e)
+        {
+            if (ServerProfileListBox.SelectedIndex == -1) return;
+            ProfileManager.ServerProfiles.RemoveAt(ServerProfileListBox.SelectedIndex);
         }
 
         private void ProfileEditorOnProfileCLosingFinished(object sender, RoutedEventArgs e)
         {
             ConfigureLauncher();
             ProfileManager.SaveClientProfiles();
+            ProfileManager.SaveServerProfiles();
         }
 
         private void ResetOptionsResetBottonOnClick(object sender, RoutedEventArgs e)
@@ -471,11 +490,24 @@ namespace HyddwnLauncher
         #endregion
 
         #region Methods
-        private void AddItem()
+        private void AddClientProfile()
         {
-            var newItem = new ClientProfile { Name = "New Profile", Guid = Guid.NewGuid().ToString() };
-            ProfileManager.ClientProfiles.Add(newItem);
-            ClientProfileListBox.SelectedItem = newItem;
+            var clientProfile = new ClientProfile { Name = "New Profile", Guid = Guid.NewGuid().ToString() };
+            ProfileManager.ClientProfiles.Add(clientProfile);
+            ClientProfileListBox.SelectedItem = clientProfile;
+        }
+
+        private async void AddServerProfile()
+        {
+            var serverProfile = ServerProfile.Create();
+
+            var profileUpdateUrl = await this.ShowInputAsync("Server Profile Url", "Please enter the url where your server profile can be located.") ?? "";
+
+            serverProfile.ProfileUpdateUrl = profileUpdateUrl;
+            serverProfile.GetUpdates();
+
+            ProfileManager.ServerProfiles.Add(serverProfile);
+            ServerProfileListBox.SelectedItem = serverProfile;
         }
 
         public void AddToLog(string text)

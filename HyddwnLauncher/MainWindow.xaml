@@ -36,6 +36,11 @@
                         <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
                     </Grid>
                 </DataTemplate>
+                <DataTemplate x:Key="ServerProfileDataTemplate" DataType="core:ServerProfile">
+                    <Grid>
+                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
+                    </Grid>
+                </DataTemplate>
             </simpleChildWindow:ChildWindow.Resources>
             <controls:MetroAnimatedSingleRowTabControl>
                 <TabItem Header="Clients">
@@ -49,8 +54,8 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
-                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddButtonCLick" />
-                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveButtonCLick" />
+                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddClientProfileButtonCLick" />
+                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveClientProfileButtonCLick" />
                         </StackPanel>
                         <ListBox x:Name="ClientProfileListBox" Grid.Row="1" Grid.Column="0"
                                  ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
@@ -60,6 +65,32 @@
                             <ScrollViewer>
                                 <controls1:NewClientProfileUserControl x:Name="ClientProfileUserControl" VerticalAlignment="Top"
                                                                        ClientProfile="{Binding ElementName=ClientProfileListBox, Path=SelectedItem}" />
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Servers">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="37" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddServerProfileButtonCLick" />
+                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveServerProfileButtonCLick" />
+                        </StackPanel>
+                        <ListBox x:Name="ServerProfileListBox" Grid.Row="1" Grid.Column="0"
+                                 ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
+                                 ItemTemplate="{DynamicResource ServerProfileDataTemplate}"
+                                 SelectionChanged="ProfileEditorOnServerFrofileListBoxSelectionChanged" />
+                        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                            <ScrollViewer>
+                                <controls1:NewServerProfileUserControl x:Name="ServerProfileUserControl" VerticalAlignment="Top"
+                                                                       ServerProfile="{Binding ElementName=ServerProfileListBox, Path=SelectedItem}" />
                             </ScrollViewer>
                         </Grid>
                     </Grid>

@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
+using HyddwnLauncher.Core;
 
 namespace HyddwnLauncher.Controls
 {
@@ -7,9 +9,18 @@ namespace HyddwnLauncher.Controls
     /// </summary>
     public partial class NewServerProfileUserControl : UserControl
     {
+        public static readonly DependencyProperty ServerProfileProperty = DependencyProperty.Register(
+            "ServerProfile", typeof(ServerProfile), typeof(NewServerProfileUserControl), new PropertyMetadata(default(ServerProfile)));
+
         public NewServerProfileUserControl()
         {
             InitializeComponent();
+        }
+
+        public ServerProfile ServerProfile
+        {
+            get { return (ServerProfile)GetValue(ServerProfileProperty); }
+            set { SetValue(ServerProfileProperty, value); }
         }
     }
 }
