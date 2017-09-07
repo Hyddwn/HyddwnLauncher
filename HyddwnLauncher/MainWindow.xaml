@@ -7,7 +7,6 @@
                       xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
-                      xmlns:util="clr-namespace:HyddwnLauncher.Util"
                       xmlns:core="clr-namespace:HyddwnLauncher.Core"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
@@ -36,6 +35,11 @@
                         <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
                     </Grid>
                 </DataTemplate>
+                <DataTemplate x:Key="ServerProfileDataTemplate" DataType="core:ServerProfile">
+                    <Grid>
+                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
+                    </Grid>
+                </DataTemplate>
             </simpleChildWindow:ChildWindow.Resources>
             <controls:MetroAnimatedSingleRowTabControl>
                 <TabItem Header="Clients">
@@ -49,8 +53,8 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
-                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddButtonCLick" />
-                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveButtonCLick" />
+                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddClientProfileButtonCLick" />
+                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveClientProfileButtonCLick" />
                         </StackPanel>
                         <ListBox x:Name="ClientProfileListBox" Grid.Row="1" Grid.Column="0"
                                  ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
@@ -58,17 +62,43 @@
                                  SelectionChanged="ProfileEditorOnClientFrofileListBoxSelectionChanged" />
                         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                             <ScrollViewer>
-                                <controls1:NewClientProfileUserControl VerticalAlignment="Top"
+                                <controls1:NewClientProfileUserControl x:Name="ClientProfileUserControl" VerticalAlignment="Top"
                                                                        ClientProfile="{Binding ElementName=ClientProfileListBox, Path=SelectedItem}" />
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Servers">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="37" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddServerProfileButtonCLick" />
+                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveServerProfileButtonCLick" />
+                        </StackPanel>
+                        <ListBox x:Name="ServerProfileListBox" Grid.Row="1" Grid.Column="0"
+                                 ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
+                                 ItemTemplate="{DynamicResource ServerProfileDataTemplate}"
+                                 SelectionChanged="ProfileEditorOnServerFrofileListBoxSelectionChanged" />
+                        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                            <ScrollViewer>
+                                <controls1:NewServerProfileUserControl x:Name="ServerProfileUserControl" VerticalAlignment="Top"
+                                                                       ServerProfile="{Binding ElementName=ServerProfileListBox, Path=SelectedItem}" />
                             </ScrollViewer>
                         </Grid>
                     </Grid>
                 </TabItem>
             </controls:MetroAnimatedSingleRowTabControl>
         </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow x:Name="NxAuthLogin" 
+        <simpleChildWindow:ChildWindow x:Name="NxAuthLogin"
             IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
-            ChildWindowWidth="350" ChildWindowHeight="300" CloseByEscape="False">
+            ChildWindowWidth="350" ChildWindowHeight="350" CloseByEscape="False">
             <Grid>
                 <StackPanel Margin="0 10 0 0">
                     <TextBlock Text="Nexon Passport" HorizontalAlignment="Center" FontSize="36" />
@@ -85,7 +115,7 @@
                              Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Username" />
                     <PasswordBox x:Name="NxAuthLoginPassword" controls:TextBoxHelper.UseFloatingWatermark="True"
                                  Margin="0 5 0 2" controls:TextBoxHelper.Watermark="Password" />
-                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember Login Details" Margin="0 5 0 2" IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.RememberLogin}"/>
+                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember Login Details" Margin="0 5 0 2"/>
                     <TextBlock x:Name="NxAuthLoginNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>
@@ -110,8 +140,8 @@
             ChildWindowHeight="300">
 
         </simpleChildWindow:ChildWindow>
-        <simpleChildWindow:ChildWindow x:Name="Loading" 
-            IsModal="true" ShowTitleBar="false" ShowCloseButton="false" 
+        <simpleChildWindow:ChildWindow x:Name="Loading"
+            IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
             ChildWindowWidth="300" ChildWindowHeight="80" CloseByEscape="false">
             <Grid>
                 <wpf:LoadingIndicator HorizontalAlignment="Left" Margin="10,0,0,0"
@@ -145,12 +175,30 @@
                              VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" />
                 </Grid>
             </controls:MetroTabItem>
-            <controls:MetroTabItem Header="Options">
+            <controls:MetroTabItem Header="Options" >
                 <Grid>
                     <ScrollViewer>
                         <StackPanel x:Name="OptionStackPanel" Margin="10">
                             <TextBlock Margin="5" Text="Options" FontWeight="Bold" FontSize="16" />
                             <StackPanel Margin="5">
+                                <TextBlock Margin="5" Text="Profile Options" FontWeight="Bold" />
+                                <StackPanel Margin="5">
+                                    <StackPanel Margin="5 2.5">
+                                        <CheckBox Margin="5 2.5"
+                                                  Content="Warn if the directory of the active Client Profile does not appear to be the root folder for Mabinogi."
+                                                  IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.WarnIfRootIsNotMabiRoot}" />
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Margin="5" Text="Reset Options" FontWeight="Bold" />
+                                <StackPanel Margin="5 2.5">
+                                    <CheckBox x:Name="ResetCredentialsCheckBox" Content="Reset Credential Storage" Margin="0 1"/>
+                                    <CheckBox x:Name="ResetClietProfilesCheckBox" Content="Reset Client Profiles" Margin="0 1"/>
+                                    <CheckBox x:Name="ResetServerProfilesCheckBox" Content="Reset Server Profiles" Margin="0 1"/>
+                                    <CheckBox x:Name="ResetLauncherConfigurationCheckBox" Content="Reset Launcher Configuration" Margin="0 1"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0 2.5">
+                                        <Button  Content="Reset" Click="ResetOptionsResetBottonOnClick" />
+                                    </StackPanel>
+                                </StackPanel>
                                 <TextBlock Margin="5 2.5" Text="Advanced Options" FontWeight="Bold" />
                                 <StackPanel Margin="5 2.5">
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
@@ -159,14 +207,6 @@
                                                    Text="Delete Custom Server Pack Files" />
                                             <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />
                                         </StackPanel>
-                                    </StackPanel>
-                                </StackPanel>
-                                <TextBlock Margin="5" Text="Profile Options" FontWeight="Bold" />
-                                <StackPanel Margin="5">
-                                    <StackPanel Margin="5 2.5">
-                                        <CheckBox Margin="5 2.5"
-                                                  Content="Warn if the directory of the active Client Profile does not appear to be the root folder for Mabinogi."
-                                                  IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.WarnIfRootIsNotMabiRoot}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -198,6 +238,8 @@
                             <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks"/>
                             <TextBlock><Run FontWeight="Bold" Text="cursey"/><Run Text=" - NXAuth Login Method"/></TextBlock>
                             <TextBlock><Run FontWeight="Bold" Text="Xcelled194"/><Run Text=" - PowerPatcher (What the launcher was originally based on)"/></TextBlock>
+                            <TextBlock><Run FontWeight="Bold" Text="Choko"/><Run Text=" - QA and Testing"/></TextBlock>
+                            <TextBlock><Run FontWeight="Bold" Text="ShaggyZE"/><Run Text=" - QA and Testing"/></TextBlock>
                             <TextBlock><Run FontWeight="Bold" Text="Playtime"/><Run Text=" - Reminds me that all Apple products suck"/></TextBlock>
                             <TextBlock><Run FontWeight="Bold" Text="Pie"/><Run Text=" - The best thing a man can eat"/></TextBlock>
                         </StackPanel>
@@ -213,12 +255,12 @@
                                      VerticalAlignment="Top" Width="514" Height="44" />
         <ComboBox x:Name="ClientProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
-                  SelectedIndex="{Binding ElementName=This, Path=LauncherContext.Settings.ClientProfileSelectedIndex}"
+                  SelectedIndex="{Binding ElementName=This, Path=Settings.LauncherSettings.ClientProfileSelectedIndex}"
                   SelectionChanged="ClientProfileComboBoxOnSelectionChanged"
                   HorizontalAlignment="Left" Margin="13,331,0,0" VerticalAlignment="Top" Width="167" />
         <ComboBox x:Name="ServerProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
-                  SelectedIndex="{Binding ElementName=This, Path=LauncherContext.Settings.ServerProfileSelectedIndex}"
+                  SelectedIndex="{Binding ElementName=This, Path=Settings.LauncherSettings.ServerProfileSelectedIndex}"
                   SelectionChanged="ServerProfileComboBoxOnSelectionChanged"
                   HorizontalAlignment="Left" Margin="13,374,0,0" VerticalAlignment="Top" Width="167" />
         <TextBlock HorizontalAlignment="Left" Margin="464,419,0,0" TextWrapping="Wrap"
@@ -237,9 +279,11 @@
                    VerticalAlignment="Top" />
         <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="291,331,0,0"
                   VerticalAlignment="Top"
-                  IsChecked="{Binding ElementName=This, Path=LauncherContext.Settings.UsePackFiles}" Height="26" />
+                  IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UsePackFiles}" Height="26" />
         <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0" TextWrapping="Wrap"
-            Text="Update Available!" Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" FontWeight="Bold" VerticalAlignment="Top" />
+                   Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" FontWeight="Bold" VerticalAlignment="Top">
+            <Hyperlink Foreground="{DynamicResource AccentColorBrush}" Click="UpdateAvailableLinkClick">Update Available!</Hyperlink>
+        </TextBlock>
     </Grid>
 
 </controls:MetroWindow>

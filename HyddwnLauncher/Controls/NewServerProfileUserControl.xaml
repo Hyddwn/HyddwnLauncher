@@ -4,7 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:HyddwnLauncher"
-             mc:Ignorable="d" d:DesignWidth="400" Height="396.978">
+             xmlns:converters="clr-namespace:HyddwnLauncher.Util.Converters"
+             xmlns:core="clr-namespace:HyddwnLauncher.Core"
+             x:Name="This"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300">
     <Grid>
         <StackPanel Margin="5">
             <StackPanel Margin="5" Orientation="Horizontal">
@@ -12,44 +15,79 @@
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The name of this server.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Server Name" />
-                <TextBox Margin="65 0 0 0" Width="180" />
+                <TextBox Margin="65 0 0 0" Width="180"
+                         Text="{Binding ElementName=This, Path=ServerProfile.Name}"
+                         />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The IP used to log into this server.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Login Ip" />
-                <TextBox Margin="90 0 0 0" Width="180" />
+                <TextBox Margin="90 0 0 0" Width="180"
+                         Text="{Binding ElementName=This, Path=ServerProfile.LoginIp}"
+                         />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The Port used to log into this server.">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Login Port" />
+                <TextBox Margin="79 0 0 0" Width="180"
+                         Text="{Binding ElementName=This, Path=ServerProfile.LoginPort}"
+                         />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="The IP used with chat operations (friends list, private messaging, etc.)">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Chat Ip" />
-                <TextBox Margin="95 0 0 0" Width="180" />
+                <TextBox Margin="95 0 0 0" Width="180"
+                         Text="{Binding ElementName=This, Path=ServerProfile.ChatIp}"
+                         />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
+                        ToolTip="The Port used with chat operations (friends list, private messaging, etc.)">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Chat Port" />
+                <TextBox Margin="84 0 0 0" Width="180"
+                         Text="{Binding ElementName=This, Path=ServerProfile.ChatPort}"
+                         />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="Link to zip file containing files that will be packed into a pack file.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Pack Data Url" />
-                <TextBox Margin="62 0 0 0" Width="180" />
+                <TextBox Margin="62 0 0 0" Width="180"
+                         Text="{Binding ElementName=This, Path=ServerProfile.PackDataUrl}"
+                         />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="Link to zip file that contains files that DO NOT belong in a pack file.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Root Data Url" />
-                <TextBox Margin="61 0 0 0" Width="180" />
+                <TextBox Margin="61 0 0 0" Width="180"
+                         Text="{Binding ElementName=This, Path=ServerProfile.RootDataUrl}"
+                         />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="Link to text file containing current ip.">
-                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Ip Update Url" />
-                <TextBox Margin="62 0 0 0" Width="180" />
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Profile Update Url" />
+                <TextBox x:Name="UpdateUrlTextbox" Margin="39 0 0 0" Width="180" Text="{Binding ElementName=This, Path=ServerProfile.ProfileUpdateUrl}"/>
             </StackPanel>
-            <StackPanel>
+            <!--<StackPanel>
                 <StackPanel
                     ToolTip="You can override url.xml values to redirect certain operations to your server instead of official.">
                     <TextBlock Text="'Urls.xml' value overrides." />
-                    <DataGrid Margin="0 5 0 0" Height="150"
+                    <DataGrid Margin="0 5 0 0" Height="150" AutoGenerateColumns="False" DataContext="{Binding}" ItemsSource="{Binding ElementName=This, Path=ServerProfile.UrlsXmlOptions}"
                               ToolTip="You can override urls.xml values to redirect certain operations to your server instead of official.">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Option" Width="*" />
-                            <DataGridTextColumn Header="Value" Width="*" />
+                            <DataGridTemplateColumn Header="Option" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Key}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Value" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Value}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
-            </StackPanel>
+            </StackPanel>-->
         </StackPanel>
     </Grid>
 </UserControl>

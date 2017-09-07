@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Network.Rest;
 using Newtonsoft.Json;
@@ -34,14 +33,16 @@ namespace HyddwnLauncher.Network
         private bool _accessTokenIsExpired;
         private DispatcherTimer _accessTokenExpiryTimer;
 
-        public bool IsAccessTokenValid()
+        private string _lastAuthenticationProfileGuid;
+
+        public bool IsAccessTokenValid(string guid)
         {
-            return _accessToken != null && !_accessTokenIsExpired && (_accessToken != LoginFailed || _accessToken != DevError);
+            return _accessToken != null && !_accessTokenIsExpired && (_accessToken != LoginFailed || _accessToken != DevError) && guid == _lastAuthenticationProfileGuid;
         }
 
         public async Task<string> GetNxAuthHash()
         {
-            if (!IsAccessTokenValid())
+            if (!IsAccessTokenValid(_lastAuthenticationProfileGuid))
                 return _accessToken;
 
             _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
@@ -93,9 +94,9 @@ namespace HyddwnLauncher.Network
             return version;
         }
 
-        public async Task<bool> GetAccessToken(string username, string password)
+        public async Task<bool> GetAccessToken(string username, string password, string profileGuid)
         {
-            if (_accessToken != null && !_accessTokenIsExpired)
+            if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == profileGuid)
                 return true;
 
             _restClient = new RestClient(new Uri("https://accounts.nexon.net"), null);
@@ -129,6 +130,8 @@ namespace HyddwnLauncher.Network
             var body = JsonConvert.DeserializeObject<dynamic>(data);
             _accessToken = body["access_token"];
             _accessTokenExpiration = body["access_token_expires_in"];
+
+            _lastAuthenticationProfileGuid = profileGuid;
 
             _accessTokenIsExpired = false;
             StartAccessTokenExpiryTimer(_accessTokenExpiration);

@@ -28,14 +28,14 @@ namespace HyddwnLauncher
     public partial class MainWindow
     {
         #region ctor
-
         public MainWindow(LauncherContext launcherContext)
         {
             Instance = this;
 #if DEBUG
-            launcherContext.Settings.Reset();
+           launcherContext.LauncherSettingsManager.Reset();
 #endif
             LauncherContext = launcherContext;
+            Settings = new LauncherSettingsManager();
             ProfileManager = new ProfileManager();
             ProfileManager.Load();
             //Populate for the first time
@@ -75,6 +75,7 @@ namespace HyddwnLauncher
         public LauncherContext LauncherContext { get; private set; }
         // Very bad, will need to adjust the method of access.
         public static MainWindow Instance { get; private set; }
+        public LauncherSettingsManager Settings { get; private set; }
 
         public bool IsUpdateAvailable
         {
@@ -120,6 +121,7 @@ namespace HyddwnLauncher
         private Dictionary<string, MetroTabItem> _pluginTabs;
 
         public event Action LoginSuccess;
+        public event Action LoginCancel;
 
         #endregion
 
@@ -165,9 +167,6 @@ namespace HyddwnLauncher
             while (_settingUpProfile)
                 await Task.Delay(250);
 
-            ImporterTextBlock.SetTextBlockSafe("Loading settings...");
-            LauncherContext.Settings.Load();
-
             ImporterTextBlock.SetTextBlockSafe("Applying settings...");
             ConfigureLauncher();
 
@@ -209,12 +208,13 @@ namespace HyddwnLauncher
                 {
                     await DeletePackFiles();
 
-                    if (!NexonApi.Instance.IsAccessTokenValid())
+                    if (!NexonApi.Instance.IsAccessTokenValid(ActiveClientProfile.Guid))
                     {
-                        if (LauncherContext.Settings.RememberLogin)
+                        var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+
+                        if (credentials != null)
                         {
-                            var success = await NexonApi.Instance.GetAccessToken(LauncherContext.Settings.NxUsername,
-                                LauncherContext.Settings.NxPassword);
+                            var success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password, ActiveClientProfile.Guid);
                             if (success)
                             {
                                 LaunchOfficial();
@@ -232,51 +232,7 @@ namespace HyddwnLauncher
                     return;
                 }
 
-                var arguments =
-                    $"code:1622 ver:{ReadVersion()} logip:208.85.109.35 logport:11000 chatip:208.85.109.37 chatport:8002 setting:file://data/features.xml";
-
-                var ipAddress = ActiveServerProfile.LoginIp;
-                IPAddress address;
-                if (ipAddress != null && IPAddress.TryParse(ipAddress, out address))
-                {
-                    arguments = arguments.Replace("208.85.109.35", address.ToString());
-                    arguments = Regex.Replace(arguments, ChatIpAddressPattern,
-                        $"chatip:{address}");
-
-                    await BuildServerPackFile();
-                }
-                else
-                {
-                    Loading.IsOpen = false;
-
-                    //TODO Replace all instances of ShowMessageAsync with ChildWindow Messages
-                    await
-                        this.ShowMessageAsync("Launch Failed",
-                            "IP address is not valid. Please update you profile with a valid IP address.");
-
-                    return;
-                }
-
-
-                Log.Info("Beginning client launch...");
-
-                Log.Info("Starting client.exe with the following args: {0}", arguments);
-                try
-                {
-                    Process.Start(ActiveClientProfile.Location, arguments);
-                    PluginHost.PostLaunch();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("Cannot start Mabbinogi: {0}", ex.ToString());
-                    throw new ApplicationException(ex.ToString());
-                }
-                Log.Info("Client start success");
-                LauncherContext.Settings.Save();
-
-                PluginHost.ShutdownPlugins();
-
-                Application.Current.Shutdown();
+                LaunchCustom();
             }
             catch (ApplicationException ex)
             {
@@ -401,14 +357,12 @@ namespace HyddwnLauncher
             NexonApi.Instance.HashPassword(ref password);
 
             // Store username and Hash
-            if (LauncherContext.Settings.RememberLogin)
+            if (RememberMeCheckBox.IsChecked != null && (bool) RememberMeCheckBox.IsChecked)
             {
-                LauncherContext.Settings.NxUsername = username;
-                LauncherContext.Settings.NxPassword = password;
-                LauncherContext.Settings.Save();
+                CredentialsStorage.Instance.Add(ActiveClientProfile.Guid, username, password);
             }
 
-            var success = await NexonApi.Instance.GetAccessToken(username, password);
+            var success = await NexonApi.Instance.GetAccessToken(username, password, ActiveClientProfile.Guid);
 
             if (!success)
             {
@@ -421,6 +375,8 @@ namespace HyddwnLauncher
 
             NxAuthLogin.IsOpen = false;
 
+            RememberMeCheckBox.IsChecked = false;
+
             ToggleLoginControls();
 
             NxAuthLoginNotice.Visibility = Visibility.Collapsed;
@@ -432,6 +388,7 @@ namespace HyddwnLauncher
         private void NxAuthLoginOnCancel(object sender, RoutedEventArgs e)
         {
             NxAuthLogin.IsOpen = false;
+            OnLoginCancel();
         }
 
         private async void ProfileEditorIsOpenChanged(object sender, RoutedEventArgs e)
@@ -444,54 +401,113 @@ namespace HyddwnLauncher
                     "You have been taken to this window because you do not have a profile configured for Mabinogi. " +
                     "Please configure a profile representing where your Client.exe is to use this launcher.");
 
-                AddItem();
+                AddClientProfile();
                 return;
             }
 
-            if (!ProfileEditor.IsOpen && _settingUpProfile)
-            {                
-                var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem).Location;
-                if (string.IsNullOrWhiteSpace(selectedProfileLocation) || !File.Exists(selectedProfileLocation))
-                {
-                    await this.ShowMessageAsync("Valid File or Path",
-                        "The path you have entered is invalid.");
-                }
+            if (ProfileEditor.IsOpen || !_settingUpProfile) return;
 
-                ImportWindow.IsOpen = true;
-                await Task.Delay(250);
-                _settingUpProfile = false;
+            var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem).Location;
+            if (string.IsNullOrWhiteSpace(selectedProfileLocation) || !File.Exists(selectedProfileLocation))
+            {
+                await this.ShowMessageAsync("Valid File or Path",
+                    "The path you have entered is invalid.");
             }
+
+            ImportWindow.IsOpen = true;
+            await Task.Delay(250);
+            _settingUpProfile = false;
         }
 
         private void ProfileEditorOnClientFrofileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ClientProfileUserControl.CredentialUsername = "";
+
+            if (ClientProfileListBox.SelectedItem is ClientProfile clientProfile)
+            {
+                var creds = CredentialsStorage.Instance.GetCredentialsForProfile(clientProfile.Guid);
+
+                if (creds != null)
+                    ClientProfileUserControl.CredentialUsername = creds.Username;
+            }
+
             ProfileManager.SaveClientProfiles();
         }
 
-        private void ProfileEditorOnAddButtonCLick(object sender, RoutedEventArgs e)
+        private void ProfileEditorOnServerFrofileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AddItem();
+            var serverProfile = ServerProfileListBox.SelectedItem as ServerProfile;
+            serverProfile?.GetUpdates();
+            ProfileManager.SaveServerProfiles();
         }
 
-        private void ProfileEditorOnRemoveButtonCLick(object sender, RoutedEventArgs e)
+        private void ProfileEditorOnAddClientProfileButtonCLick(object sender, RoutedEventArgs e)
+        {
+            AddClientProfile();
+        }
+
+        private void ProfileEditorOnRemoveClientProfileButtonCLick(object sender, RoutedEventArgs e)
         {
             if (ClientProfileListBox.SelectedIndex == -1) return;
             ProfileManager.ClientProfiles.RemoveAt(ClientProfileListBox.SelectedIndex);
+        }
+
+        private void ProfileEditorOnAddServerProfileButtonCLick(object sender, RoutedEventArgs e)
+        {
+            AddServerProfile();
+        }
+
+        private void ProfileEditorOnRemoveServerProfileButtonCLick(object sender, RoutedEventArgs e)
+        {
+            if (ServerProfileListBox.SelectedIndex == -1) return;
+            ProfileManager.ServerProfiles.RemoveAt(ServerProfileListBox.SelectedIndex);
         }
 
         private void ProfileEditorOnProfileCLosingFinished(object sender, RoutedEventArgs e)
         {
             ConfigureLauncher();
             ProfileManager.SaveClientProfiles();
+            ProfileManager.SaveServerProfiles();
+        }
+
+        private void ResetOptionsResetBottonOnClick(object sender, RoutedEventArgs e)
+        {
+            if (ResetCredentialsCheckBox.IsChecked != null && (bool)ResetCredentialsCheckBox.IsChecked)
+                CredentialsStorage.Instance.Reset();
+
+            if (ResetClietProfilesCheckBox.IsChecked != null && (bool)ResetClietProfilesCheckBox.IsChecked)
+                ProfileManager.ResetClientProfiles();
+
+            if (ResetServerProfilesCheckBox.IsChecked != null && (bool)ResetServerProfilesCheckBox.IsChecked)
+                ProfileManager.ResetServerProfiles();
+
+            if (ResetLauncherConfigurationCheckBox.IsChecked != null && (bool)ResetLauncherConfigurationCheckBox.IsChecked)
+                Settings.Reset();
+
+            ResetCredentialsCheckBox.IsChecked = ResetClietProfilesCheckBox.IsChecked =
+                ResetServerProfilesCheckBox.IsChecked = ResetLauncherConfigurationCheckBox.IsChecked = false;
         }
         #endregion
 
         #region Methods
-        private void AddItem()
+        private void AddClientProfile()
         {
-            var newItem = new ClientProfile { Name = "New Profile" };
-            ProfileManager.ClientProfiles.Add(newItem);
-            ClientProfileListBox.SelectedItem = newItem;
+            var clientProfile = new ClientProfile { Name = "New Profile", Guid = Guid.NewGuid().ToString() };
+            ProfileManager.ClientProfiles.Add(clientProfile);
+            ClientProfileListBox.SelectedItem = clientProfile;
+        }
+
+        private async void AddServerProfile()
+        {
+            var serverProfile = ServerProfile.Create();
+
+            var profileUpdateUrl = await this.ShowInputAsync("Server Profile Url", "Please enter the url where your server profile can be located.") ?? "";
+
+            serverProfile.ProfileUpdateUrl = profileUpdateUrl;
+            serverProfile.GetUpdates();
+
+            ProfileManager.ServerProfiles.Add(serverProfile);
+            ServerProfileListBox.SelectedItem = serverProfile;
         }
 
         public void AddToLog(string text)
@@ -514,7 +530,7 @@ namespace HyddwnLauncher
 
             Application.Current.Dispatcher.Invoke(() => { maxVersion = ReadVersion(); });
 
-            if (LauncherContext.Settings.UsePackFiles &&
+            if (Settings.LauncherSettings.UsePackFiles &&
                 ActiveServerProfile.PackVersion == maxVersion)
             {
                 var packEngine = new PackEngine();
@@ -534,6 +550,9 @@ namespace HyddwnLauncher
                 ProfileEditor.IsOpen = true;
                 return;
             }
+
+            foreach (var clientProfile in ProfileManager.ClientProfiles.Where(p => string.IsNullOrWhiteSpace(p.Guid)))
+                clientProfile.Guid = Guid.NewGuid().ToString();
 
             _settingUpProfile = false;
         }
@@ -597,7 +616,7 @@ namespace HyddwnLauncher
 
             var testpath = Path.GetDirectoryName(ActiveClientProfile.Location) + "\\eTracer.exe";
 
-            if (LauncherContext.Settings.WarnIfRootIsNotMabiRoot &&
+            if (Settings.LauncherSettings.WarnIfRootIsNotMabiRoot &&
                 !File.Exists(testpath))
             {
                 Log.Warning("The path set for this profile does not appear to be the root folder for Mabinogi.");
@@ -678,17 +697,22 @@ namespace HyddwnLauncher
                     };
                     pluginContext.GetNexonApi += () => NexonApi.Instance;
                     pluginContext.GetPackEngine += () => new PackEngine();
-                    pluginContext.RequestUserLogin += async action =>
+                    pluginContext.RequestUserLogin += async (successAction, cancelAction) =>
                     {
-                        if (LauncherContext.Settings.RememberLogin)
+                        var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+
+                        if (credentials != null)
                         {
-                            var success = await NexonApi.Instance.GetAccessToken(LauncherContext.Settings.NxUsername,
-                                LauncherContext.Settings.NxPassword);
-                            if (success) action.Raise();
-                            return;
+                            var success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password, ActiveClientProfile.Guid);
+                            if (success)
+                            {
+                                successAction.Raise();
+                                return;
+                            }
                         }
 
-                        LoginSuccess += action;
+                        LoginSuccess += successAction;
+                        LoginCancel += cancelAction;
                         NxAuthLogin.IsOpen = true;
                     };
                     pluginContext.GetPatcherState += () => IsPatching;
@@ -700,12 +724,19 @@ namespace HyddwnLauncher
                                 MainTabControl.SelectedItem = tab;
                         });
                     };
+                    pluginContext.ShowDialog += (title, message) =>
+                    {
+                        var result = Task.Run(async () =>
+                            await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative));
+
+                        return result.Result == MessageDialogResult.Affirmative;
+                    };
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
 
                     var pluginUi = plugin.GetPluginUi();
 
                     if (pluginUi == null) return;
-                   
+
                     var pluginTabItem = new MetroTabItem
                     {
                         Header = plugin.Name,
@@ -725,6 +756,32 @@ namespace HyddwnLauncher
 
             PluginHost.ClientProfileChanged(ActiveClientProfile);
             PluginHost.ServerProfileChanged(ActiveServerProfile);
+        }
+
+        private async void LaunchCustom()
+        {
+            var arguments =
+                $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ActiveServerProfile.LoginIp} logport:{ActiveServerProfile.LoginPort} chatip:{ActiveServerProfile.ChatIp} chatport:{ActiveServerProfile.ChatPort} locale:USA env:Regular setting:file://data/features.xml";
+
+            Log.Info("Beginning client launch...");
+
+            Log.Info("Starting client.exe with the following args: {0}", arguments);
+            try
+            {
+                Process.Start(ActiveClientProfile.Location, arguments);
+                PluginHost.PostLaunch();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Cannot start Mabbinogi: {0}", ex.ToString());
+                throw new ApplicationException(ex.ToString());
+            }
+            Log.Info("Client start success");
+            Settings.SaveLauncherSettings();
+
+            PluginHost.ShutdownPlugins();
+
+            Application.Current.Shutdown();
         }
 
         private async void LaunchOfficial()
@@ -758,7 +815,7 @@ namespace HyddwnLauncher
                     throw new IOException();
                 }
                 Log.Info("Client start success");
-                LauncherContext.Settings.Save();
+                Settings.SaveLauncherSettings();
                 PluginHost.ShutdownPlugins();
                 Application.Current.Shutdown();
             }
@@ -767,6 +824,16 @@ namespace HyddwnLauncher
                 Loading.IsOpen = false;
                 await this.ShowMessageAsync("Launch Failed", "Cannot start Mabinogi: " + ex.Message);
                 Log.Exception(ex, "Client start finished with errors");
+            }
+        }
+
+        public void OnLoginCancel()
+        {
+            LoginCancel?.Raise();
+            if (LoginCancel == null) return;
+            foreach (var d in LoginCancel.GetInvocationList())
+            {
+                LoginCancel -= d as Action;
             }
         }
 
@@ -796,7 +863,7 @@ namespace HyddwnLauncher
         {
             try
             {
-                return BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0);
+                return File.Exists("version.dat") ? BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0) : 0;
             }
             catch
             {
@@ -829,8 +896,25 @@ namespace HyddwnLauncher
             NxAuthLoginPassword.IsEnabled = !NxAuthLoginPassword.IsEnabled;
             NxAuthLoginSubmit.IsEnabled = !NxAuthLoginSubmit.IsEnabled;
             NxAuthLoginCancel.IsEnabled = !NxAuthLoginCancel.IsEnabled;
+            RememberMeCheckBox.IsEnabled = !RememberMeCheckBox.IsEnabled;
 
             NxAuthLoginLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
+        }
+
+        private async void UpdateAvailableLinkClick(object sender, RoutedEventArgs e)
+        {
+            var response = await this.ShowMessageAsync("Update Available",
+                "A new version of Hyddwn Launcher is available." +
+                "\r\n" +
+                "\r\n" +
+                $"Current Version: {Assembly.GetExecutingAssembly().GetName().Version}\r\n" +
+                $"New Version: {_updateInfo["Version"]}", MessageDialogStyle.AffirmativeAndNegative);
+
+            if (response != MessageDialogResult.Affirmative) return;
+
+            _backgroundWorker.DoWork += _backgroundWorker_DoWork;
+
+            _backgroundWorker.RunWorkerAsync();
         }
 
         private async void UpdaterUpdate()

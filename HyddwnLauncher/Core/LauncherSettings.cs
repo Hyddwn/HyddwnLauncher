@@ -1,11 +1,12 @@
-﻿using System.ComponentModel;
-using System.Net;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using HyddwnLauncher.Properties;
+using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher.Core
 {
-    // A wrapper around the .NET Settings system 
+    // A wrapper around the .NET Settings system
     // that supports INotifyPropertyChanged and Binding
     public class LauncherSettings : INotifyPropertyChanged
     {
@@ -19,12 +20,22 @@ namespace HyddwnLauncher.Core
         private bool _usePackFiles;
         private string _uuid;
         private bool _warnIfRootIsNotMabiRoot;
-        private string _nxUsername;
-        private string _nxPassword;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event Action<string> SaveOnChanged;
 
         public LauncherSettings()
         {
-            Load();
+            ClientProfileSelectedIndex = -1;
+            ConnectionLimit = 10;
+            FirstRun = true;
+            HyddwnProfileUpgrade = true;
+            RequiresAdmin = true;
+            ServerProfileSelectedIndex = -1;
+            RememberLogin = false;
+            UsePackFiles = false;
+            Uuid = "";
+            WarnIfRootIsNotMabiRoot = true;
         }
 
         public bool UsePackFiles
@@ -137,84 +148,12 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public string NxUsername
-        {
-            get => _nxUsername;
-            set
-            {
-                if (value == _nxUsername) return;
-                _nxUsername = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string NxPassword
-        {
-            get => _nxPassword;
-            set
-            {
-                if (value == _nxPassword) return;
-                _nxPassword = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public int MaxConnectionLimit => Settings.Default.MaxConnectionLimit;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void Load()
-        {
-            UsePackFiles = Settings.Default.UsePackFiles;
-            RequiresAdmin = Settings.Default.RequireAdmin;
-            WarnIfRootIsNotMabiRoot = Settings.Default.WarnIfNotInMabiDir;
-            ClientProfileSelectedIndex = Settings.Default.ClientProfileSelectedIndex;
-            ServerProfileSelectedIndex = Settings.Default.ServerProfileSelectedIndex;
-            ConnectionLimit = Settings.Default.DefaultConnectionLimit;
-            HyddwnProfileUpgrade = Settings.Default.HyddwnProfileUpgrade;
-            RememberLogin = Settings.Default.RememberLogin;
-            Uuid = Settings.Default.UUID;
-            NxUsername = Settings.Default.NxUsername;
-            NxPassword = Settings.Default.NxPassword;
-            if (PropertyChanged == null)
-                PropertyChanged += SaveOnChanged;
-        }
-
-        private void SaveOnChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
-        {
-            if (propertyChangedEventArgs.PropertyName == "ConnectionLimit")
-                ServicePointManager.DefaultConnectionLimit = ConnectionLimit;
-
-            Save();
-        }
-
-        public void Reset()
-        {
-            Settings.Default.Reset();
-            Settings.Default.Save();
-            Load();
-        }
-
-        public void Save()
-        {
-            Settings.Default.UsePackFiles = UsePackFiles;
-            Settings.Default.RequireAdmin = RequiresAdmin;
-            Settings.Default.WarnIfNotInMabiDir = WarnIfRootIsNotMabiRoot;
-            Settings.Default.ClientProfileSelectedIndex = ClientProfileSelectedIndex;
-            Settings.Default.ServerProfileSelectedIndex = ServerProfileSelectedIndex;
-            Settings.Default.DefaultConnectionLimit = ConnectionLimit;
-            Settings.Default.HyddwnProfileUpgrade = HyddwnProfileUpgrade;
-            Settings.Default.UUID = Uuid;
-            Settings.Default.RememberLogin = RememberLogin;
-            Settings.Default.NxUsername = NxUsername;
-            Settings.Default.NxPassword = NxPassword;
-            Settings.Default.Save();
-        }
-
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+            SaveOnChanged?.Raise(propertyName);
         }
     }
 }
