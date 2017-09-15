@@ -6,8 +6,6 @@ using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher.Core
 {
-    // A wrapper around the .NET Settings system
-    // that supports INotifyPropertyChanged and Binding
     public class LauncherSettings : INotifyPropertyChanged
     {
         private int _clientProfileSelectedIndex;
