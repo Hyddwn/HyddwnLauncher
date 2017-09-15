@@ -1,0 +1,114 @@
+﻿using System.ComponentModel;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+
+namespace HyddwnLauncher.PackOps.Core
+{
+    public class PackOperationsViewModel : INotifyPropertyChanged
+    {
+		// Works but probably not exactly what I was looking for.
+        private const string PackFileTestRegex = @"(\S+\d*_full|\S+\d*_to_\S+\d*).pack";
+
+        private string _filePath;
+        private string _packName;
+		private bool _isSequenceTargetable;
+		private int _packVersion;
+
+        public PackOperationsViewModel()
+        {
+
+        }
+
+        public PackOperationsViewModel(string packFilePath)
+        {
+            FilePath = packFilePath;
+            PackName = Path.GetFileName(FilePath);
+
+            var match = Regex.Match(PackName, PackFileTestRegex).Value;
+			IsSequenceTargetable = match == PackName;
+
+			if (PackName.Contains("full"))
+			{
+				var matchRegex = @"(\d+_)";
+				match = Regex.Match(PackName, matchRegex).Value;
+				var fromMatch = match.Replace("_", "");
+
+				int packVersion = 0;
+
+				int.TryParse(fromMatch, out packVersion);
+
+				PackVersion = packVersion;
+				return;
+			}
+
+			if (PackName.Contains("_to_"))
+			{
+				var matchRegex = @"(_\d+)";
+				match = Regex.Match(PackName, matchRegex).Value;
+				var toMatch = match.Replace("_", "");
+
+				int packVersion = 0;
+
+				int.TryParse(toMatch, out packVersion);
+
+				PackVersion = packVersion;
+				return;
+			}
+
+			PackVersion = -1;
+		}
+
+        public string FilePath
+        {
+            get { return _filePath; }
+            set
+            {
+                if (_filePath == value) return;
+                _filePath = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public string PackName
+        {
+            get { return _packName; }
+            set
+            {
+                if (_packName == value) return;
+                _packName = value;
+                OnPropertyChanged();
+            }
+        }
+
+		public int PackVersion
+		{
+			get { return _packVersion; }
+			protected set
+			{
+				if (_packVersion == value) return;
+				_packVersion = value;
+				OnPropertyChanged();
+			}
+		}
+
+        public bool IsSequenceTargetable
+        {
+            get { return _isSequenceTargetable; }
+            set
+            {
+                if (_isSequenceTargetable == value) return;
+				_isSequenceTargetable = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+}
