@@ -21,16 +21,16 @@ namespace HyddwnLauncher.PackOps
 	public partial class PackOpsPluginUI : UserControl
 	{
 		public static readonly DependencyProperty MaximumPackVersionProperty = DependencyProperty.Register(
-			"MaximumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(default(int)));
+			"MaximumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
 
 		public static readonly DependencyProperty MinimumPackVersionProperty = DependencyProperty.Register(
-			"MinimumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(default(int)));
+			"MinimumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
 
 		public static readonly DependencyProperty FromValueProperty = DependencyProperty.Register(
-			"FromValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(default(int)));
+			"FromValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
 
 		public static readonly DependencyProperty ToValueProperty = DependencyProperty.Register(
-			"ToValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(default(int)));
+			"ToValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
 
 		private IClientProfile _clientProfile;
 		private readonly PluginContext _pluginContext;
@@ -46,6 +46,8 @@ namespace HyddwnLauncher.PackOps
 
 			PackViewEntries = new ObservableCollection<PackViewerEntry>();
 			PackOperationsViewModels = new ObservableCollection<PackOperationsViewModel>();
+
+			MinimumPackVersion = MaximumPackVersion = FromValue = ToValue = 0;
 
 			InitializeComponent();
 		}
