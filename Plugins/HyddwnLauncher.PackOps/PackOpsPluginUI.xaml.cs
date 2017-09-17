@@ -223,6 +223,9 @@ namespace HyddwnLauncher.PackOps
 
         private async void PackOperationsMergePacksOnClick(object sender, RoutedEventArgs e)
         {
+			var packEntryCollection = new List<PackListEntry>();
+			var selectedPackViewModels = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable && (pvm.PackVersion >= FromValue && pvm.PackVersion <= ToValue)).OrderBy(pvm => pvm.PackVersion).ToList();
+
 			// Reader must be kept open to pull the data streams
 			using (var packReader = new PackReader())
 			{
@@ -230,21 +233,25 @@ namespace HyddwnLauncher.PackOps
 				PackOperationsLoader.IsOpen = true;
 				await Task.Delay(500);
 
-				var packEntryCollection = new List<PackListEntry>();
-				var selectedPackViewModels = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable && (pvm.PackVersion >= FromValue && pvm.PackVersion <= ToValue)).OrderBy(pvm => pvm.PackVersion).ToList();
+				ProgressBar.Value = 0;
+				ProgressBar.IsIndeterminate = true;
+				ProgressText.Text = $"Getting Entries...";
 
-				// This will then only take the overrides between the selected pack files you would like to merge
-				foreach (var packViewModel in PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable).OrderBy(pvm => pvm.PackName))
+				await Task.Run(() =>
 				{
-					try
+					// This will then only take the overrides between the selected pack files you would like to merge
+					foreach (var packViewModel in selectedPackViewModels)
 					{
-						packReader.Load(packViewModel.FilePath);
+						try
+						{
+							packReader.Load(packViewModel.FilePath);
+						}
+						catch (Exception ex)
+						{
+							_pluginContext.LogException(ex, false);
+						}
 					}
-					catch (Exception ex)
-					{
-						_pluginContext.LogException(ex, false);
-					}
-				}
+				});
 
 				packEntryCollection = packReader.GetEntries().OrderBy(ple => ple.PackFilePath).ThenBy(ple => ple.FullName).ToList();
 
@@ -264,34 +271,15 @@ namespace HyddwnLauncher.PackOps
 					Dispatcher.Invoke(() =>
 					{
 						ProgressBar.Value = 0;
+						ProgressBar.IsIndeterminate = false;
 						ProgressText.Text = $"0 of {entries} ({ByteSizeHelper.ToString(bytes)} left)";
 					});
 
 					var packName = "";
 
 					var beginningPack = selectedPackViewModels.FirstOrDefault().PackName;
-					var endingPack = selectedPackViewModels.LastOrDefault().PackName;
 
-					if (beginningPack.EndsWith("full.pack", StringComparison.OrdinalIgnoreCase))
-					{
-						var matchRegex = @"(_\d+)";
-						var match = Regex.Match(endingPack, matchRegex).Value;
-						match = match.Replace("_", "");
-
-						packName = $"{match}_full.pack";
-					}
-					else
-					{
-						var matchRegex = @"(\d+_)";
-						var match = Regex.Match(beginningPack, matchRegex).Value;
-						var fromMatch = match.Replace("_", "");
-
-						matchRegex = @"(_\d+)";
-						match = Regex.Match(endingPack, matchRegex).Value;
-						var toMatch = match.Replace("_", "");
-
-						packName = $"{fromMatch}_to_{toMatch}.pack";
-					}
+					packName = beginningPack.EndsWith("full.pack", StringComparison.OrdinalIgnoreCase) ? $"{selectedPackViewModels.LastOrDefault().PackVersion}_full.pack" : $"{selectedPackViewModels.FirstOrDefault().PackVersion}_to_{selectedPackViewModels.LastOrDefault().PackVersion}.pack";
 
 					using (var pw = new PackWriter($"{ packagePath}\\{packName}", version))
 					{
@@ -320,32 +308,35 @@ namespace HyddwnLauncher.PackOps
 						});
 
 						pw.Pack();
-
-						if (PackOpsSettingsManager.Instance.PackOpsSettings.DeletePackFilesAfterMerge)
-						{
-							Dispatcher.Invoke(() =>
-							{
-								ProgressBar.Value = 0;
-								ProgressBar.IsIndeterminate = true;
-								ProgressText.Text = $"Cleaning Up...";
-							});
-
-							foreach (var model in selectedPackViewModels)
-							{
-								try
-								{
-									File.Delete(model.FilePath);
-								}
-								catch (Exception ex)
-								{
-									_pluginContext.LogString($"Unable to delete {model.PackName}", false);
-									_pluginContext.LogException(ex, false);
-								}
-							}
-						}
 					}
 				});
 			}
+
+			await Task.Run(() =>
+			{
+				if (PackOpsSettingsManager.Instance.PackOpsSettings.DeletePackFilesAfterMerge)
+				{
+					Dispatcher.Invoke(() =>
+					{
+						ProgressBar.Value = 0;
+						ProgressBar.IsIndeterminate = true;
+						ProgressText.Text = $"Cleaning Up...";
+					});
+
+					foreach (var model in selectedPackViewModels)
+					{
+						try
+						{
+							File.Delete(model.FilePath);
+						}
+						catch (Exception ex)
+						{
+							_pluginContext.LogString($"Unable to delete {model.PackName}", false);
+							_pluginContext.LogException(ex, false);
+						}
+					}
+				}
+			});
 
 			ProgressBar.Value = 0;
 			ProgressBar.IsIndeterminate = true;
