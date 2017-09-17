@@ -158,7 +158,7 @@ namespace HyddwnLauncher.PackOps
 
                     foreach (var packFileEntry in PackFileEntries)
                     {
-                        PackViewerEntry root =
+                        var root =
                             PackViewEntries.FirstOrDefault(
                                 x => x.Name.Equals(Path.GetFileName(packFileEntry.PackFilePath)) && x.Level.Equals(1));
                         if (root == null)
@@ -172,10 +172,10 @@ namespace HyddwnLauncher.PackOps
                             PackViewEntries.OrderBy(p => p.Name);
                         }
 
-                        string[] fileItem = packFileEntry.FullName.Split('\\');
+                        var fileItem = packFileEntry.FullName.Split('\\');
                         if (fileItem.Any())
                         {
-                            PackViewerEntry subRoot =
+                            var subRoot =
                                 root.SubItems.FirstOrDefault(x => x.Name.Equals(fileItem[0]) && x.Level.Equals(2));
                             if (subRoot == null)
                             {
@@ -190,11 +190,11 @@ namespace HyddwnLauncher.PackOps
 
                             if (fileItem.Length > 1)
                             {
-                                PackViewerEntry parentItem = subRoot;
-                                int level = 3;
-                                for (int i = 1; i < fileItem.Length; ++i)
+                                var parentItem = subRoot;
+                                var level = 3;
+                                for (var i = 1; i < fileItem.Length; ++i)
                                 {
-                                    PackViewerEntry subItem =
+                                    var subItem =
                                         parentItem.SubItems.FirstOrDefault(
                                             x => x.Name.Equals(fileItem[i]) && x.Level.Equals(level));
                                     if (subItem == null)
@@ -255,8 +255,7 @@ namespace HyddwnLauncher.PackOps
 
 				packEntryCollection = packReader.GetEntries().OrderBy(ple => ple.PackFilePath).ThenBy(ple => ple.FullName).ToList();
 
-				var packagePath = $"package";
-				var packFolder = $"{packagePath}\\data";
+				const string packagePath = "package";
 
 				// Just in case
 				var version = await _pluginContext.GetNexonApi().GetLatestVersion();
@@ -264,9 +263,9 @@ namespace HyddwnLauncher.PackOps
 				await Task.Run(() =>
 				{
 					double entries = packEntryCollection.Count;
-					int progress = 0;
+					var progress = 0;
 
-					long bytes = packEntryCollection.Sum(p => p.DecompressedSize);
+					var bytes = packEntryCollection.Sum(p => p.DecompressedSize);
 
 					Dispatcher.Invoke(() =>
 					{
