@@ -9,6 +9,7 @@
              xmlns:design="clr-namespace:HyddwnLauncher.PackOps.Design"
              xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
              xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
+             xmlns:converters="clr-namespace:HyddwnLauncher.PackOps.Util.Converters"
              mc:Ignorable="d" d:DesignHeight="280" d:DesignWidth="795" HorizontalAlignment="Stretch">
     <UserControl.Resources>
         <design:DesignTimeResourceDictionary>
@@ -23,12 +24,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/cobalt.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/ImaBrokeDude.Controls;component/wpf/styles.xaml" />
             </design:DesignTimeResourceDictionary.MergedDictionaries>
-            <DataTemplate x:Key="PackOperationsViewModelDataTemplate">
-                <Grid HorizontalAlignment="Stretch">
-                    <CheckBox Content="{Binding PackName}" IsEnabled="{Binding IsEnabled}"
-                              IsChecked="{Binding IsChecked}" />
-                </Grid>
-            </DataTemplate>
+            <converters:BooleanAndMultiConverter x:Key="AndMultiConverter"/>
         </design:DesignTimeResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -58,17 +54,24 @@
                     <controls:NumericUpDown x:Name="FromUpDown"
                                             Minimum="{Binding ElementName=This, Path=MinimumPackVersion}"
                                             Maximum="{Binding ElementName=ToUpDown, Path=Value}"
-                                            Value="{Binding ElementName=This, Path=FromValue}"
+                                            Value="{Binding ElementName=This, Path=FromValue, FallbackValue=0, TargetNullValue=0}"
                                             HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,125,0,0"
                                             Width="106" Height="27" />
                     <TextBlock TextWrapping="Wrap" Text="To" FontSize="16" HorizontalAlignment="Left"
                                VerticalAlignment="Top" Margin="218,99,0,0" />
                     <controls:NumericUpDown x:Name="ToUpDown" Minimum="{Binding ElementName=FromUpDown, Path=Value}"
                                             Maximum="{Binding ElementName=This, Path=MaximumPackVersion}"
-                                            Value="{Binding ElementName=This, Path=ToValue}" HorizontalAlignment="Left"
+                                            Value="{Binding ElementName=This, Path=ToValue, FallbackValue=0, TargetNullValue=0}" HorizontalAlignment="Left"
                                             VerticalAlignment="Top" Margin="218,125,0,0" Width="106" Height="27" />
                     <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Merge Packs"
-                            Click="PackOperationsMergePacksOnClick" Margin="363,125,0,0" />
+                            Click="PackOperationsMergePacksOnClick" Margin="363,125,0,0">
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource AndMultiConverter}">
+                                <Binding ElementName="FromUpDown" Path="Value"/>
+                                <Binding ElementName="ToUpDown" Path="Value"/>
+                            </MultiBinding>
+                        </Button.IsEnabled>
+                    </Button>
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Pack Viewer" Visibility="Collapsed">
