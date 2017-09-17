@@ -103,7 +103,7 @@ namespace HyddwnLauncher.PackOps
 				Dispatcher.Invoke(() =>
 				{
 					MaximumPackVersion = packViewModelWorkingSet.LastOrDefault().PackVersion;
-					MinimumPackVersion = packViewModelWorkingSet.FirstOrDefault().PackVersion;
+					MinimumPackVersion = FromValue = ToValue = packViewModelWorkingSet.FirstOrDefault().PackVersion;
 				});
 			});
         }
