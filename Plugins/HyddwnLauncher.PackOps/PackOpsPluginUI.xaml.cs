@@ -293,10 +293,12 @@ namespace HyddwnLauncher.PackOps
 							progress++;
 							bytes -= entry.DecompressedSize;
 
+							var progressLocal = progress;
+							var bytesLocal = bytes;
 							Dispatcher.Invoke(() =>
 							{
-								ProgressBar.Value = (progress / entries) * 100;
-								ProgressText.Text = $"{progress} of {entries} ({ByteSizeHelper.ToString(bytes)} left)";
+								ProgressBar.Value = (progressLocal / entries) * 100;
+								ProgressText.Text = $"{progressLocal} of {entries} ({ByteSizeHelper.ToString(bytesLocal)} left)";
 							});
 						}
 
