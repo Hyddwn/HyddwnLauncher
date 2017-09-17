@@ -16,14 +16,14 @@ using HyddwnLauncher.PackOps.Util;
 
 namespace HyddwnLauncher.PackOps
 {
-    /// <summary>
-    /// Interaction logic for PackOpsPluginUI.xaml
-    /// </summary>
-    public partial class PackOpsPluginUI : UserControl
-    {
-        private IClientProfile _clientProfile;
-        private IServerProfile _serverProfile;
-        private PluginContext _pluginContext;
+	/// <summary>
+	/// Interaction logic for PackOpsPluginUI.xaml
+	/// </summary>
+	public partial class PackOpsPluginUI : UserControl
+	{
+		private IClientProfile _clientProfile;
+		private IServerProfile _serverProfile;
+		private PluginContext _pluginContext;
 
 		public static readonly DependencyProperty MaximumPackVersionProperty = DependencyProperty.Register(
 			"MaximumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(default(int)));
@@ -38,18 +38,18 @@ namespace HyddwnLauncher.PackOps
 			"ToValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(default(int)));
 
 		public PackOpsPluginUI(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
-        {
-            _pluginContext = pluginContext;
-            _clientProfile = clientProfile;
-            _serverProfile = serverProfile;
+		{
+			_pluginContext = pluginContext;
+			_clientProfile = clientProfile;
+			_serverProfile = serverProfile;
 
 			PackOpsSettings = PackOpsSettingsManager.Instance.PackOpsSettings;
 
-            PackViewEntries = new ObservableCollection<PackViewerEntry>();
-            PackOperationsViewModels = new ObservableCollection<PackOperationsViewModel>();
+			PackViewEntries = new ObservableCollection<PackViewerEntry>();
+			PackOperationsViewModels = new ObservableCollection<PackOperationsViewModel>();
 
-            InitializeComponent();
-        }
+			InitializeComponent();
+		}
 
 		public int MaximumPackVersion
 		{
@@ -77,21 +77,21 @@ namespace HyddwnLauncher.PackOps
 
 		public PackOpsSettings PackOpsSettings { get; protected set; }
 		public List<PackListEntry> PackFileEntries { get; private set; }
-        public ObservableCollection<PackViewerEntry> PackViewEntries { get; private set; }
-        public ObservableCollection<PackOperationsViewModel> PackOperationsViewModels { get; private set; }
+		public ObservableCollection<PackViewerEntry> PackViewEntries { get; private set; }
+		public ObservableCollection<PackOperationsViewModel> PackOperationsViewModels { get; private set; }
 
-        public void ClientProfileChangedAsync(IClientProfile clientProfile)
-        {
-            _clientProfile = clientProfile;
+		public void ClientProfileChangedAsync(IClientProfile clientProfile)
+		{
+			_clientProfile = clientProfile;
 
 			GetPacksForClientProfile();
-        }
+		}
 
-        private async void GetPacksForClientProfile()
-        {
-            if (_clientProfile == null) return;
+		private async void GetPacksForClientProfile()
+		{
+			if (_clientProfile == null) return;
 
-            PackOperationsViewModels.Clear();
+			PackOperationsViewModels.Clear();
 
 			await Task.Run(() =>
 			{
@@ -106,125 +106,128 @@ namespace HyddwnLauncher.PackOps
 					MinimumPackVersion = FromValue = ToValue = packViewModelWorkingSet.FirstOrDefault().PackVersion;
 				});
 			});
-        }
+		}
 
-        public void ServerProfileChanged(IServerProfile serverProfile)
-        {
-            _serverProfile = serverProfile;
+		public void ServerProfileChanged(IServerProfile serverProfile)
+		{
+			_serverProfile = serverProfile;
 
 			GetPacksForClientProfile();
-        }
+		}
 
-        private async void PackViewerRefreshOnClick(object sender, RoutedEventArgs e)
-        {
+		private async void PackViewerRefreshOnClick(object sender, RoutedEventArgs e)
+		{
 			PackViewLoader.IsOpen = true;
 			await Task.Delay(500);
 
 			await GetPackEntries();
-            await Refresh();
-        }
+			await Refresh();
+		}
 
-        private async Task GetPackEntries()
-        {
-            if (_clientProfile == null) return;
+		private async Task GetPackEntries()
+		{
+			if (_clientProfile == null) return;
 
-            var packagePath = $"{Path.GetDirectoryName(_clientProfile.Location)}\\package";
+			var packagePath = $"{Path.GetDirectoryName(_clientProfile.Location)}\\package";
 
 			await Task.Run(() =>
 			{
 				using (var packReader = new PackReader(packagePath))
 					PackFileEntries = packReader.GetEntries().OrderBy(g => g.PackFilePath).ToList();
 			});
-        }
+		}
 
-        private async Task Refresh()
-        {
-            if (_clientProfile == null) return;
-            if (string.IsNullOrWhiteSpace(_clientProfile.Location)) return;
+		private async Task Refresh()
+		{
+			if (_clientProfile == null) return;
+			if (string.IsNullOrWhiteSpace(_clientProfile.Location)) return;
 
-            await Populate();
+			await Populate();
 
-            PackViewLoader.IsOpen = false;
-        }
+			PackViewLoader.IsOpen = false;
+		}
 
-        private async Task Populate()
-        {
-            await Task.Run(() =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    PackViewEntries.Clear();
-                    PackViewTreeView.Items.SortDescriptions.Clear();
+		private async Task Populate()
+		{
+			await Task.Run(() =>
+			{
+				Dispatcher.Invoke(() =>
+				{
+					PackViewEntries.Clear();
+					PackViewTreeView.Items.SortDescriptions.Clear();
 
-                    foreach (var packFileEntry in PackFileEntries)
-                    {
-                        var root =
-                            PackViewEntries.FirstOrDefault(
-                                x => x.Name.Equals(Path.GetFileName(packFileEntry.PackFilePath)) && x.Level.Equals(1));
-                        if (root == null)
-                        {
-                            root = new PackViewerEntry
-                            {
-                                Level = 1,
-                                Name = Path.GetFileName(packFileEntry.PackFilePath),
-                            };
-                            PackViewEntries.Add(root);
-                            PackViewEntries.OrderBy(p => p.Name);
-                        }
+					foreach (var packFileEntry in PackFileEntries)
+					{
+						var root =
+							PackViewEntries.FirstOrDefault(
+								x => x.Name.Equals(Path.GetFileName(packFileEntry.PackFilePath)) && x.Level.Equals(1));
+						if (root == null)
+						{
+							root = new PackViewerEntry
+							{
+								Level = 1,
+								Name = Path.GetFileName(packFileEntry.PackFilePath),
+							};
+							PackViewEntries.Add(root);
+							PackViewEntries.OrderBy(p => p.Name);
+						}
 
-                        var fileItem = packFileEntry.FullName.Split('\\');
-                        if (fileItem.Any())
-                        {
-                            var subRoot =
-                                root.SubItems.FirstOrDefault(x => x.Name.Equals(fileItem[0]) && x.Level.Equals(2));
-                            if (subRoot == null)
-                            {
-                                subRoot = new PackViewerEntry
-                                {
-                                    Level = 2,
-                                    Name = fileItem[0],
-                                };
-                                root.SubItems.Add(subRoot);
-                                root.SubItems.OrderBy(p => p.Name);
-                            }
+						var fileItem = packFileEntry.FullName.Split('\\');
+						if (fileItem.Any())
+						{
+							var subRoot =
+								root.SubItems.FirstOrDefault(x => x.Name.Equals(fileItem[0]) && x.Level.Equals(2));
+							if (subRoot == null)
+							{
+								subRoot = new PackViewerEntry
+								{
+									Level = 2,
+									Name = fileItem[0],
+								};
+								root.SubItems.Add(subRoot);
+								root.SubItems.OrderBy(p => p.Name);
+							}
 
-                            if (fileItem.Length > 1)
-                            {
-                                var parentItem = subRoot;
-                                var level = 3;
-                                for (var i = 1; i < fileItem.Length; ++i)
-                                {
-                                    var subItem =
-                                        parentItem.SubItems.FirstOrDefault(
-                                            x => x.Name.Equals(fileItem[i]) && x.Level.Equals(level));
-                                    if (subItem == null)
-                                    {
-                                        subItem = new PackViewerEntry()
-                                        {
-                                            Name = fileItem[i],
-                                            Level = level,
-                                        };
-                                        parentItem.SubItems.Add(subItem);
-                                        parentItem.SubItems.OrderBy(p => p.Name);
-                                    }
+							if (fileItem.Length > 1)
+							{
+								var parentItem = subRoot;
+								var level = 3;
+								for (var i = 1; i < fileItem.Length; ++i)
+								{
+									var subItem =
+										parentItem.SubItems.FirstOrDefault(
+											x => x.Name.Equals(fileItem[i]) && x.Level.Equals(level));
+									if (subItem == null)
+									{
+										subItem = new PackViewerEntry()
+										{
+											Name = fileItem[i],
+											Level = level,
+										};
+										parentItem.SubItems.Add(subItem);
+										parentItem.SubItems.OrderBy(p => p.Name);
+									}
 
-                                    parentItem = subItem;
-                                    level++;
-                                }
-                            }
-                        }
-                    }
+									parentItem = subItem;
+									level++;
+								}
+							}
+						}
+					}
 
-                    PackViewTreeView.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
-                    PackViewTreeView.Items.Refresh();
-                });
-            });
-        }
+					PackViewTreeView.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+					PackViewTreeView.Items.Refresh();
+				});
+			});
+		}
 
-        private async void PackOperationsMergePacksOnClick(object sender, RoutedEventArgs e)
-        {
-			var packEntryCollection = new List<PackListEntry>();
-			var selectedPackViewModels = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable && (pvm.PackVersion >= FromValue && pvm.PackVersion <= ToValue)).OrderBy(pvm => pvm.PackVersion).ToList();
+		private async void PackOperationsMergePacksOnClick(object sender, RoutedEventArgs e)
+		{
+			List<PackListEntry> packEntryCollection;
+			var selectedPackViewModels = PackOperationsViewModels
+				.Where(pvm => pvm.IsSequenceTargetable && (pvm.PackVersion >= FromValue && pvm.PackVersion <= ToValue))
+				.OrderBy(pvm => pvm.PackVersion).ToList();
+			if (selectedPackViewModels.Count < 2) return;
 
 			// Reader must be kept open to pull the data streams
 			using (var packReader = new PackReader())
@@ -235,7 +238,7 @@ namespace HyddwnLauncher.PackOps
 
 				ProgressBar.Value = 0;
 				ProgressBar.IsIndeterminate = true;
-				ProgressText.Text = $"Getting Entries...";
+				ProgressText.Text = "Getting Entries...";
 
 				await Task.Run(() =>
 				{
@@ -278,7 +281,9 @@ namespace HyddwnLauncher.PackOps
 
 					var beginningPack = selectedPackViewModels.FirstOrDefault().PackName;
 
-					packName = beginningPack.EndsWith("full.pack", StringComparison.OrdinalIgnoreCase) ? $"{selectedPackViewModels.LastOrDefault().PackVersion}_full.pack" : $"{selectedPackViewModels.FirstOrDefault().PackVersion}_to_{selectedPackViewModels.LastOrDefault().PackVersion}.pack";
+					packName = beginningPack.EndsWith("full.pack", StringComparison.OrdinalIgnoreCase)
+						? $"{selectedPackViewModels.LastOrDefault().PackVersion}_full.pack"
+						: $"{selectedPackViewModels.FirstOrDefault().PackVersion}_to_{selectedPackViewModels.LastOrDefault().PackVersion}.pack";
 
 					using (var pw = new PackWriter($"{ packagePath}\\{packName}", version))
 					{
@@ -286,7 +291,9 @@ namespace HyddwnLauncher.PackOps
 						{
 							var fileStream = entry.GetCompressedDataAsStream();
 
-							pw.WriteDirect(fileStream, entry.FullName, (int)entry.Seed, (int)entry.CompressedSize, (int)entry.DecompressedSize, entry.IsCompressed, entry.CreationTime, entry.LastWriteTime, entry.LastAccessTime);
+							pw.WriteDirect(fileStream, entry.FullName, (int) entry.Seed, (int) entry.CompressedSize,
+								(int) entry.DecompressedSize, entry.IsCompressed, entry.CreationTime, entry.LastWriteTime,
+								entry.LastAccessTime);
 							fileStream.Dispose();
 
 							progress++;
@@ -305,7 +312,7 @@ namespace HyddwnLauncher.PackOps
 						{
 							ProgressBar.Value = 0;
 							ProgressBar.IsIndeterminate = true;
-							ProgressText.Text = $"Creating Pack File...";
+							ProgressText.Text = "Creating Pack File...";
 						});
 
 						pw.Pack();
@@ -315,33 +322,31 @@ namespace HyddwnLauncher.PackOps
 
 			await Task.Run(() =>
 			{
-				if (PackOpsSettingsManager.Instance.PackOpsSettings.DeletePackFilesAfterMerge)
+				if (!PackOpsSettingsManager.Instance.PackOpsSettings.DeletePackFilesAfterMerge) return;
+				Dispatcher.Invoke(() =>
 				{
-					Dispatcher.Invoke(() =>
-					{
-						ProgressBar.Value = 0;
-						ProgressBar.IsIndeterminate = true;
-						ProgressText.Text = $"Cleaning Up...";
-					});
+					ProgressBar.Value = 0;
+					ProgressBar.IsIndeterminate = true;
+					ProgressText.Text = "Cleaning Up...";
+				});
 
-					foreach (var model in selectedPackViewModels)
+				foreach (var model in selectedPackViewModels)
+				{
+					try
 					{
-						try
-						{
-							File.Delete(model.FilePath);
-						}
-						catch (Exception ex)
-						{
-							_pluginContext.LogString($"Unable to delete {model.PackName}", false);
-							_pluginContext.LogException(ex, false);
-						}
+						File.Delete(model.FilePath);
+					}
+					catch (Exception ex)
+					{
+						_pluginContext.LogString($"Unable to delete {model.PackName}", false);
+						_pluginContext.LogException(ex, false);
 					}
 				}
 			});
 
 			ProgressBar.Value = 0;
 			ProgressBar.IsIndeterminate = true;
-			ProgressText.Text = $"Getting Packs...";
+			ProgressText.Text = "Getting Packs...";
 
 			GetPacksForClientProfile();
 
@@ -349,5 +354,5 @@ namespace HyddwnLauncher.PackOps
 
 			_pluginContext.SetPatcherState(false);
 		}
-    }
+	}
 }
