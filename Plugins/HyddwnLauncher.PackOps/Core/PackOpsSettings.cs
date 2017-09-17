@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace HyddwnLauncher.PackOps.Core
@@ -7,8 +6,6 @@ namespace HyddwnLauncher.PackOps.Core
 	public class PackOpsSettings : INotifyPropertyChanged
 	{
 		private bool _deletePackFilesAfterMerge;
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		public PackOpsSettings()
 		{
@@ -25,6 +22,8 @@ namespace HyddwnLauncher.PackOps.Core
 				OnPropertyChanged();
 			}
 		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{

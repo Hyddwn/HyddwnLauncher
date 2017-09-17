@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,14 +16,10 @@ using HyddwnLauncher.PackOps.Util;
 namespace HyddwnLauncher.PackOps
 {
 	/// <summary>
-	/// Interaction logic for PackOpsPluginUI.xaml
+	///     Interaction logic for PackOpsPluginUI.xaml
 	/// </summary>
 	public partial class PackOpsPluginUI : UserControl
 	{
-		private IClientProfile _clientProfile;
-		private IServerProfile _serverProfile;
-		private PluginContext _pluginContext;
-
 		public static readonly DependencyProperty MaximumPackVersionProperty = DependencyProperty.Register(
 			"MaximumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(default(int)));
 
@@ -36,6 +31,10 @@ namespace HyddwnLauncher.PackOps
 
 		public static readonly DependencyProperty ToValueProperty = DependencyProperty.Register(
 			"ToValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(default(int)));
+
+		private IClientProfile _clientProfile;
+		private readonly PluginContext _pluginContext;
+		private IServerProfile _serverProfile;
 
 		public PackOpsPluginUI(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
 		{
@@ -53,32 +52,32 @@ namespace HyddwnLauncher.PackOps
 
 		public int MaximumPackVersion
 		{
-			get { return (int)GetValue(MaximumPackVersionProperty); }
-			set { SetValue(MaximumPackVersionProperty, value); }
+			get => (int) GetValue(MaximumPackVersionProperty);
+			set => SetValue(MaximumPackVersionProperty, value);
 		}
 
 		public int MinimumPackVersion
 		{
-			get { return (int)GetValue(MinimumPackVersionProperty); }
-			set { SetValue(MinimumPackVersionProperty, value); }
+			get => (int) GetValue(MinimumPackVersionProperty);
+			set => SetValue(MinimumPackVersionProperty, value);
 		}
 
 		public int FromValue
 		{
-			get { return (int)GetValue(FromValueProperty); }
-			set { SetValue(FromValueProperty, value); }
+			get => (int) GetValue(FromValueProperty);
+			set => SetValue(FromValueProperty, value);
 		}
 
 		public int ToValue
 		{
-			get { return (int)GetValue(ToValueProperty); }
-			set { SetValue(ToValueProperty, value); }
+			get => (int) GetValue(ToValueProperty);
+			set => SetValue(ToValueProperty, value);
 		}
 
 		public PackOpsSettings PackOpsSettings { get; protected set; }
 		public List<PackListEntry> PackFileEntries { get; private set; }
 		public ObservableCollection<PackViewerEntry> PackViewEntries { get; private set; }
-		public ObservableCollection<PackOperationsViewModel> PackOperationsViewModels { get; private set; }
+		public ObservableCollection<PackOperationsViewModel> PackOperationsViewModels { get; }
 
 		public void ClientProfileChangedAsync(IClientProfile clientProfile)
 		{
@@ -95,10 +94,12 @@ namespace HyddwnLauncher.PackOps
 
 			await Task.Run(() =>
 			{
-				foreach (var packFilePath in Directory.EnumerateFiles($"{Path.GetDirectoryName(_clientProfile.Location)}\\package", "*.pack", SearchOption.TopDirectoryOnly).OrderBy(a => a))
+				foreach (var packFilePath in Directory.EnumerateFiles($"{Path.GetDirectoryName(_clientProfile.Location)}\\package",
+					"*.pack", SearchOption.TopDirectoryOnly).OrderBy(a => a))
 					Dispatcher.Invoke(() => PackOperationsViewModels.Add(new PackOperationsViewModel(packFilePath)));
 
-				var packViewModelWorkingSet = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable).OrderBy(pvm => pvm.PackVersion).ToList();
+				var packViewModelWorkingSet = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable)
+					.OrderBy(pvm => pvm.PackVersion).ToList();
 
 				Dispatcher.Invoke(() =>
 				{
@@ -133,7 +134,9 @@ namespace HyddwnLauncher.PackOps
 			await Task.Run(() =>
 			{
 				using (var packReader = new PackReader(packagePath))
+				{
 					PackFileEntries = packReader.GetEntries().OrderBy(g => g.PackFilePath).ToList();
+				}
 			});
 		}
 
@@ -166,7 +169,7 @@ namespace HyddwnLauncher.PackOps
 							root = new PackViewerEntry
 							{
 								Level = 1,
-								Name = Path.GetFileName(packFileEntry.PackFilePath),
+								Name = Path.GetFileName(packFileEntry.PackFilePath)
 							};
 							PackViewEntries.Add(root);
 							PackViewEntries.OrderBy(p => p.Name);
@@ -182,7 +185,7 @@ namespace HyddwnLauncher.PackOps
 								subRoot = new PackViewerEntry
 								{
 									Level = 2,
-									Name = fileItem[0],
+									Name = fileItem[0]
 								};
 								root.SubItems.Add(subRoot);
 								root.SubItems.OrderBy(p => p.Name);
@@ -199,10 +202,10 @@ namespace HyddwnLauncher.PackOps
 											x => x.Name.Equals(fileItem[i]) && x.Level.Equals(level));
 									if (subItem == null)
 									{
-										subItem = new PackViewerEntry()
+										subItem = new PackViewerEntry
 										{
 											Name = fileItem[i],
-											Level = level,
+											Level = level
 										};
 										parentItem.SubItems.Add(subItem);
 										parentItem.SubItems.OrderBy(p => p.Name);
@@ -225,7 +228,7 @@ namespace HyddwnLauncher.PackOps
 		{
 			List<PackListEntry> packEntryCollection;
 			var selectedPackViewModels = PackOperationsViewModels
-				.Where(pvm => pvm.IsSequenceTargetable && (pvm.PackVersion >= FromValue && pvm.PackVersion <= ToValue))
+				.Where(pvm => pvm.IsSequenceTargetable && pvm.PackVersion >= FromValue && pvm.PackVersion <= ToValue)
 				.OrderBy(pvm => pvm.PackVersion).ToList();
 			if (selectedPackViewModels.Count < 2) return;
 
@@ -244,7 +247,6 @@ namespace HyddwnLauncher.PackOps
 				{
 					// This will then only take the overrides between the selected pack files you would like to merge
 					foreach (var packViewModel in selectedPackViewModels)
-					{
 						try
 						{
 							packReader.Load(packViewModel.FilePath);
@@ -253,7 +255,6 @@ namespace HyddwnLauncher.PackOps
 						{
 							_pluginContext.LogException(ex, false);
 						}
-					}
 				});
 
 				packEntryCollection = packReader.GetEntries().OrderBy(ple => ple.PackFilePath).ThenBy(ple => ple.FullName).ToList();
@@ -285,7 +286,7 @@ namespace HyddwnLauncher.PackOps
 						? $"{selectedPackViewModels.LastOrDefault().PackVersion}_full.pack"
 						: $"{selectedPackViewModels.FirstOrDefault().PackVersion}_to_{selectedPackViewModels.LastOrDefault().PackVersion}.pack";
 
-					using (var pw = new PackWriter($"{ packagePath}\\{packName}", version))
+					using (var pw = new PackWriter($"{packagePath}\\{packName}", version))
 					{
 						foreach (var entry in packEntryCollection)
 						{
@@ -303,7 +304,7 @@ namespace HyddwnLauncher.PackOps
 							var bytesLocal = bytes;
 							Dispatcher.Invoke(() =>
 							{
-								ProgressBar.Value = (progressLocal / entries) * 100;
+								ProgressBar.Value = progressLocal / entries * 100;
 								ProgressText.Text = $"{progressLocal} of {entries} ({ByteSizeHelper.ToString(bytesLocal)} left)";
 							});
 						}
@@ -331,7 +332,6 @@ namespace HyddwnLauncher.PackOps
 				});
 
 				foreach (var model in selectedPackViewModels)
-				{
 					try
 					{
 						File.Delete(model.FilePath);
@@ -341,7 +341,6 @@ namespace HyddwnLauncher.PackOps
 						_pluginContext.LogString($"Unable to delete {model.PackName}", false);
 						_pluginContext.LogException(ex, false);
 					}
-				}
 			});
 
 			ProgressBar.Value = 0;

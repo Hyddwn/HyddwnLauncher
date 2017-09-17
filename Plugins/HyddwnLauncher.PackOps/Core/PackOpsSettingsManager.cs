@@ -10,10 +10,10 @@ namespace HyddwnLauncher.PackOps.Core
 	{
 		public static PackOpsSettingsManager Instance;
 
-		private PluginContext _pluginContext;
-		private readonly string _packOpsJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\packops.json";
+		private readonly string _packOpsJson =
+			$"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\packops.json";
 
-		public PackOpsSettings PackOpsSettings { get; protected set; }
+		private PluginContext _pluginContext;
 
 		private PackOpsSettingsManager(PluginContext pluginCOntext)
 		{
@@ -23,6 +23,8 @@ namespace HyddwnLauncher.PackOps.Core
 			PackOpsSettings = LoadPackOpsSettings();
 			PackOpsSettings.PropertyChanged += SaveOnChanged;
 		}
+
+		public PackOpsSettings PackOpsSettings { get; protected set; }
 
 		public static void Initialize(PluginContext pluginContext)
 		{
