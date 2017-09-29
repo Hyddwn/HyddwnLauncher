@@ -696,7 +696,7 @@ namespace HyddwnLauncher
                             await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
                     };
                     pluginContext.GetNexonApi += () => NexonApi.Instance;
-                    pluginContext.GetPackEngine += () => new PackEngine();
+                    pluginContext.CreatePackEngine += () => new PackEngine();
                     pluginContext.RequestUserLogin += async (successAction, cancelAction) =>
                     {
                         var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);

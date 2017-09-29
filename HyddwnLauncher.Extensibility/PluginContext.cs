@@ -21,7 +21,7 @@ namespace HyddwnLauncher.Extensibility
         /// <summary>
         /// Creates an instance of IPackEngine for use
         /// </summary>
-        public Func<IPackEngine> GetPackEngine;
+        public Func<IPackEngine> CreatePackEngine;
 
         /// <summary>
         /// Retrieves an instance of ISettingsManager
