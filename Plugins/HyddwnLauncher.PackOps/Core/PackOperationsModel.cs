@@ -5,27 +5,26 @@ using System.Text.RegularExpressions;
 
 namespace HyddwnLauncher.PackOps.Core
 {
-    public class PackOperationsViewModel : INotifyPropertyChanged
-    {
+	public class PackOperationsViewModel : INotifyPropertyChanged
+	{
 		// Works but probably not exactly what I was looking for.
-        private const string PackFileTestRegex = @"(\S+\d*_full|\S+\d*_to_\S+\d*).pack";
+		private const string PackFileTestRegex = @"(\S+\d*_full|\S+\d*_to_\S+\d*).pack";
 
-        private string _filePath;
-        private string _packName;
+		private string _filePath;
 		private bool _isSequenceTargetable;
+		private string _packName;
 		private int _packVersion;
 
-        public PackOperationsViewModel()
-        {
+		public PackOperationsViewModel()
+		{
+		}
 
-        }
+		public PackOperationsViewModel(string packFilePath)
+		{
+			FilePath = packFilePath;
+			PackName = Path.GetFileName(FilePath);
 
-        public PackOperationsViewModel(string packFilePath)
-        {
-            FilePath = packFilePath;
-            PackName = Path.GetFileName(FilePath);
-
-            var match = Regex.Match(PackName, PackFileTestRegex).Value;
+			var match = Regex.Match(PackName, PackFileTestRegex).Value;
 			IsSequenceTargetable = match == PackName;
 
 			if (PackName.Contains("full"))
@@ -34,7 +33,7 @@ namespace HyddwnLauncher.PackOps.Core
 				match = Regex.Match(PackName, matchRegex).Value;
 				var fromMatch = match.Replace("_", "");
 
-				int packVersion = 0;
+				var packVersion = 0;
 
 				int.TryParse(fromMatch, out packVersion);
 
@@ -48,7 +47,7 @@ namespace HyddwnLauncher.PackOps.Core
 				match = Regex.Match(PackName, matchRegex).Value;
 				var toMatch = match.Replace("_", "");
 
-				int packVersion = 0;
+				var packVersion = 0;
 
 				int.TryParse(toMatch, out packVersion);
 
@@ -59,32 +58,32 @@ namespace HyddwnLauncher.PackOps.Core
 			PackVersion = -1;
 		}
 
-        public string FilePath
-        {
-            get { return _filePath; }
-            set
-            {
-                if (_filePath == value) return;
-                _filePath = value;
-                OnPropertyChanged();
-            }
-        }
+		public string FilePath
+		{
+			get => _filePath;
+			set
+			{
+				if (_filePath == value) return;
+				_filePath = value;
+				OnPropertyChanged();
+			}
+		}
 
 
-        public string PackName
-        {
-            get { return _packName; }
-            set
-            {
-                if (_packName == value) return;
-                _packName = value;
-                OnPropertyChanged();
-            }
-        }
+		public string PackName
+		{
+			get => _packName;
+			set
+			{
+				if (_packName == value) return;
+				_packName = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public int PackVersion
 		{
-			get { return _packVersion; }
+			get => _packVersion;
 			protected set
 			{
 				if (_packVersion == value) return;
@@ -93,22 +92,22 @@ namespace HyddwnLauncher.PackOps.Core
 			}
 		}
 
-        public bool IsSequenceTargetable
-        {
-            get { return _isSequenceTargetable; }
-            set
-            {
-                if (_isSequenceTargetable == value) return;
+		public bool IsSequenceTargetable
+		{
+			get => _isSequenceTargetable;
+			set
+			{
+				if (_isSequenceTargetable == value) return;
 				_isSequenceTargetable = value;
-                OnPropertyChanged();
-            }
-        }
+				OnPropertyChanged();
+			}
+		}
 
-        public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
 }

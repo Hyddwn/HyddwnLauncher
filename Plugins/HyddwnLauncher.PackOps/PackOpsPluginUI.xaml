@@ -9,23 +9,22 @@
              xmlns:design="clr-namespace:HyddwnLauncher.PackOps.Design"
              xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
              xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
-              mc:Ignorable="d" d:DesignHeight="280" d:DesignWidth="795" HorizontalAlignment="Stretch">
+             xmlns:converters="clr-namespace:HyddwnLauncher.PackOps.Util.Converters"
+             mc:Ignorable="d" d:DesignHeight="280" d:DesignWidth="795" HorizontalAlignment="Stretch">
     <UserControl.Resources>
         <design:DesignTimeResourceDictionary>
             <design:DesignTimeResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml"/>
+                <ResourceDictionary
+                    Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/cobalt.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/ImaBrokeDude.Controls;component/wpf/styles.xaml" />
             </design:DesignTimeResourceDictionary.MergedDictionaries>
-            <DataTemplate x:Key="PackOperationsViewModelDataTemplate">
-                <Grid HorizontalAlignment="Stretch">
-                    <CheckBox Content="{Binding PackName}" IsEnabled="{Binding IsEnabled}" IsChecked="{Binding IsChecked}"/>
-                </Grid>
-            </DataTemplate>
+            <converters:BooleanAndMultiConverter x:Key="AndMultiConverter"/>
         </design:DesignTimeResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -34,52 +33,80 @@
             <controls:MetroTabItem Header="Pack Operations">
                 <Grid>
                     <simpleChildWindow:ChildWindow x:Name="PackOperationsLoader"
-                                    Grid.RowSpan="2"
-                                    IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
-                                    ChildWindowWidth="450" ChildWindowHeight="80" CloseByEscape="false">
+                                                   Grid.RowSpan="2"
+                                                   IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
+                                                   ChildWindowWidth="450" ChildWindowHeight="80" CloseByEscape="false">
                         <Grid>
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,17,10,43" Text="Merging Pack Files, this might take some time..." />
-                            <controls:MetroProgressBar x:Name="ProgressBar" Margin="10,47,10,23"></controls:MetroProgressBar>
-                            <TextBlock x:Name="ProgressText" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,53,10,7" />
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,17,10,43"
+                                       Text="Merging Pack Files, this might take some time..." />
+                            <controls:MetroProgressBar x:Name="ProgressBar" Margin="10,47,10,23" />
+                            <TextBlock x:Name="ProgressText" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Margin="10,53,10,7" />
                         </Grid>
                     </simpleChildWindow:ChildWindow>
-                    <TextBlock Text="Merge Official Pack Files" FontSize="24" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6,11,0,0"/>
-                    <TextBlock TextWrapping="Wrap" Text="Pack files can be merged to help improve the startup performance of Mabinogi. Below you can select a sequence of pack files to merge." FontSize="16"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6,44,0,0"/>
-                    <TextBlock TextWrapping="Wrap" Text="From" FontSize="16"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,99,0,0"/>
-                    <controls:NumericUpDown x:Name="FromUpDown" Minimum="{Binding ElementName=This, Path=MinimumPackVersion}" Maximum="{Binding ElementName=ToUpDown, Path=Value}" Value="{Binding ElementName=This, Path=FromValue}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,125,0,0" Width="106" Height="27"/>
-                    <TextBlock TextWrapping="Wrap" Text="To" FontSize="16"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="218,99,0,0"/>
-                    <controls:NumericUpDown x:Name="ToUpDown" Minimum="{Binding ElementName=FromUpDown, Path=Value}" Maximum="{Binding ElementName=This, Path=MaximumPackVersion}" Value="{Binding ElementName=This, Path=ToValue}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="218,125,0,0" Width="106" Height="27"/>
-                    <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Merge Packs" Click="PackOperationsMergePacksOnClick" Margin="363,125,0,0"/>
+                    <TextBlock Text="Merge Official Pack Files" FontSize="24" FontWeight="Bold"
+                               HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6,11,0,0" />
+                    <TextBlock TextWrapping="Wrap"
+                               Text="Pack files can be merged to help improve the startup performance of Mabinogi. Below you can select a sequence of pack files to merge."
+                               FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6,44,0,0" />
+                    <TextBlock TextWrapping="Wrap" Text="From" FontSize="16" HorizontalAlignment="Left"
+                               VerticalAlignment="Top" Margin="7,99,0,0" />
+                    <controls:NumericUpDown x:Name="FromUpDown"
+                                            Minimum="{Binding ElementName=This, Path=MinimumPackVersion}"
+                                            Maximum="{Binding ElementName=ToUpDown, Path=Value}"
+                                            Value="{Binding ElementName=This, Path=FromValue}"
+                                            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,125,0,0"
+                                            Width="106" Height="27" />
+                    <TextBlock TextWrapping="Wrap" Text="To" FontSize="16" HorizontalAlignment="Left"
+                               VerticalAlignment="Top" Margin="218,99,0,0" />
+                    <controls:NumericUpDown x:Name="ToUpDown" Minimum="{Binding ElementName=FromUpDown, Path=Value}"
+                                            Maximum="{Binding ElementName=This, Path=MaximumPackVersion}"
+                                            Value="{Binding ElementName=This, Path=ToValue}" HorizontalAlignment="Left"
+                                            VerticalAlignment="Top" Margin="218,125,0,0" Width="106" Height="27" />
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Top" Content="Merge Packs"
+                            Click="PackOperationsMergePacksOnClick" Margin="363,125,0,0">
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource AndMultiConverter}">
+                                <Binding ElementName="This" Path="FromValue"/>
+                                <Binding ElementName="This" Path="ToValue"/>
+                            </MultiBinding>
+                        </Button.IsEnabled>
+                    </Button>
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Pack Viewer" Visibility="Collapsed">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="3*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="5*"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5*" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <simpleChildWindow:ChildWindow x:Name="PackViewLoader"
-                                    Grid.RowSpan="2"
-                                    IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
-                                    ChildWindowWidth="300" ChildWindowHeight="80" CloseByEscape="false" Grid.ColumnSpan="2">
+                                                   Grid.RowSpan="2"
+                                                   IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
+                                                   ChildWindowWidth="300" ChildWindowHeight="80" CloseByEscape="false"
+                                                   Grid.ColumnSpan="2">
                         <Grid>
                             <wpf:LoadingIndicator HorizontalAlignment="Left" Margin="10,0,0,0"
-                                      Style="{StaticResource LoadingIndicatorArcsStyle}" />
-                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Retreiving Pack List..." />
+                                                  Style="{StaticResource LoadingIndicatorArcsStyle}" />
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"
+                                       Text="Retreiving Pack List..." />
                         </Grid>
                     </simpleChildWindow:ChildWindow>
-                    <TreeView x:Name="PackViewTreeView" Grid.Row="0" Margin="5" ItemsSource="{Binding ElementName=This, Path=PackViewEntries}" Grid.ColumnSpan="1">
+                    <TreeView x:Name="PackViewTreeView" Grid.Row="0" Margin="5"
+                              ItemsSource="{Binding ElementName=This, Path=PackViewEntries}" Grid.ColumnSpan="1">
                         <TreeView.Resources>
-                            <HierarchicalDataTemplate DataType="{x:Type core:PackViewerEntry}" ItemsSource="{Binding SubItems}">
-                                <TextBlock Text="{Binding Name}"/>
+                            <HierarchicalDataTemplate DataType="{x:Type core:PackViewerEntry}"
+                                                      ItemsSource="{Binding SubItems}">
+                                <TextBlock Text="{Binding Name}" />
                             </HierarchicalDataTemplate>
                         </TreeView.Resources>
                     </TreeView>
-                    <Button Grid.Row="1" HorizontalAlignment="Left" Margin="5 0 0 5" Width="70" Content="Refresh" Click="PackViewerRefreshOnClick"/>
+                    <Button Grid.Row="1" HorizontalAlignment="Left" Margin="5 0 0 5" Width="70" Content="Refresh"
+                            Click="PackViewerRefreshOnClick" />
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Settings">
@@ -92,9 +119,10 @@
                                 <StackPanel Margin="5 2.5">
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5 2.5">
-                                            <CheckBox Content="Delete Old Pack Files After Merge" VerticalAlignment="Center"
-                                                  ToolTip="After the merge process has completed, this determines whether or not the packs your merged are deleted."
-                                                  IsChecked="{Binding ElementName=This, Path=PackOpsSettings.DeletePackFilesAfterMerge}"/>
+                                            <CheckBox Content="Delete Old Pack Files After Merge"
+                                                      VerticalAlignment="Center"
+                                                      ToolTip="After the merge process has completed, this determines whether or not the packs your merged are deleted."
+                                                      IsChecked="{Binding ElementName=This, Path=PackOpsSettings.DeletePackFilesAfterMerge}" />
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
@@ -106,26 +134,47 @@
             <controls:MetroTabItem Header="About">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="125"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="125" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="180"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Image Source="Icon_Internal_a.ico" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="1"/>
-                    <StackPanel VerticalAlignment="Center" Grid.Column="0"  Margin="0,124,0,5" Grid.RowSpan="2">
-                        <TextBlock FontWeight="Bold" TextAlignment="Center" Text="PackOps Plugin"/>
-                        <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Plugin Author: Sven"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778"><Run Text="MabiMods Profile"/></Hyperlink></TextBlock>
+                    <Image Source="Icon_Internal_a.ico" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                           Grid.RowSpan="1" />
+                    <StackPanel VerticalAlignment="Center" Grid.Column="0" Margin="0,124,0,5" Grid.RowSpan="2">
+                        <TextBlock FontWeight="Bold" TextAlignment="Center" Text="PackOps Plugin" />
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center">
+                            <Run Text="Plugin Author: Sven" /><LineBreak />
+                            <Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">
+                                <Run Text="MabiMods Profile" />
+                            </Hyperlink>
+                        </TextBlock>
                     </StackPanel>
                     <ScrollViewer Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                         <StackPanel>
-                            <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks"/>
-                            <TextBlock><Run FontWeight="Bold" Text="exectails"/><Run Text=" - MackLib"/></TextBlock>
-                            <TextBlock><Run FontWeight="Bold" Text="Xcelled194"/><Run Text=" - PackMule"/></TextBlock>
-                            <TextBlock TextAlignment="Center" FontWeight="Bold" Text="License(s)"/>
-                            <GroupBox Header="Plugin - GPL License" VerticalAlignment="Top" >
-                                <TextBlock Margin="5" TextWrapping="Wrap" ><Run Text="This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version."/><LineBreak/><Run/><LineBreak/><Run Text="This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details."/><LineBreak/><Run/><LineBreak/><Run Text="You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;"/><Hyperlink NavigateUri="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</Hyperlink><Run Text="&gt;."/></TextBlock>
+                            <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks" />
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="exectails" /><Run Text=" - MackLib" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="Xcelled194" /><Run Text=" - PackMule" />
+                            </TextBlock>
+                            <TextBlock TextAlignment="Center" FontWeight="Bold" Text="License(s)" />
+                            <GroupBox Header="Plugin - GPL License" VerticalAlignment="Top">
+                                <TextBlock Margin="5" TextWrapping="Wrap">
+                                    <Run
+                                        Text="This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version." />
+                                    <LineBreak /><Run /><LineBreak />
+                                    <Run
+                                        Text="This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details." />
+                                    <LineBreak /><Run /><LineBreak />
+                                    <Run
+                                        Text="You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;" />
+                                    <Hyperlink NavigateUri="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</Hyperlink>
+                                    <Run Text="&gt;." />
+                                </TextBlock>
                             </GroupBox>
                         </StackPanel>
                     </ScrollViewer>

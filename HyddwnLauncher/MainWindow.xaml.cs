@@ -696,7 +696,7 @@ namespace HyddwnLauncher
                             await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
                     };
                     pluginContext.GetNexonApi += () => NexonApi.Instance;
-                    pluginContext.GetPackEngine += () => new PackEngine();
+                    pluginContext.CreatePackEngine += () => new PackEngine();
                     pluginContext.RequestUserLogin += async (successAction, cancelAction) =>
                     {
                         var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
@@ -731,6 +731,7 @@ namespace HyddwnLauncher
 
                         return result.Result == MessageDialogResult.Affirmative;
                     };
+                    pluginContext.CreateSettingsManager += (configPath, settingsSuffix) => new SettingsManager(configPath, settingsSuffix);
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
 
                     var pluginUi = plugin.GetPluginUi();

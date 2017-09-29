@@ -9,28 +9,13 @@ namespace HyddwnLauncher.PackOps.Pack
 {
 	public class PackReader : IDisposable
 	{
-		private Dictionary<string, PackListEntry> entries;
-		private Dictionary<string, List<PackListEntry>> entriesNamed;
-		private List<FileStream> fileStreams;
-		private List<BinaryReader> binaryReaders;
+		private readonly List<BinaryReader> binaryReaders;
+		private readonly Dictionary<string, PackListEntry> entries;
+		private readonly Dictionary<string, List<PackListEntry>> entriesNamed;
+		private readonly List<FileStream> fileStreams;
 
 		/// <summary>
-		/// File path that was used to create this reader.
-		/// </summary>
-		public string FilePath { get; private set; }
-
-		/// <summary>
-		/// Amount of entries in all open pack files.
-		/// </summary>
-		public int Count { get { return entries.Count; } }
-
-		/// <summary>
-		/// Amount of open pack files.
-		/// </summary>
-		public int PackCount { get { return fileStreams.Count; } }
-
-		/// <summary>
-		/// Creates a new empty pack reader
+		///     Creates a new empty pack reader
 		/// </summary>
 		public PackReader()
 		{
@@ -41,54 +26,71 @@ namespace HyddwnLauncher.PackOps.Pack
 		}
 
 		/// <summary>
-		/// Creates new pack reader for given file or folder.
+		///     Creates new pack reader for given file or folder.
 		/// </summary>
 		/// <param name="filePath">File or folder path. If it's a folder the reader reads all *.pack files in the top directory.</param>
 		public PackReader(string filePath) : this()
 		{
-			this.FilePath = filePath;
+			FilePath = filePath;
 
 			if (File.Exists(filePath))
-			{
-				this.Load(filePath);
-			}
+				Load(filePath);
 			else if (Directory.Exists(filePath))
-			{
 				foreach (var path in Directory.EnumerateFiles(filePath, "*.pack", SearchOption.TopDirectoryOnly).OrderBy(a => a))
-					this.Load(path);
-			}
+					Load(path);
 			else
 				throw new ArgumentException("Path not found.");
 		}
 
 		/// <summary>
-		/// Closes all file streams.
+		///     File path that was used to create this reader.
 		/// </summary>
-		public void Close()
-		{
-			this.Dispose();
-		}
+		public string FilePath { get; }
 
 		/// <summary>
-		/// Closes all file streams.
+		///     Amount of entries in all open pack files.
+		/// </summary>
+		public int Count => entries.Count;
+
+		/// <summary>
+		///     Amount of open pack files.
+		/// </summary>
+		public int PackCount => fileStreams.Count;
+
+		/// <summary>
+		///     Closes all file streams.
 		/// </summary>
 		public void Dispose()
 		{
 			foreach (var br in binaryReaders)
-			{
-				try { br.Close(); }
-				catch { }
-			}
+				try
+				{
+					br.Close();
+				}
+				catch
+				{
+				}
 
 			foreach (var fs in fileStreams)
-			{
-				try { fs.Close(); }
-				catch { }
-			}
+				try
+				{
+					fs.Close();
+				}
+				catch
+				{
+				}
 		}
 
 		/// <summary>
-		/// Returns true if a file with the given full name exists.
+		///     Closes all file streams.
+		/// </summary>
+		public void Close()
+		{
+			Dispose();
+		}
+
+		/// <summary>
+		///     Returns true if a file with the given full name exists.
 		/// </summary>
 		/// <param name="fullName"></param>
 		/// <returns></returns>
@@ -97,12 +99,14 @@ namespace HyddwnLauncher.PackOps.Pack
 			fullName = fullName.ToLower();
 
 			lock (entries)
+			{
 				return entries.ContainsKey(fullName);
+			}
 		}
 
 		/// <summary>
-		/// Returns the entry with the given full name, or null if it
-		/// doesn't exist.
+		///     Returns the entry with the given full name, or null if it
+		///     doesn't exist.
 		/// </summary>
 		/// <param name="fullName"></param>
 		/// <returns></returns>
@@ -113,14 +117,16 @@ namespace HyddwnLauncher.PackOps.Pack
 			PackListEntry result;
 
 			lock (entriesNamed)
+			{
 				entries.TryGetValue(fullName, out result);
+			}
 
 			return result;
 		}
 
 		/// <summary>
-		/// Returns list of all files with the given file name.
-		/// List will be empty if none were found.
+		///     Returns list of all files with the given file name.
+		///     List will be empty if none were found.
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns></returns>
@@ -131,7 +137,9 @@ namespace HyddwnLauncher.PackOps.Pack
 			List<PackListEntry> result;
 
 			lock (entriesNamed)
+			{
 				entriesNamed.TryGetValue(fileName, out result);
+			}
 
 			if (result == null)
 				return new List<PackListEntry>();
@@ -140,17 +148,19 @@ namespace HyddwnLauncher.PackOps.Pack
 		}
 
 		/// <summary>
-		/// Returns list of all entries.
+		///     Returns list of all entries.
 		/// </summary>
 		/// <returns></returns>
 		public List<PackListEntry> GetEntries()
 		{
 			lock (entries)
+			{
 				return entries.Values.ToList();
+			}
 		}
 
 		/// <summary>
-		/// Loads entries from the given pack file.
+		///     Loads entries from the given pack file.
 		/// </summary>
 		/// <param name="filePath"></param>
 		public void Load(string filePath)
@@ -170,10 +180,10 @@ namespace HyddwnLauncher.PackOps.Pack
 			header.Sum = br.ReadUInt32();
 			header.FileTime1 = br.ReadInt64();
 			header.FileTime2 = br.ReadInt64();
-            header.Zero = new byte[16];
+			header.Zero = new byte[16];
 
 			strBuffer = br.ReadBytes(480);
-			len = Array.IndexOf(strBuffer, (byte)0);
+			len = Array.IndexOf(strBuffer, (byte) 0);
 			header.DataPath = Encoding.UTF8.GetString(strBuffer, 0, len);
 
 			header.FileCount = br.ReadUInt32();
@@ -182,15 +192,15 @@ namespace HyddwnLauncher.PackOps.Pack
 			header.DataLength = br.ReadUInt32();
 			header.Zero = br.ReadBytes(16);
 
-			for (int i = 0; i < header.FileCount; ++i)
+			for (var i = 0; i < header.FileCount; ++i)
 			{
 				var entry = new PackListEntry(filePath, header, br);
 
-				entry.NameType = (PackListNameType)br.ReadByte();
+				entry.NameType = (PackListNameType) br.ReadByte();
 
 				if (entry.NameType <= PackListNameType.L64)
 				{
-					var size = (0x10 * ((byte)entry.NameType + 1));
+					var size = 0x10 * ((byte) entry.NameType + 1);
 					strBuffer = br.ReadBytes(size - 1);
 				}
 				else if (entry.NameType == PackListNameType.L96)
@@ -200,13 +210,15 @@ namespace HyddwnLauncher.PackOps.Pack
 				}
 				else if (entry.NameType == PackListNameType.LDyn)
 				{
-					var size = (int)br.ReadUInt32() + 5;
+					var size = (int) br.ReadUInt32() + 5;
 					strBuffer = br.ReadBytes(size - 1 - 4);
 				}
 				else
+				{
 					throw new Exception("Unknown entry name type '" + entry.NameType + "'.");
+				}
 
-				len = Array.IndexOf(strBuffer, (byte)0);
+				len = Array.IndexOf(strBuffer, (byte) 0);
 				entry.FullName = Encoding.UTF8.GetString(strBuffer, 0, len);
 				entry.FileName = Path.GetFileName(entry.FullName);
 
@@ -223,7 +235,9 @@ namespace HyddwnLauncher.PackOps.Pack
 				entry.FileTime5 = br.ReadInt64();
 
 				lock (entries)
+				{
 					entries[entry.FullName.ToLower()] = entry;
+				}
 
 				lock (entriesNamed)
 				{
@@ -237,8 +251,8 @@ namespace HyddwnLauncher.PackOps.Pack
 		}
 
 		/// <summary>
-		/// Attempts to return the path to the installed instance of Mabinogi.
-		/// Returns null if no Mabinogi folder could be found.
+		///     Attempts to return the path to the installed instance of Mabinogi.
+		///     Returns null if no Mabinogi folder could be found.
 		/// </summary>
 		/// <returns></returns>
 		public static string GetMabinogiDirectory()
