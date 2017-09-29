@@ -731,6 +731,7 @@ namespace HyddwnLauncher
 
                         return result.Result == MessageDialogResult.Affirmative;
                     };
+                    pluginContext.CreateSettingsManager += (configPath, settingsSuffix) => new SettingsManager(configPath, settingsSuffix);
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
 
                     var pluginUi = plugin.GetPluginUi();

@@ -24,6 +24,11 @@ namespace HyddwnLauncher.Extensibility
         public Func<IPackEngine> GetPackEngine;
 
         /// <summary>
+        /// Retrieves an instance of ISettingsManager
+        /// </summary>
+        public Func<string, string, ISettingsManager> CreateSettingsManager;
+
+        /// <summary>
         /// string: title
         /// string: messages
         /// returns bool: success
