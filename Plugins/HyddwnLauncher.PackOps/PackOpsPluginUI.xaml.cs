@@ -88,7 +88,7 @@ namespace HyddwnLauncher.PackOps
 			GetPacksForClientProfile();
 		}
 
-		private async void GetPacksForClientProfile()
+		internal async void GetPacksForClientProfile()
 		{
 			if (_clientProfile == null) return;
 
