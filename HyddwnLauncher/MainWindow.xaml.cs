@@ -765,12 +765,11 @@ namespace HyddwnLauncher
                     {
                         var returnResult = false;
 
-                        Dispatcher.Invoke(() =>
+                        Dispatcher.Invoke(async () =>
                         {
-                            var result = Task.Run(async () =>
-                                await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative));
+                             var result = await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative);
 
-                            returnResult = result.Result == MessageDialogResult.Affirmative;
+                            returnResult = result == MessageDialogResult.Affirmative;
                         });
 
                         return returnResult;
