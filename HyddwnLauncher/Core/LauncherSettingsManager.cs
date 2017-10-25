@@ -21,8 +21,15 @@ namespace HyddwnLauncher.Core
 
 			SettingsManager = new SettingsManager(_configurationJson);
 			LauncherSettings = LoadLauncherSettings();
-			LauncherSettings.SaveOnChanged += SaveOnChanged;
-		}
+
+            LauncherSettings.SaveOnChanged += SaveOnChanged;
+
+		    if (string.IsNullOrWhiteSpace(LauncherSettings.Theme))
+		        LauncherSettings.Theme = "BaseDark";
+
+		    if (string.IsNullOrWhiteSpace(LauncherSettings.Accent))
+		        LauncherSettings.Accent = "Cobalt";
+        }
 
 		private void SaveOnChanged(string propertyName)
 		{

@@ -17,6 +17,8 @@ namespace HyddwnLauncher.Core
         private bool _rememberLogin;
         private bool _usePackFiles;
         private bool _warnIfRootIsNotMabiRoot;
+        private string _theme;
+        private string _accent;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event Action<string> SaveOnChanged;
@@ -32,6 +34,8 @@ namespace HyddwnLauncher.Core
             RememberLogin = false;
             UsePackFiles = false;
             WarnIfRootIsNotMabiRoot = true;
+            Theme = "BaseDark";
+            Accent = "Cobalt";
         }
 
         public bool UsePackFiles
@@ -133,12 +137,27 @@ namespace HyddwnLauncher.Core
             }
         }
 
+        public string Theme
         {
+            get => _theme;
             set
             {
+                if (value == _theme) return;
+                _theme = value;
                 OnPropertyChanged();
             }
         }
+        public string Accent
+        {
+            get => _accent;
+            set
+            {
+                if (value == _accent) return;
+                _accent = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

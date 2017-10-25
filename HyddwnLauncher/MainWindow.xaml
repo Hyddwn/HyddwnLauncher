@@ -8,6 +8,7 @@
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
                       xmlns:core="clr-namespace:HyddwnLauncher.Core"
+                      xmlns:util="clr-namespace:HyddwnLauncher.Util"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}" WindowTransitionsEnabled="true"
@@ -23,7 +24,33 @@
         </Style>
     </FrameworkElement.Style>
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <Ellipse x:Key="AppThemeMenuIcon"
+                     x:Shared="False"
+                     Width="16"
+                     Height="16"
+                     StrokeThickness="1"
+                     Stroke="{Binding BorderColorBrush, Mode=OneWay}"
+                     Fill="{Binding ColorBrush, Mode=OneWay}"/>
+            <Ellipse x:Key="AccentMenuIcon"
+                     x:Shared="False"
+                     Width="16"
+                     Height="16"
+                     Fill="{Binding ColorBrush, Mode=OneWay}"/>
+            <DataTemplate x:Key="AppThemeComboBoxItem" DataType="{x:Type util:AppThemeMenuData}">
+                <StackPanel Orientation="Horizontal">
+                    <ContentPresenter Height="16" Width="16" Margin="4" Content="{StaticResource AppThemeMenuIcon}"/>
+                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 5 0" Text="{Binding Name}"/>
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate x:Key="AccentComboBoxItem" DataType="{x:Type util:AccentColorMenuData}">
+                <StackPanel Orientation="Horizontal">
+                    <ContentPresenter Height="16" Width="16" Margin="4" Content="{StaticResource AccentMenuIcon}"/>
+                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 5 0" Text="{Binding Name}"/>
+                </StackPanel>
+            </DataTemplate>
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ProfileEditor"
@@ -181,6 +208,17 @@
                         <StackPanel x:Name="OptionStackPanel" Margin="10">
                             <TextBlock Margin="5" Text="Options" FontWeight="Bold" FontSize="16" />
                             <StackPanel Margin="5">
+                                <TextBlock Margin="5" Text="Theme Options" FontWeight="Bold" />
+                                <StackPanel Margin="5">
+                                    <StackPanel Margin="5 2.5">
+                                        <TextBlock Margin="5" Text="Theme base color"/>
+                                        <ComboBox SelectedValuePath="Name" SelectedValue="{Binding ElementName=This, Path=Settings.LauncherSettings.Theme}" ItemTemplate="{DynamicResource AppThemeComboBoxItem}" ItemsSource="{Binding ElementName=This, Path=AppThemes, Mode=OneWay}" SelectionChanged="ComboBox_SelectionChanged"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="5 2.5">
+                                        <TextBlock Margin="5" Text="Theme accent color"/>
+                                        <ComboBox SelectedValuePath="Name" SelectedValue="{Binding ElementName=This, Path=Settings.LauncherSettings.Accent}" ItemTemplate="{DynamicResource AccentComboBoxItem}" ItemsSource="{Binding ElementName=This, Path=AccentColors, Mode=OneWay}" SelectionChanged="ComboBox_SelectionChanged"/>
+                                    </StackPanel>
+                                </StackPanel>
                                 <TextBlock Margin="5" Text="Profile Options" FontWeight="Bold" />
                                 <StackPanel Margin="5">
                                     <StackPanel Margin="5 2.5">
