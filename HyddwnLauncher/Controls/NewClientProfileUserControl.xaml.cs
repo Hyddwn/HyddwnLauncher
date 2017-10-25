@@ -37,6 +37,12 @@ namespace HyddwnLauncher.Controls
 
         private void BrowseButtonOnClick(object sender, RoutedEventArgs e)
         {
+            if (ClientProfile == null)
+            {
+                ErrorWindow.IsOpen = true;
+                return;
+            }
+
             var openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Executables (*.exe)|*.exe";
             openFileDialog.InitialDirectory = "C:\\Nexon\\Library\\mabinogi\\appdata\\";
@@ -46,6 +52,8 @@ namespace HyddwnLauncher.Controls
 
         private void ClientProfileSavedCredentialsRemoveButtonOnClick(object sender, RoutedEventArgs e)
         {
+            if (ClientProfile == null) return;
+
             CredentialsStorage.Instance.Remove(ClientProfile.Guid);
             CredentialUsername = "";
         }
