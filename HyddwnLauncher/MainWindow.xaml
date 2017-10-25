@@ -162,7 +162,7 @@
         <simpleChildWindow:ChildWindow x:Name="NoticeWindow"
             HorizontalContentAlignment="Center"
             VerticalContentAlignment="Center" Title=""
-            TitleBarBackground="#FF272626"
+            TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
             IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ChildWindowWidth="320"
             ChildWindowHeight="300">
 
