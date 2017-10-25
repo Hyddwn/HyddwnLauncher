@@ -16,7 +16,6 @@ namespace HyddwnLauncher.Core
         private int _serverProfileSelectedIndex;
         private bool _rememberLogin;
         private bool _usePackFiles;
-        private string _uuid;
         private bool _warnIfRootIsNotMabiRoot;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -32,7 +31,6 @@ namespace HyddwnLauncher.Core
             ServerProfileSelectedIndex = -1;
             RememberLogin = false;
             UsePackFiles = false;
-            Uuid = "";
             WarnIfRootIsNotMabiRoot = true;
         }
 
@@ -135,13 +133,9 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public string Uuid
         {
-            get => _uuid;
             set
             {
-                if (value == _uuid) return;
-                _uuid = value;
                 OnPropertyChanged();
             }
         }
