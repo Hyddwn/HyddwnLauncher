@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -764,10 +763,17 @@ namespace HyddwnLauncher
                     };
                     pluginContext.ShowDialog += (title, message) =>
                     {
-                        var result = Task.Run(async () =>
-                            await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative));
+                        var returnResult = false;
 
-                        return result.Result == MessageDialogResult.Affirmative;
+                        Dispatcher.Invoke(() =>
+                        {
+                            var result = Task.Run(async () =>
+                                await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative));
+
+                            returnResult = result.Result == MessageDialogResult.Affirmative;
+                        });
+
+                        return returnResult;
                     };
                     pluginContext.CreateSettingsManager += (configPath, settingsSuffix) => new SettingsManager(configPath, settingsSuffix);
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
@@ -779,7 +785,7 @@ namespace HyddwnLauncher
                     var pluginTabItem = new MetroTabItem
                     {
                         Header = plugin.Name,
-                        Content = pluginUi,
+                        Content = pluginUi
                     };
 
                     _pluginTabs.Add($"{plugin.GetGuid()}", pluginTabItem);
