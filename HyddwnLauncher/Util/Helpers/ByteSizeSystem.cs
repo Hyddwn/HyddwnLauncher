@@ -1,4 +1,4 @@
-namespace HyddwnLauncher.Util
+namespace HyddwnLauncher.Util.Helpers
 {
     public enum ByteSizeSystem
     {

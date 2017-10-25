@@ -139,10 +139,10 @@
     <Compile Include="Network\Rest\RestClient.cs" />
     <Compile Include="Network\Rest\RestRequest.cs" />
     <Compile Include="Network\Rest\RestResponse.cs" />
-    <Compile Include="Util\ByteSizeHelper.cs" />
+    <Compile Include="Util\Helpers\ByteSizeHelper.cs" />
     <Compile Include="Network\NexonApi.cs" />
-    <Compile Include="Util\ByteSizeMode.cs" />
-    <Compile Include="Util\ByteSizeSystem.cs" />
+    <Compile Include="Util\Helpers\ByteSizeMode.cs" />
+    <Compile Include="Util\Helpers\ByteSizeSystem.cs" />
     <Compile Include="Util\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Util\CustomPackFileMode.cs" />
     <Compile Include="ExceptionReporter.xaml.cs">
