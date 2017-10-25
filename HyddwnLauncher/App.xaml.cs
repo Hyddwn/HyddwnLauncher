@@ -99,31 +99,6 @@ namespace HyddwnLauncher
             }
         }
 
-
-        private static void CheckMabiDir()
-        {
-            if (!Settings.Default.WarnIfNotInMabiDir ||
-                File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                            "\\eTracer.aes"))
-                return;
-            Log.Warning("MabiBroke Launcher in not located in the Mabinogi folder!");
-            if (
-                MessageBox.Show(
-                    "MabiBroke Launcher is not located in the Mabinogi folder.\r\n\r\nThis will most likely result in improper operations.\r\n\r\nPress \"Yes\" to continue (not recommended!) or \"No\" to exit.",
-                    "Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) != MessageBoxResult.No)
-                return;
-            Environment.Exit(0);
-        }
-
-        private static void SetCwd()
-        {
-            Log.Info("Current Directory: {0}", Assemblypath);
-            if (Environment.CurrentDirectory == Assemblypath || Assemblypath == null)
-                return;
-            Log.Info("Setting Current Working Direcotry to {0}", Assemblypath);
-            Environment.CurrentDirectory = Assemblypath;
-        }
-
         private static void CheckForAdmin(bool requiresAdmin)
         {
             if (!requiresAdmin || IsAdministrator())
