@@ -139,6 +139,7 @@
     <Compile Include="Network\Rest\RestClient.cs" />
     <Compile Include="Network\Rest\RestRequest.cs" />
     <Compile Include="Network\Rest\RestResponse.cs" />
+    <Compile Include="Util\Commands\SimpleCommand.cs" />
     <Compile Include="Util\Helpers\ByteSizeHelper.cs" />
     <Compile Include="Network\NexonApi.cs" />
     <Compile Include="Util\Helpers\ByteSizeMode.cs" />
