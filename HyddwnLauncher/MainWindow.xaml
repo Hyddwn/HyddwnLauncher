@@ -149,7 +149,7 @@
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>
                 <StackPanel VerticalAlignment="Bottom" Margin="15 0 15 10">
-                    <wpf:LoadingIndicator HorizontalAlignment="Center" Margin="0,0,0,5"
+                    <wpf:LoadingIndicator HorizontalAlignment="Center" Margin="0,0,0,5" IsTabStop="False"
                                           x:Name="NxAuthLoginLoadingIndicator"
                                           Style="{StaticResource LoadingIndicatorArcsStyle}" IsActive="False" />
                     <DockPanel VerticalAlignment="Bottom">

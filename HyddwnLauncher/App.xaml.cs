@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using System.Windows;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Properties;
@@ -20,13 +21,13 @@ namespace HyddwnLauncher
         private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
         public static string[] CmdArgs;
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             var packFileClean = false;
-            if (!Directory.Exists(Assemblypath + "\\Archived"))
-                Directory.CreateDirectory(Assemblypath + "\\Archived");
-            Log.Archive = Assemblypath + "\\Archived";
             Log.LogFile = Assemblypath + "\\Hyddwn Launcher.log";
+
+            await Task.Delay(1000);
+
             Log.Info("=== Application Startup ===");
 
             Log.Info("Initialize Launcher Context");
