@@ -371,6 +371,13 @@ namespace HyddwnLauncher
 
         private async void NxAuthLoginOnSubmit(object sender, RoutedEventArgs e)
         {
+            // Requested behavior
+            if (NxAuthLoginUsername.IsFocused)
+            {
+                NxAuthLoginPassword.Focus();
+                return;
+            }
+
             if (NxAuthLoginNotice.Visibility == Visibility.Visible)
             {
                 NxAuthLoginNotice.Visibility = Visibility.Collapsed;
@@ -381,6 +388,28 @@ namespace HyddwnLauncher
 
             var username = NxAuthLoginUsername.Text;
             var password = NxAuthLoginPassword.Password;
+
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                ToggleLoginControls();
+
+                NxAuthLoginNotice.Text = "Please enter a Username";
+                NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginUsername.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                ToggleLoginControls();
+
+                NxAuthLoginNotice.Text = "Please enter a Password";
+                NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginPassword.Focus();
+                return;
+            }
 
             NxAuthLoginPassword.Password = "";
 
@@ -400,6 +429,8 @@ namespace HyddwnLauncher
 
                 NxAuthLoginNotice.Text = "Username or Password is Incorrect";
                 NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginPassword.Focus();
                 return;
             }
 
