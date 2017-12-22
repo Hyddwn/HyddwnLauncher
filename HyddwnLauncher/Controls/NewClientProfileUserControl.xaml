@@ -6,8 +6,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:HyddwnLauncher.Controls"
              xmlns:validation="clr-namespace:HyddwnLauncher.Util.Validation"
+             xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="222">
     <Grid>
+        <simpleChildWindow:ChildWindow x:Name="ErrorWindow"
+                                       Grid.RowSpan="2" TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
+                                       IsModal="true" ShowTitleBar="True" ShowCloseButton="True" Title="No Profile Selected"
+                                       ChildWindowWidth="300" ChildWindowHeight="80" >
+            <Grid>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0" TextWrapping="Wrap" TextAlignment="Center"
+                           Text="You must select or create a Client Profile before setting properties." />
+            </Grid>
+        </simpleChildWindow:ChildWindow>
         <StackPanel Margin="5">
             <StackPanel Margin="5" Orientation="Horizontal">
                 <TextBlock Text="Client Profile Editor" FontWeight="Bold" FontSize="16" />
@@ -27,9 +38,9 @@
                         </Binding.ValidationRules>
                     </Binding>
                 </TextBox>
-                <Button Margin="5 0 0 0" Content=". . ." Height="26" Click="BrowseButtonOnClick" />
+                <Button Margin="5 0 0 0" Content=". . ." IsEnabled="{Binding Path=ClientProfile, TargetNullValue=False}" Height="26" Click="BrowseButtonOnClick" />
             </StackPanel>
-            <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="Save Crednetials">
+            <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="Saved Crednetials">
                 <GroupBox Header="Saved Credentials" Margin="5">
                     <StackPanel>
                         <TextBox x:Name="CredentialTextBox" Margin="10,5,10,0" IsEnabled="False" IsReadOnly="True" Text="{Binding ElementName=This, Path=CredentialUsername}"/>

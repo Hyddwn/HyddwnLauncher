@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using System.Windows;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Properties;
@@ -20,13 +21,13 @@ namespace HyddwnLauncher
         private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
         public static string[] CmdArgs;
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             var packFileClean = false;
-            if (!Directory.Exists(Assemblypath + "\\Archived"))
-                Directory.CreateDirectory(Assemblypath + "\\Archived");
-            Log.Archive = Assemblypath + "\\Archived";
             Log.LogFile = Assemblypath + "\\Hyddwn Launcher.log";
+
+            await Task.Delay(1000);
+
             Log.Info("=== Application Startup ===");
 
             Log.Info("Initialize Launcher Context");
@@ -97,31 +98,6 @@ namespace HyddwnLauncher
                 };
                 clientCount++;
             }
-        }
-
-
-        private static void CheckMabiDir()
-        {
-            if (!Settings.Default.WarnIfNotInMabiDir ||
-                File.Exists(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                            "\\eTracer.aes"))
-                return;
-            Log.Warning("MabiBroke Launcher in not located in the Mabinogi folder!");
-            if (
-                MessageBox.Show(
-                    "MabiBroke Launcher is not located in the Mabinogi folder.\r\n\r\nThis will most likely result in improper operations.\r\n\r\nPress \"Yes\" to continue (not recommended!) or \"No\" to exit.",
-                    "Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) != MessageBoxResult.No)
-                return;
-            Environment.Exit(0);
-        }
-
-        private static void SetCwd()
-        {
-            Log.Info("Current Directory: {0}", Assemblypath);
-            if (Environment.CurrentDirectory == Assemblypath || Assemblypath == null)
-                return;
-            Log.Info("Setting Current Working Direcotry to {0}", Assemblypath);
-            Environment.CurrentDirectory = Assemblypath;
         }
 
         private static void CheckForAdmin(bool requiresAdmin)

@@ -16,8 +16,9 @@ namespace HyddwnLauncher.Core
         private int _serverProfileSelectedIndex;
         private bool _rememberLogin;
         private bool _usePackFiles;
-        private string _uuid;
         private bool _warnIfRootIsNotMabiRoot;
+        private string _theme;
+        private string _accent;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event Action<string> SaveOnChanged;
@@ -32,8 +33,9 @@ namespace HyddwnLauncher.Core
             ServerProfileSelectedIndex = -1;
             RememberLogin = false;
             UsePackFiles = false;
-            Uuid = "";
             WarnIfRootIsNotMabiRoot = true;
+            Theme = "BaseDark";
+            Accent = "Cobalt";
         }
 
         public bool UsePackFiles
@@ -135,16 +137,27 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public string Uuid
+        public string Theme
         {
-            get => _uuid;
+            get => _theme;
             set
             {
-                if (value == _uuid) return;
-                _uuid = value;
+                if (value == _theme) return;
+                _theme = value;
                 OnPropertyChanged();
             }
         }
+        public string Accent
+        {
+            get => _accent;
+            set
+            {
+                if (value == _accent) return;
+                _accent = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

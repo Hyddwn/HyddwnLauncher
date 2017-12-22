@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="HyddwnLauncher.UOTiara.UOTiaraPluginUI"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:design="clr-namespace:HyddwnLauncher.UOTiara.Design"
@@ -28,7 +28,6 @@
                 </design:DesignTimeResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-
     </UserControl.Resources>
     <Grid>
         <controls:MetroAnimatedSingleRowTabControl
@@ -40,7 +39,7 @@
                         <ColumnDefinition Width="67*"/>
                     </Grid.ColumnDefinitions>
                     <simpleChildWindow:ChildWindow x:Name="LoadingOverlay"
-                                                   IsModal="true" Grid.ColumnSpan="2" ShowTitleBar="false" ShowCloseButton="false" 
+                                                   IsModal="true" Grid.ColumnSpan="2" ShowTitleBar="false" ShowCloseButton="false"
                                                    ChildWindowWidth="300" ChildWindowHeight="80" CloseByEscape="false">
                         <Grid>
                             <wpf:LoadingIndicator HorizontalAlignment="Left" Margin="10,0,0,0"
@@ -50,14 +49,13 @@
                     </simpleChildWindow:ChildWindow>
                     <ListView
                         x:Name="ModListView"
-                        Grid.Column="0" HorizontalAlignment="Left" 
-                        VerticalAlignment="Top" 
+                        Grid.Column="0" HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
                         Height="189"
                         Margin="10 10 0 0"
-                        
                         ItemsSource="{Binding ElementName=This, Path=ModInfoList}"
                         DataContext="{Binding}"
-                        SelectionChanged="listView1_SelectionChanged" 
+                        SelectionChanged="listView1_SelectionChanged"
                         ContextMenu="{StaticResource ContextMenu1}" >
                         <ListView.View>
                             <GridView >

@@ -97,7 +97,7 @@ namespace HyddwnLauncher.PackOps
 			await Task.Run(() =>
 			{
 				foreach (var packFilePath in Directory.EnumerateFiles($"{Path.GetDirectoryName(_clientProfile.Location)}\\package",
-					"*.pack", SearchOption.TopDirectoryOnly).OrderBy(a => a))
+					"*.pack", SearchOption.TopDirectoryOnly).ToList().OrderBy(a => a))
 					Dispatcher.Invoke(() => PackOperationsViewModels.Add(new PackOperationsViewModel(packFilePath)));
 
 				var packViewModelWorkingSet = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable)
@@ -263,9 +263,6 @@ namespace HyddwnLauncher.PackOps
 
 				const string packagePath = "package";
 
-				// Just in case
-				var version = await _pluginContext.GetNexonApi().GetLatestVersion();
-
 				await Task.Run(() =>
 				{
 					double entries = packEntryCollection.Count;
@@ -288,7 +285,7 @@ namespace HyddwnLauncher.PackOps
 						? $"{selectedPackViewModels.LastOrDefault().PackVersion}_full.pack"
 						: $"{selectedPackViewModels.FirstOrDefault().PackVersion}_to_{selectedPackViewModels.LastOrDefault().PackVersion}.pack";
 
-					using (var pw = new PackWriter($"{packagePath}\\{packName}", version))
+					using (var pw = new PackWriter($"{packagePath}\\{packName}", selectedPackViewModels.LastOrDefault().PackVersion))
 					{
 						foreach (var entry in packEntryCollection)
 						{

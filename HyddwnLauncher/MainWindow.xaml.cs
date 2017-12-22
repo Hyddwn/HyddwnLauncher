@@ -6,17 +6,18 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Network;
 using HyddwnLauncher.Util;
 using Ionic.Zip;
+using MahApps.Metro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 
@@ -45,6 +46,24 @@ namespace HyddwnLauncher
                 ProfileManager.SaveServerProfiles();
             }
 
+            ChangeAppTheme();
+
+            AccentColors = ThemeManager.Accents
+                .Select(a =>
+                        new AccentColorMenuData
+                        {
+                            Name = a.Name,
+                            ColorBrush = a.Resources["AccentColorBrush"] as Brush
+                        }).ToList();
+            AppThemes = ThemeManager.AppThemes
+                .Select(a =>
+                        new AppThemeMenuData
+                        {
+                            Name = a.Name,
+                            BorderColorBrush = a.Resources["BlackColorBrush"] as Brush,
+                            ColorBrush = a.Resources["WhiteColorBrush"] as Brush
+                        }).ToList();
+
             InitializeComponent();
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
             _disableWhilePatching = new Control[]
@@ -56,6 +75,8 @@ namespace HyddwnLauncher
             };
 
             _updateClose = false;
+
+
         }
 
         #endregion
@@ -68,6 +89,8 @@ namespace HyddwnLauncher
         #endregion
 
         #region Properties
+        public string Theme { get; set; }
+        public string Accent { get; set; }
         private PluginHost PluginHost { get; set; }
         public ProfileManager ProfileManager { get; private set; }
         public ServerProfile ActiveServerProfile { get; set; }
@@ -76,6 +99,8 @@ namespace HyddwnLauncher
         // Very bad, will need to adjust the method of access.
         public static MainWindow Instance { get; private set; }
         public LauncherSettingsManager Settings { get; private set; }
+        public List<AccentColorMenuData> AccentColors { get; set; }
+        public List<AppThemeMenuData> AppThemes { get; set; }
 
         public bool IsUpdateAvailable
         {
@@ -193,6 +218,11 @@ namespace HyddwnLauncher
         private void Updater_Closing(object sender, CancelEventArgs e)
         {
             e.Cancel = true;
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ChangeAppTheme();
         }
 
         private async void LaunchButton_Click(object sender, RoutedEventArgs e)
@@ -341,6 +371,13 @@ namespace HyddwnLauncher
 
         private async void NxAuthLoginOnSubmit(object sender, RoutedEventArgs e)
         {
+            // Requested behavior
+            if (NxAuthLoginUsername.IsFocused)
+            {
+                NxAuthLoginPassword.Focus();
+                return;
+            }
+
             if (NxAuthLoginNotice.Visibility == Visibility.Visible)
             {
                 NxAuthLoginNotice.Visibility = Visibility.Collapsed;
@@ -351,6 +388,28 @@ namespace HyddwnLauncher
 
             var username = NxAuthLoginUsername.Text;
             var password = NxAuthLoginPassword.Password;
+
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                ToggleLoginControls();
+
+                NxAuthLoginNotice.Text = "Please enter a Username";
+                NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginUsername.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                ToggleLoginControls();
+
+                NxAuthLoginNotice.Text = "Please enter a Password";
+                NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginPassword.Focus();
+                return;
+            }
 
             NxAuthLoginPassword.Password = "";
 
@@ -370,6 +429,8 @@ namespace HyddwnLauncher
 
                 NxAuthLoginNotice.Text = "Username or Password is Incorrect";
                 NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginPassword.Focus();
                 return;
             }
 
@@ -541,6 +602,13 @@ namespace HyddwnLauncher
                 await DeletePackFiles();
 
             Loading.IsOpen = false;
+        }
+
+        private void ChangeAppTheme()
+        {
+            ThemeManager.ChangeAppStyle(Application.Current,
+                ThemeManager.GetAccent(Settings.LauncherSettings.Accent),
+                ThemeManager.GetAppTheme(Settings.LauncherSettings.Theme));
         }
 
         private void CheckClientProfiles()
@@ -726,10 +794,16 @@ namespace HyddwnLauncher
                     };
                     pluginContext.ShowDialog += (title, message) =>
                     {
-                        var result = Task.Run(async () =>
-                            await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative));
+                        var returnResult = false;
 
-                        return result.Result == MessageDialogResult.Affirmative;
+                        Dispatcher.Invoke(async () =>
+                        {
+                             var result = await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative);
+
+                            returnResult = result == MessageDialogResult.Affirmative;
+                        });
+
+                        return returnResult;
                     };
                     pluginContext.CreateSettingsManager += (configPath, settingsSuffix) => new SettingsManager(configPath, settingsSuffix);
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
@@ -741,7 +815,7 @@ namespace HyddwnLauncher
                     var pluginTabItem = new MetroTabItem
                     {
                         Header = plugin.Name,
-                        Content = pluginUi,
+                        Content = pluginUi
                     };
 
                     _pluginTabs.Add($"{plugin.GetGuid()}", pluginTabItem);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher
@@ -8,6 +10,12 @@ namespace HyddwnLauncher
         [STAThread]
         public static void Main(string[] args)
         {
+            var assemblypath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);   
+
+            if (!Directory.Exists(assemblypath + "\\Archived"))
+                Directory.CreateDirectory(assemblypath + "\\Archived");
+            Log.Archive = assemblypath + "\\Archived";
+
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {
                 try
