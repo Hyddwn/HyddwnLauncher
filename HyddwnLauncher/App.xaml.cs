@@ -23,8 +23,6 @@ namespace HyddwnLauncher
         protected override void OnStartup(StartupEventArgs e)
         {
             var packFileClean = false;
-            if (!Directory.Exists(Assemblypath + "\\Archived"))
-                Directory.CreateDirectory(Assemblypath + "\\Archived");
             Log.Archive = Assemblypath + "\\Archived";
             Log.LogFile = Assemblypath + "\\Hyddwn Launcher.log";
             Log.Info("=== Application Startup ===");
