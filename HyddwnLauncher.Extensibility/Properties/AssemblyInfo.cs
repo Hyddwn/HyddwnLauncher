@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -10,6 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HyddwnLauncher.Extensibility")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: InternalsVisibleTo("Hyddwn Launcher")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
