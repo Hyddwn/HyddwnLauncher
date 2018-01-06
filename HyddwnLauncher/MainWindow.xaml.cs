@@ -215,6 +215,7 @@ namespace HyddwnLauncher
                         if (credentials != null)
                         {
                             var success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password, ActiveClientProfile.Guid);
+
                             if (success)
                             {
                                 LaunchOfficial();
@@ -679,9 +680,9 @@ namespace HyddwnLauncher
                 try
                 {
                     var pluginContext = new PluginContext();
-                    pluginContext.MainUpdater += PluginMainUpdator;
-                    pluginContext.SetPatcherState += isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
-                    pluginContext.LogException += async (exception, b) =>
+                    pluginContext.MainUpdaterInternal += PluginMainUpdator;
+                    pluginContext.SetPatcherStateInternal += isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
+                    pluginContext.LogExceptionInternal += async (exception, b) =>
                     {
                         Log.Exception(exception);
                         if (b)
@@ -689,15 +690,15 @@ namespace HyddwnLauncher
                                 await this.ShowMessageAsync("Error", exception.Message));
 
                     };
-                    pluginContext.LogString += async (s, b) =>
+                    pluginContext.LogStringInternal += async (s, b) =>
                     {
                         Log.Info(s);
                         if (b)
                             await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
                     };
-                    pluginContext.GetNexonApi += () => NexonApi.Instance;
-                    pluginContext.CreatePackEngine += () => new PackEngine();
-                    pluginContext.RequestUserLogin += async (successAction, cancelAction) =>
+                    pluginContext.GetNexonApiInternal += () => NexonApi.Instance;
+                    pluginContext.CreatePackEngineInternal += () => new PackEngine();
+                    pluginContext.RequestUserLoginInternal += async (successAction, cancelAction) =>
                     {
                         var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
 
@@ -715,8 +716,8 @@ namespace HyddwnLauncher
                         LoginCancel += cancelAction;
                         NxAuthLogin.IsOpen = true;
                     };
-                    pluginContext.GetPatcherState += () => IsPatching;
-                    pluginContext.SetActiveTab += guid =>
+                    pluginContext.GetPatcherStateInternal += () => IsPatching;
+                    pluginContext.SetActiveTabInternal += guid =>
                     {
                         Dispatcher.Invoke(() =>
                         {
@@ -724,14 +725,14 @@ namespace HyddwnLauncher
                                 MainTabControl.SelectedItem = tab;
                         });
                     };
-                    pluginContext.ShowDialog += (title, message) =>
+                    pluginContext.ShowDialogInternal += (title, message) =>
                     {
                         var result = Task.Run(async () =>
                             await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative));
 
                         return result.Result == MessageDialogResult.Affirmative;
                     };
-                    pluginContext.CreateSettingsManager += (configPath, settingsSuffix) => new SettingsManager(configPath, settingsSuffix);
+                    pluginContext.CreateSettingsManagerInternal += (configPath, settingsSuffix) => new SettingsManager(configPath, settingsSuffix);
                     plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
 
                     var pluginUi = plugin.GetPluginUi();
