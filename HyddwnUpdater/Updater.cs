@@ -15,11 +15,11 @@ namespace HyddwnUpdater
     public class Updater
     {
         public static readonly Updater Instance = new Updater();
-        private static string[] args;
+        private static string[] _args;
 
-        public Updater()
+        private Updater()
         {
-            args = ParseLine(Environment.CommandLine).ToArray();
+            _args = ParseLine(Environment.CommandLine).ToArray();
         }
 
         private static void CheckForAdmin()
@@ -27,44 +27,42 @@ namespace HyddwnUpdater
             if (IsAdministrator()) return;
 
             var executingAssembly = Assembly.GetExecutingAssembly();
-            var logDirectoryName = Path.GetDirectoryName(executingAssembly.Location);
 
             var startInfo = new ProcessStartInfo
             {
                 UseShellExecute = true,
-                WorkingDirectory = Environment.CurrentDirectory
+                WorkingDirectory = Environment.CurrentDirectory,
+                FileName = executingAssembly.Location,
+                Arguments = $"\"{_args[1]}\" {_args[2]} \"{_args[3]}\"",
+                Verb = "runas"
             };
-            if (executingAssembly.Location != null)
-                startInfo.FileName = executingAssembly.Location;
-            startInfo.Arguments = $"\"{args[1]}\" {args[2]} \"{args[3]}\"";
-            startInfo.Verb = "runas";
             try
             {
                 Process.Start(startInfo);
             }
             catch (Exception ex)
             {
-                Log.Error("Cannot start elevated instance:\r\n{0}", (object) ex);
+                Log.Error("Cannot start elevated instance:\r\n{0}", (object)ex);
             }
             Environment.Exit(0);
         }
 
-        public static bool IsAdministrator()
+        private static bool IsAdministrator()
         {
             return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
         }
 
         /// <summary>
-        ///     Returns arguments parsed from line.
-        /// </summary>
-        /// <remarks>
-        ///     Matches words and multiple words in quotation.
-        /// </remarks>
-        /// <example>
-        ///     arg0 arg1 arg2 -- 3 args: "arg0", "arg1", and "arg2"
-        ///     arg0 arg1 "arg2 arg3" -- 3 args: "arg0", "arg1", and "arg2 arg3"
-        /// </example>
-        protected IList<string> ParseLine(string line)
+		/// Returns arguments parsed from line.
+		/// </summary>
+		/// <remarks>
+		/// Matches words and multiple words in quotation.
+		/// </remarks>
+		/// <example>
+		/// arg0 arg1 arg2 -- 3 args: "arg0", "arg1", and "arg2"
+		/// arg0 arg1 "arg2 arg3" -- 3 args: "arg0", "arg1", and "arg2 arg3"
+		/// </example>
+        private static IEnumerable<string> ParseLine(string line)
         {
             var args = new List<string>();
             var quote = false;
@@ -96,9 +94,9 @@ namespace HyddwnUpdater
             try
             {
                 Log.Info("////// Arguments //////");
-                Log.Info($"Update Archive: {args[1]}");
-                Log.Info($"SHA CHecksum: {args[2]}");
-                Log.Info($"Post Update Launch Target: {args[3]}");
+                Log.Info($"Update Archive: {_args[1]}");
+                Log.Info($"SHA CHecksum: {_args[2]}");
+                Log.Info($"Post Update Launch Target: {_args[3]}");
                 Log.Info("///////////////////////");
             }
             catch
@@ -113,38 +111,32 @@ namespace HyddwnUpdater
                 try
                 {
                     Log.Info("Check that executing process is actually terminated...");
-                    var proc = Process.GetProcessesByName(args[3]);
-                    if (proc != null)
-                    {
-                        Log.Info("One or more of the process(s) is still running. Terminating...");
+                    var proc = Process.GetProcessesByName(_args[3]);
+                    Log.Info("One or more of the process(s) is still running. Terminating...");
 
-                        foreach (var process in proc)
-                            process.Kill();
+                    foreach (var process in proc)
+                        process.Kill();
 
-                        Log.Info("Killed process successfully!");
+                    Log.Info("Killed process successfully!");
 
-                        Log.Info("Wait 2 seconds for application to close entirely...");
-                        Thread.Sleep(2000);
-                    }
+                    Log.Info("Wait 2 seconds for application to close entirely...");
+                    Thread.Sleep(2000);
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, "Failed to close one or more processes.");
+                    changingOutput.PrintResult(false);
+                    Log.Exception(ex, "Process not running or access denied, update may fail.");
                 }
             }
 
 
-            try
-            {
-            }
-            catch
-            {
-                Log.Warning("Process not running or access denied, update may fail.");
-            }
 
+#if DEBUG
+            Log.Debug("Skip administrator permissions check.");
+#else
             Log.Info("Chech if Administrator...");
             CheckForAdmin();
-
+#endif
 
             var directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Log.Info("Starting update proceedure.");
@@ -154,14 +146,14 @@ namespace HyddwnUpdater
                 try
                 {
                     Log.Info("Calculating SHA256 Checksum for file...");
-                    using (var fileStream = File.OpenRead(args[1]))
+
+                    using (var fileStream = File.OpenRead(_args[1]))
                     {
-                        var calculatedHash = BitConverter.ToString(new SHA256Managed().ComputeHash(fileStream))
-                            .Replace("-", string.Empty);
-                        Log.Info("Expected hash {0}", args[2]);
+                        var calculatedHash = BitConverter.ToString(new SHA256Managed().ComputeHash(fileStream)).Replace("-", string.Empty);
+                        Log.Info("Expected hash {0}", _args[2]);
                         Log.Info("Got hash {0}", calculatedHash);
 
-                        if (calculatedHash != args[2])
+                        if (calculatedHash != _args[2])
                         {
                             changingOutput.PrintResult(false);
                             Log.Error("Verification failed! SHA256 hash mismatch. Press enter to exit.");
@@ -186,12 +178,12 @@ namespace HyddwnUpdater
             {
                 try
                 {
-                    var outputDirectory = directoryName + "\\" + Path.GetFileNameWithoutExtension(args[1]);
+                    var outputDirectory = directoryName + "\\" + Path.GetFileNameWithoutExtension(_args[1]);
                     Log.Info("Extracting update files to {0}", outputDirectory);
 
                     if (Directory.Exists(outputDirectory))
                         Directory.Delete(outputDirectory, true);
-                    ZipFile.ExtractToDirectory(args[1], outputDirectory);
+                    ZipFile.ExtractToDirectory(_args[1], outputDirectory);
                     Log.Info("Extracting update files complete.");
                     changingOutput.PrintResult(true);
                 }
@@ -208,22 +200,12 @@ namespace HyddwnUpdater
             {
                 try
                 {
-                    var outputDirectory = directoryName + "\\" + Path.GetFileNameWithoutExtension(args[1]);
+                    var outputDirectory = directoryName + "\\" + Path.GetFileNameWithoutExtension(_args[1]);
 
                     Log.Info("////// Begin File Copy //////");
 
-                    foreach (var str in Directory.GetFiles(outputDirectory))
-                    {
-                        var fileName = Path.GetFileName(str);
-                        var path = directoryName + "\\" + fileName;
-                        Log.Info("Copying {0} to {1}", str, path);
-                        if (path == directoryName + @"\Updater.exe")
-                            File.Move(directoryName + @"\Updater.exe", directoryName + @"\Updater.old");
-                        if (File.Exists(path))
-                            File.Delete(path);
+                    DirectoryCopy(outputDirectory, directoryName);
 
-                        File.Copy(str, directoryName + "\\" + fileName);
-                    }
                     Log.Info("/////// End File Copy ///////");
                     changingOutput.PrintResult(true);
                 }
@@ -236,18 +218,23 @@ namespace HyddwnUpdater
                     Environment.Exit(1);
                 }
             }
+
             using (var changingOutput = new ChangingOutput("Cleaning up..."))
             {
                 Log.Info("Cleaning up...");
 
-                var outputDirectory = directoryName + "\\" + Path.GetFileNameWithoutExtension(args[1]);
+                var outputDirectory = directoryName + "\\" + Path.GetFileNameWithoutExtension(_args[1]);
 
                 try
                 {
                     Log.Info("Deleting {0}", outputDirectory);
 
                     Directory.Delete(outputDirectory, true);
-                    File.Delete(args[1]);
+#if DEBUG
+                    
+#else
+                    File.Delete(_args[1]);
+#endif
                     Log.Info("Deleted successfully!");
                     changingOutput.PrintResult(true);
                 }
@@ -265,14 +252,7 @@ namespace HyddwnUpdater
                 Log.Info("Starting Application...");
                 Console.WriteLine("Starting Application...");
 
-
-                new Process
-                {
-                    StartInfo =
-                    {
-                        FileName = directoryName + "\\" + args[3]
-                    }
-                }.Start();
+                new Process {StartInfo = {FileName = directoryName + "\\" + _args[3]}}.Start();
                 Environment.Exit(0);
             }
             catch (Exception ex)
@@ -281,6 +261,46 @@ namespace HyddwnUpdater
                 Console.WriteLine("\r\nUpdate was successful but failed to automatically start application.");
                 Console.ReadLine();
                 Environment.Exit(1);
+            }
+        }
+
+        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs = true)
+        {
+            // Get the subdirectories for the specified directory.
+            var dir = new DirectoryInfo(sourceDirName);
+
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Source directory does not exist or could not be found: "
+                    + sourceDirName);
+            }
+
+            var dirs = dir.GetDirectories();
+            // If the destination directory doesn't exist, create it.
+            if (!Directory.Exists(destDirName))
+            {
+                Directory.CreateDirectory(destDirName);
+            }
+
+            // Get the files in the directory and copy them to the new location.
+            var files = dir.GetFiles();
+            foreach (var file in files)
+            {
+
+                var temppath = Path.Combine(destDirName, file.Name);
+                Log.Info("Copying {0} to {1}", file.Name, temppath);
+                file.CopyTo(temppath, false);
+            }
+
+            // If copying subdirectories, copy them and their contents to new location.
+            if (!copySubDirs) return;
+            {
+                foreach (var subdir in dirs)
+                {
+                    var temppath = Path.Combine(destDirName, subdir.Name);
+                    DirectoryCopy(subdir.FullName, temppath, copySubDirs);
+                }
             }
         }
     }
