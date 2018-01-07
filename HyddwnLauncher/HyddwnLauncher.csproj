@@ -139,6 +139,9 @@
     <Compile Include="Network\Rest\RestClient.cs" />
     <Compile Include="Network\Rest\RestRequest.cs" />
     <Compile Include="Network\Rest\RestResponse.cs" />
+    <Compile Include="SplashScreen.xaml.cs">
+      <DependentUpon>SplashScreen.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util\ByteSizeHelper.cs" />
     <Compile Include="Network\NexonApi.cs" />
     <Compile Include="Util\ByteSizeMode.cs" />
@@ -190,6 +193,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Controls\NewServerProfileUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SplashScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
