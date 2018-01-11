@@ -10,7 +10,8 @@ namespace HyddwnLauncher.Controls
     public partial class NewServerProfileUserControl : UserControl
     {
         public static readonly DependencyProperty ServerProfileProperty = DependencyProperty.Register(
-            "ServerProfile", typeof(ServerProfile), typeof(NewServerProfileUserControl), new PropertyMetadata(default(ServerProfile)));
+            "ServerProfile", typeof(ServerProfile), typeof(NewServerProfileUserControl),
+            new PropertyMetadata(default(ServerProfile)));
 
         public NewServerProfileUserControl()
         {
@@ -19,8 +20,8 @@ namespace HyddwnLauncher.Controls
 
         public ServerProfile ServerProfile
         {
-            get { return (ServerProfile)GetValue(ServerProfileProperty); }
-            set { SetValue(ServerProfileProperty, value); }
+            get => (ServerProfile) GetValue(ServerProfileProperty);
+            set => SetValue(ServerProfileProperty, value);
         }
     }
 }

@@ -147,18 +147,18 @@ namespace HyddwnLauncher.Network.Rest
         }
 
         /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
+        ///     Call to Nexon API returned unauthorized. Most likely the API key
         ///     is invalid.
         /// </exception>
         public void CheckResponse(HttpResponseMessage httpResponseMessage)
         {
             if (httpResponseMessage.StatusCode == HttpStatusCode.Unauthorized)
                 throw new UnauthorizedAccessException(
-                    "Call to Sqaure Connect API returned unauthorized. Most likely the API key is invalid.");
+                    "Call to Nexon API returned unauthorized. Most likely the API key is invalid.");
         }
 
         /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
+        ///     Call to Nexon API returned unauthorized. Most likely the API key
         ///     is invalid.
         /// </exception>
         public async Task<RestResponse<T>> ExecuteGet<T>()
@@ -171,7 +171,7 @@ namespace HyddwnLauncher.Network.Rest
         }
 
         /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
+        ///     Call to Nexon API returned unauthorized. Most likely the API key
         ///     is invalid.
         /// </exception>
         public async Task<RestResponse> ExecutePost()
@@ -184,7 +184,7 @@ namespace HyddwnLauncher.Network.Rest
         }
 
         /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
+        ///     Call to Nexon API returned unauthorized. Most likely the API key
         ///     is invalid.
         /// </exception>
         public async Task<RestResponse<T>> ExecutePost<T>()
@@ -197,7 +197,7 @@ namespace HyddwnLauncher.Network.Rest
         }
 
         /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
+        ///     Call to Nexon API returned unauthorized. Most likely the API key
         ///     is invalid.
         /// </exception>
         public async Task<RestResponse> ExecuteDelete()
@@ -210,7 +210,7 @@ namespace HyddwnLauncher.Network.Rest
         }
 
         /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
+        ///     Call to Nexon API returned unauthorized. Most likely the API key
         ///     is invalid.
         /// </exception>
         public async Task<RestResponse<T>> ExecuteDelete<T>()
@@ -223,7 +223,7 @@ namespace HyddwnLauncher.Network.Rest
         }
 
         /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
+        ///     Call to Nexon API returned unauthorized. Most likely the API key
         ///     is invalid.
         /// </exception>
         public async Task<RestResponse> ExecutePut()
@@ -236,7 +236,7 @@ namespace HyddwnLauncher.Network.Rest
         }
 
         /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
+        ///     Call to Nexon API returned unauthorized. Most likely the API key
         ///     is invalid.
         /// </exception>
         public async Task<RestResponse<T>> ExecutePut<T>()
@@ -250,11 +250,6 @@ namespace HyddwnLauncher.Network.Rest
 
         private async Task<HttpResponseMessage> SendInternal(HttpMethod method)
         {
-            // Account for the following settings:
-            // - MaxRetryCount                          Max times to retry
-            // DEPRECATED RetryWaitTimeInSeconds        Time to wait between retries
-            // DEPRECATED ThrowErrorOnExeedingMaxCalls  Throw an exception if we hit a ratelimit
-
             var timesToTry = _restClient.MaxRetryCount + 1;
 
             Debug.Assert(timesToTry >= 1);
@@ -262,7 +257,9 @@ namespace HyddwnLauncher.Network.Rest
             do
             {
                 var httpRequest = PrepRequest(method);
+
                 var httpResponseMessage = await new HttpClient().SendAsync(httpRequest).ConfigureAwait(false);
+
 
                 if (httpResponseMessage.StatusCode == (HttpStatusCode) 429)
                 {
@@ -281,11 +278,8 @@ namespace HyddwnLauncher.Network.Rest
                     continue;
                 }
 
-                if (httpResponseMessage.IsSuccessStatusCode)
-                    return httpResponseMessage;
 
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    return httpResponseMessage;
+                return httpResponseMessage;
             } while (timesToTry-- > 0);
 
             // We never reached a success

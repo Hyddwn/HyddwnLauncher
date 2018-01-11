@@ -23,21 +23,22 @@ namespace HyddwnLauncher.Network
 
         public static readonly NexonApi Instance = new NexonApi();
 
-        private RestClient _restClient;
-
         //Tokens
         private string _accessToken;
 
         //Token Expiry Timer
         private int _accessTokenExpiration;
-        private bool _accessTokenIsExpired;
         private DispatcherTimer _accessTokenExpiryTimer;
+        private bool _accessTokenIsExpired;
 
         private string _lastAuthenticationProfileGuid;
 
+        private RestClient _restClient;
+
         public bool IsAccessTokenValid(string guid)
         {
-            return _accessToken != null && !_accessTokenIsExpired && (_accessToken != LoginFailed || _accessToken != DevError) && guid == _lastAuthenticationProfileGuid;
+            return _accessToken != null && !_accessTokenIsExpired &&
+                   (_accessToken != LoginFailed || _accessToken != DevError) && guid == _lastAuthenticationProfileGuid;
         }
 
         public async Task<string> GetNxAuthHash()
@@ -96,8 +97,8 @@ namespace HyddwnLauncher.Network
 
         public async Task<bool> GetAccessToken(string username, string password, string profileGuid)
         {
-            if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == profileGuid)
-                return true;
+            //if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == profileGuid)
+            //    return true;
 
             _restClient = new RestClient(new Uri("https://accounts.nexon.net"), null);
 
@@ -123,10 +124,16 @@ namespace HyddwnLauncher.Network
             // Compiler tricks to ensure it isn't optimized away
             var ps = password;
 
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-                return false;
+            var data = "";
 
-            var data = await response.GetContent();
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                data = await response.GetContent();
+                return false;
+            }
+
+
+            data = await response.GetContent();
             var body = JsonConvert.DeserializeObject<dynamic>(data);
             _accessToken = body["access_token"];
             _accessTokenExpiration = body["access_token_expires_in"];
@@ -137,6 +144,13 @@ namespace HyddwnLauncher.Network
             StartAccessTokenExpiryTimer(_accessTokenExpiration);
 
             return true;
+        }
+
+        public void HashPassword(ref string password)
+        {
+            // ToLower is required here, otherwise the password is incorrect.
+            password = BitConverter.ToString(Sha512.ComputeHash(Encoding.UTF8.GetBytes(password))).Replace("-", "")
+                .ToLower();
         }
 
         private void StartAccessTokenExpiryTimer(int timeout = 7200)
@@ -172,17 +186,9 @@ namespace HyddwnLauncher.Network
             return uuid;
         }
 
-        public void HashPassword(ref string password)
-        {
-            // ToLower is required here, otherwise the password is incorrect.
-            password = BitConverter.ToString(Sha512.ComputeHash(Encoding.UTF8.GetBytes(password))).Replace("-", "")
-                .ToLower();
-        }
-
         private struct AccountLoginJson
         {
-            [JsonProperty(PropertyName = "id")]
-            public string Id { get; set; }
+            [JsonProperty(PropertyName = "id")] public string Id { get; set; }
 
             [JsonProperty(PropertyName = "password")]
             public string Password { get; set; }
@@ -193,8 +199,7 @@ namespace HyddwnLauncher.Network
             [JsonProperty(PropertyName = "client_id")]
             public string ClientId { get; set; }
 
-            [JsonProperty(PropertyName = "scope")]
-            public string Scope { get; set; }
+            [JsonProperty(PropertyName = "scope")] public string Scope { get; set; }
 
             [JsonProperty(PropertyName = "device_id")]
             public string DeviceId { get; set; }

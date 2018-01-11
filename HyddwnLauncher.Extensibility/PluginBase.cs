@@ -46,12 +46,10 @@ namespace HyddwnLauncher.Extensibility
 
         public virtual void PatchBegin()
         {
-            
         }
 
         public virtual void PatchEnd()
         {
-            
         }
     }
 }

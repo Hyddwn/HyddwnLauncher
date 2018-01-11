@@ -8,6 +8,7 @@
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
                       xmlns:core="clr-namespace:HyddwnLauncher.Core"
+                      xmlns:design="clr-namespace:HyddwnLauncher.Util.Design"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}" WindowTransitionsEnabled="true"
@@ -24,21 +25,46 @@
         </Style>
     </FrameworkElement.Style>
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+                </ResourceDictionary>
+                <design:DesignTimeResourceDictionary>
+                    <design:DesignTimeResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                        <ResourceDictionary
+                            Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                        <ResourceDictionary
+                            Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/cobalt.xaml" />
+                        <ResourceDictionary Source="pack://application:,,,/ImaBrokeDude.Controls;component/wpf/styles.xaml" />
+                    </design:DesignTimeResourceDictionary.MergedDictionaries>
+                </design:DesignTimeResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
     </Window.Resources>
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ProfileEditor"
-            TitleBarBackground="{DynamicResource WindowBackgroundBrush}" Title="Profile Editor" IsOpenChanged="ProfileEditorIsOpenChanged"
-            IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ClosingFinished="ProfileEditorOnProfileCLosingFinished" ChildWindowWidth="560" ChildWindowHeight="440">
+                                       TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
+                                       Title="Profile Editor" IsOpenChanged="ProfileEditorIsOpenChanged"
+                                       IsModal="true" ShowTitleBar="true" ShowCloseButton="true"
+                                       ClosingFinished="ProfileEditorOnProfileCLosingFinished" ChildWindowWidth="560"
+                                       ChildWindowHeight="440">
             <simpleChildWindow:ChildWindow.Resources>
                 <DataTemplate x:Key="ClientProfileDataTemplate" DataType="core:ClientProfile">
                     <Grid>
-                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
+                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16"
+                                   HorizontalAlignment="Stretch" />
                     </Grid>
                 </DataTemplate>
                 <DataTemplate x:Key="ServerProfileDataTemplate" DataType="core:ServerProfile">
                     <Grid>
-                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Stretch" />
+                        <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" FontSize="16"
+                                   HorizontalAlignment="Stretch" />
                     </Grid>
                 </DataTemplate>
             </simpleChildWindow:ChildWindow.Resources>
@@ -63,7 +89,8 @@
                                  SelectionChanged="ProfileEditorOnClientFrofileListBoxSelectionChanged" />
                         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                             <ScrollViewer>
-                                <controls1:NewClientProfileUserControl x:Name="ClientProfileUserControl" VerticalAlignment="Top"
+                                <controls1:NewClientProfileUserControl x:Name="ClientProfileUserControl"
+                                                                       VerticalAlignment="Top"
                                                                        ClientProfile="{Binding ElementName=ClientProfileListBox, Path=SelectedItem}" />
                             </ScrollViewer>
                         </Grid>
@@ -89,7 +116,8 @@
                                  SelectionChanged="ProfileEditorOnServerFrofileListBoxSelectionChanged" />
                         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                             <ScrollViewer>
-                                <controls1:NewServerProfileUserControl x:Name="ServerProfileUserControl" VerticalAlignment="Top"
+                                <controls1:NewServerProfileUserControl x:Name="ServerProfileUserControl"
+                                                                       VerticalAlignment="Top"
                                                                        ServerProfile="{Binding ElementName=ServerProfileListBox, Path=SelectedItem}" />
                             </ScrollViewer>
                         </Grid>
@@ -98,8 +126,8 @@
             </controls:MetroAnimatedSingleRowTabControl>
         </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow x:Name="NxAuthLogin"
-            IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
-            ChildWindowWidth="350" ChildWindowHeight="350" CloseByEscape="False">
+                                       IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
+                                       ChildWindowWidth="350" ChildWindowHeight="350" CloseByEscape="False">
             <Grid>
                 <StackPanel Margin="0 10 0 0">
                     <TextBlock Text="Nexon Passport" HorizontalAlignment="Center" FontSize="36" />
@@ -108,7 +136,7 @@
                             Text="Please log in using your Nexon Username and Password. All Information used is immediately discarded for your protection." />
                         <LineBreak /><Run />
                         <Run FontWeight="Bold"
-                             Text="Do not enter your username or password into closed sourced launchers without verifying they are safe to use." />
+                             Text="Do not enter your username or password into closed-source launchers without verifying they are safe to use." />
                     </TextBlock>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
@@ -116,7 +144,7 @@
                              Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Username" />
                     <PasswordBox x:Name="NxAuthLoginPassword" controls:TextBoxHelper.UseFloatingWatermark="True"
                                  Margin="0 5 0 2" controls:TextBoxHelper.Watermark="Password" />
-                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember Login Details" Margin="0 5 0 2"/>
+                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember Login Details" Margin="0 5 0 2" />
                     <TextBlock x:Name="NxAuthLoginNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>
@@ -125,25 +153,25 @@
                                           x:Name="NxAuthLoginLoadingIndicator"
                                           Style="{StaticResource LoadingIndicatorArcsStyle}" IsActive="False" />
                     <DockPanel VerticalAlignment="Bottom">
-                        <Button DockPanel.Dock="Left" IsDefault="True" x:Name="NxAuthLoginSubmit" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Login"
+                        <Button DockPanel.Dock="Left" IsDefault="True" x:Name="NxAuthLoginSubmit" Width="100"
+                                HorizontalAlignment="Left" VerticalAlignment="Center" Content="Login"
                                 Click="NxAuthLoginOnSubmit" />
-                        <Button DockPanel.Dock="Right" IsCancel="True" x:Name="NxAuthLoginCancel" Width="100" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Cancel"
+                        <Button DockPanel.Dock="Right" IsCancel="True" x:Name="NxAuthLoginCancel" Width="100"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Content="Cancel"
                                 Click="NxAuthLoginOnCancel" />
                     </DockPanel>
                 </StackPanel>
             </Grid>
         </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow x:Name="NoticeWindow"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center" Title=""
-            TitleBarBackground="#FF272626"
-            IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ChildWindowWidth="320"
-            ChildWindowHeight="300">
-
-        </simpleChildWindow:ChildWindow>
+                                       HorizontalContentAlignment="Center"
+                                       VerticalContentAlignment="Center" Title=""
+                                       TitleBarBackground="#FF272626"
+                                       IsModal="true" ShowTitleBar="true" ShowCloseButton="true" ChildWindowWidth="320"
+                                       ChildWindowHeight="300" />
         <simpleChildWindow:ChildWindow x:Name="Loading"
-            IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
-            ChildWindowWidth="300" ChildWindowHeight="80" CloseByEscape="false">
+                                       IsModal="true" ShowTitleBar="false" ShowCloseButton="false"
+                                       ChildWindowWidth="300" ChildWindowHeight="80" CloseByEscape="false">
             <Grid>
                 <wpf:LoadingIndicator HorizontalAlignment="Left" Margin="10,0,0,0"
                                       Style="{StaticResource LoadingIndicatorArcsStyle}" />
@@ -151,10 +179,10 @@
             </Grid>
         </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow x:Name="ImportWindow"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center" Title="ImportWorker" IsModal="true"
-            ShowTitleBar="false"
-            ShowCloseButton="false" ChildWindowWidth="300" ChildWindowHeight="80">
+                                       HorizontalContentAlignment="Center"
+                                       VerticalContentAlignment="Center" Title="ImportWorker" IsModal="true"
+                                       ShowTitleBar="false"
+                                       ShowCloseButton="false" ChildWindowWidth="300" ChildWindowHeight="80">
             <Grid>
                 <TextBlock x:Name="ImporterTextBlock" Text="Special Thanks to Carsey" FontWeight="Bold" FontSize="16"
                            VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" />
@@ -176,7 +204,7 @@
                              VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" />
                 </Grid>
             </controls:MetroTabItem>
-            <controls:MetroTabItem Header="Options" >
+            <controls:MetroTabItem Header="Options">
                 <Grid>
                     <ScrollViewer>
                         <StackPanel x:Name="OptionStackPanel" Margin="10">
@@ -192,12 +220,16 @@
                                 </StackPanel>
                                 <TextBlock Margin="5" Text="Reset Options" FontWeight="Bold" />
                                 <StackPanel Margin="5 2.5">
-                                    <CheckBox x:Name="ResetCredentialsCheckBox" Content="Reset Credential Storage" Margin="0 1"/>
-                                    <CheckBox x:Name="ResetClietProfilesCheckBox" Content="Reset Client Profiles" Margin="0 1"/>
-                                    <CheckBox x:Name="ResetServerProfilesCheckBox" Content="Reset Server Profiles" Margin="0 1"/>
-                                    <CheckBox x:Name="ResetLauncherConfigurationCheckBox" Content="Reset Launcher Configuration" Margin="0 1"/>
+                                    <CheckBox x:Name="ResetCredentialsCheckBox" Content="Reset Credential Storage"
+                                              Margin="0 1" />
+                                    <CheckBox x:Name="ResetClietProfilesCheckBox" Content="Reset Client Profiles"
+                                              Margin="0 1" />
+                                    <CheckBox x:Name="ResetServerProfilesCheckBox" Content="Reset Server Profiles"
+                                              Margin="0 1" />
+                                    <CheckBox x:Name="ResetLauncherConfigurationCheckBox"
+                                              Content="Reset Launcher Configuration" Margin="0 1" />
                                     <StackPanel Orientation="Horizontal" Margin="0 2.5">
-                                        <Button  Content="Reset" Click="ResetOptionsResetBottonOnClick" />
+                                        <Button Content="Reset" Click="ResetOptionsResetBottonOnClick" />
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Margin="5 2.5" Text="Advanced Options" FontWeight="Bold" />
@@ -205,7 +237,7 @@
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5">
                                             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
-                                                   Text="Delete Custom Server Pack Files" />
+                                                       Text="Delete Custom Server Pack Files" />
                                             <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />
                                         </StackPanel>
                                     </StackPanel>
@@ -218,37 +250,66 @@
             <controls:MetroTabItem Header="About">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="180"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="180"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Image Source="Icon_Internal_a.ico" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Image Source="Icon_Internal_a.ico" HorizontalAlignment="Left" VerticalAlignment="Top" />
                     <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="1">
-                        <TextBlock FontWeight="Bold" TextAlignment="Center" Text="Hyddwn Launcher"/>
-                        <TextBlock TextAlignment="Center" Text="{Binding ElementName=LauncherVersion, Path=Text, StringFormat={}Version: {0}}"></TextBlock>
-                        <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="Author: Sven"/><LineBreak/><Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink></TextBlock>
+                        <TextBlock FontWeight="Bold" TextAlignment="Center" Text="Hyddwn Launcher" />
+                        <TextBlock TextAlignment="Center"
+                                   Text="{Binding ElementName=LauncherVersion, Path=Text, StringFormat={}Version: {0}}" />
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Center">
+                            <Run Text="Author: Sven" /><LineBreak />
+                            <Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink>
+                        </TextBlock>
                     </StackPanel>
                     <ScrollViewer Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                         <StackPanel>
-                            <GroupBox Header="GPL License" VerticalAlignment="Top" >
-                                <TextBlock Margin="5" TextWrapping="Wrap" ><Run Text="This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version."/><LineBreak/><Run/><LineBreak/><Run Text="This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details."/><LineBreak/><Run/><LineBreak/><Run Text="You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;"/><Hyperlink NavigateUri="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</Hyperlink><Run Text="&gt;."/></TextBlock>
+                            <GroupBox Header="GPL License" VerticalAlignment="Top">
+                                <TextBlock Margin="5" TextWrapping="Wrap">
+                                    <Run
+                                        Text="This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version." />
+                                    <LineBreak /><Run /><LineBreak />
+                                    <Run
+                                        Text="This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details." />
+                                    <LineBreak /><Run /><LineBreak />
+                                    <Run
+                                        Text="You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;" />
+                                    <Hyperlink NavigateUri="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</Hyperlink>
+                                    <Run Text="&gt;." />
+                                </TextBlock>
                             </GroupBox>
-                            <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks"/>
-                            <TextBlock><Run FontWeight="Bold" Text="cursey"/><Run Text=" - NXAuth Login Method"/></TextBlock>
-                            <TextBlock><Run FontWeight="Bold" Text="Xcelled194"/><Run Text=" - PowerPatcher (What the launcher was originally based on)"/></TextBlock>
-                            <TextBlock><Run FontWeight="Bold" Text="Choko"/><Run Text=" - QA and Testing"/></TextBlock>
-                            <TextBlock><Run FontWeight="Bold" Text="ShaggyZE"/><Run Text=" - QA and Testing"/></TextBlock>
-                            <TextBlock><Run FontWeight="Bold" Text="Playtime"/><Run Text=" - Reminds me that all Apple products suck"/></TextBlock>
-                            <TextBlock><Run FontWeight="Bold" Text="Pie"/><Run Text=" - The best thing a man can eat"/></TextBlock>
+                            <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks" />
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="cursey" /><Run Text=" - NXAuth Login Method" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="Xcelled194" />
+                                <Run Text=" - PowerPatcher (What the launcher was originally based on)" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="Choko" /><Run Text=" - QA and Testing" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="ShaggyZE" /><Run Text=" - QA and Testing" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="Playtime" />
+                                <Run Text=" - Reminds me that all Apple products suck" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="Pie" /><Run Text=" - The best thing a man can eat" />
+                            </TextBlock>
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </controls:MetroTabItem>
         </controls:MetroAnimatedSingleRowTabControl>
-        <TextBlock Margin="704,423,11,17" TextWrapping="Wrap" Text="Copyright © Project Hyddwn" Width="111"
+        <TextBlock Margin="628,438,1,2" TextWrapping="Wrap" Text="Copyright © 2016-2018 Sven (formally ImaBrokeDude)"
                    FontSize="8" />
         <Button Click="LaunchButton_Click" x:Name="LaunchButton" Content="Launch" HorizontalAlignment="Left"
                 Margin="704,374,0,0" VerticalAlignment="Top" Width="112" Height="45" />
@@ -281,8 +342,10 @@
         <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="291,331,0,0"
                   VerticalAlignment="Top"
                   IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UsePackFiles}" Height="26" />
-        <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0" TextWrapping="Wrap"
-                   Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}" FontWeight="Bold" VerticalAlignment="Top">
+        <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0"
+                   TextWrapping="Wrap"
+                   Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   FontWeight="Bold" VerticalAlignment="Top">
             <Hyperlink Foreground="{DynamicResource AccentColorBrush}" Click="UpdateAvailableLinkClick">Update Available!</Hyperlink>
         </TextBlock>
     </Grid>

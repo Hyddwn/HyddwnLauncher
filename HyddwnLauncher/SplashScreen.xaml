@@ -1,12 +1,42 @@
-﻿<Window x:Class="HyddwnLauncher.SplashScreen"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HyddwnLauncher"
-        mc:Ignorable="d"
-        Title="SplashScreen" Height="300" Width="300">
+﻿<controls:MetroWindow x:Class="HyddwnLauncher.SplashScreen"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:HyddwnLauncher"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:design="clr-namespace:HyddwnLauncher.Util.Design"
+                      x:Name="This"
+                      mc:Ignorable="d" ResizeMode="NoResize" UseNoneWindowStyle="True" WindowStyle="None"
+                      Title="SplashScreen" Height="300" Width="538" WindowStartupLocation="CenterScreen" Loaded="SplashScreenLoaded" >
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="VisibilityConverter"/>
+    </Window.Resources>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="222" />
+            <RowDefinition Height="78" />
+        </Grid.RowDefinitions>
+        <Image HorizontalAlignment="Stretch" VerticalAlignment="Top" Source="HyddwnLauncherSplashExact.png" />
+        <controls:MetroProgressBar x:Name="SplashProgressBar" 
+                                   Visibility="{Binding ElementName=This, Path=IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}"
+                                   Foreground="{DynamicResource AccentColorBrush}" Grid.Row="1"
+                                   Value="{Binding ElementName=This, Path=ProgressPercentage}"
+                                   VerticalAlignment="Center"
+                                   
+                                   IsIndeterminate="{Binding ElementName=This, Path=IsProgressBarIndeterminate}" Margin="25,18,25,54" />
+        <TextBlock x:Name="SplashStatusText" HorizontalAlignment="Left"
+                   Margin="3,61,0,0" Grid.Row="1"
+                   TextWrapping="Wrap" 
+                   VerticalAlignment="Top" Text="{Binding ElementName=This, Path=StatusText}"
+                   />
+        <!--  -->
+        <TextBlock HorizontalAlignment="Left" Margin="342,65,0,0" FontSize="8" Grid.Row="1"
+                   Text="Copyright © 2016-2018 Sven (formally ImaBrokeDude)" VerticalAlignment="Top" />
+        <TextBlock x:Name="ProgressTextBlock" HorizontalAlignment="Left"
+            Margin="25,29,0,0" Grid.Row="1"
+            TextWrapping="Wrap" 
+            VerticalAlignment="Top"
+            Text="{Binding ElementName=This, Path=ProgressText}"/>
     </Grid>
-</Window>
+</controls:MetroWindow>

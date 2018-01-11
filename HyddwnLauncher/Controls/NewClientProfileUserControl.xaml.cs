@@ -15,7 +15,8 @@ namespace HyddwnLauncher.Controls
             new PropertyMetadata(default(ClientProfile)));
 
         public static readonly DependencyProperty CredentialUsernameProperty = DependencyProperty.Register(
-            "CredentialUsername", typeof(string), typeof(NewClientProfileUserControl), new PropertyMetadata(default(string)));
+            "CredentialUsername", typeof(string), typeof(NewClientProfileUserControl),
+            new PropertyMetadata(default(string)));
 
 
         public NewClientProfileUserControl()
@@ -31,7 +32,7 @@ namespace HyddwnLauncher.Controls
 
         public string CredentialUsername
         {
-            get => (string)GetValue(CredentialUsernameProperty);
+            get => (string) GetValue(CredentialUsernameProperty);
             set => SetValue(CredentialUsernameProperty, value);
         }
 

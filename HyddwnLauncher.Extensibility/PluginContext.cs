@@ -5,79 +5,79 @@ using HyddwnLauncher.Extensibility.Interfaces;
 namespace HyddwnLauncher.Extensibility
 {
     /// <summary>
-    /// Used to make calls to Hyddwn Launcher to do specific tasks or retrive information.
+    ///     Used to make calls to Hyddwn Launcher to do specific tasks or retrive information.
     /// </summary>
     public class PluginContext
     {
         /// <summary>
-        /// Gets the current patching state of the launcher
-        /// </summary>
-        internal Func<bool> GetPatcherStateInternal;
-
-        /// <summary>
-        /// Retrieve an instance of INexonApi for use
-        /// </summary>
-        internal Func<INexonApi> GetNexonApiInternal;
-
-        /// <summary>
-        /// Creates an instance of IPackEngine for use
+        ///     Creates an instance of IPackEngine for use
         /// </summary>
         internal Func<IPackEngine> CreatePackEngineInternal;
 
         /// <summary>
-        /// Retrieves an instance of ISettingsManager
+        ///     Retrieves an instance of ISettingsManager
         /// </summary>
         internal Func<string, string, ISettingsManager> CreateSettingsManagerInternal;
 
         /// <summary>
-        /// string: title
-        /// string: message
-        /// returns bool: success
+        ///     Retrieve an instance of INexonApi for use
         /// </summary>
-        internal Func<string, string, bool> ShowDialogInternal;
+        internal Func<INexonApi> GetNexonApiInternal;
 
         /// <summary>
-        /// Exception: the exception to log
-        /// bool: show a messagebox with the exception
+        ///     Gets the current patching state of the launcher
+        /// </summary>
+        internal Func<bool> GetPatcherStateInternal;
+
+        /// <summary>
+        ///     Exception: the exception to log
+        ///     bool: show a messagebox with the exception
         /// </summary>
         internal Action<Exception, bool> LogExceptionInternal;
 
         /// <summary>
-        /// string: the message to log
-        /// bool: show a messagebox with the message
+        ///     string: the message to log
+        ///     bool: show a messagebox with the message
         /// </summary>
         internal Action<string, bool> LogStringInternal;
 
         /// <summary>
-        /// Updares the main progress reporter
-        /// string: left reporter text
-        /// string: right reporter text
-        /// double: progress bar value
-        /// bool: is indeterminate (don't know the progress)
-        /// bool: is progressbar visible
+        ///     Updares the main progress reporter
+        ///     string: left reporter text
+        ///     string: right reporter text
+        ///     double: progress bar value
+        ///     bool: is indeterminate (don't know the progress)
+        ///     bool: is progressbar visible
         /// </summary>
         internal Action<string, string, double, bool, bool> MainUpdaterInternal;
 
         /// <summary>
-        /// Makes the launcher prompt for their nexon user and password
-        /// Action: success action to invoke if the user logs in successfully
-        /// Action: cancel action to invoke if the user cancels the login
+        ///     Makes the launcher prompt for their nexon user and password
+        ///     Action: success action to invoke if the user logs in successfully
+        ///     Action: cancel action to invoke if the user cancels the login
         /// </summary>
         internal Action<Action, Action> RequestUserLoginInternal;
 
         /// <summary>
-        /// Sets wether the launcher should behaive as if it is patching
-        /// </summary>
-        internal Action<bool> SetPatcherStateInternal;
-
-        /// <summary>
-        /// Sets the active tab (only works for plugins)
-        /// Guid: the guid of the plugin
+        ///     Sets the active tab (only works for plugins)
+        ///     Guid: the guid of the plugin
         /// </summary>
         internal Action<Guid> SetActiveTabInternal;
 
         /// <summary>
-        /// Get the current patching state of the launcher
+        ///     Sets wether the launcher should behaive as if it is patching
+        /// </summary>
+        internal Action<bool> SetPatcherStateInternal;
+
+        /// <summary>
+        ///     string: title
+        ///     string: message
+        ///     returns bool: success
+        /// </summary>
+        internal Func<string, string, bool> ShowDialogInternal;
+
+        /// <summary>
+        ///     Get the current patching state of the launcher
         /// </summary>
         /// <returns>Wether the patching state is active</returns>
         public bool GetPatcherState()
@@ -90,7 +90,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        /// Retrieves an instance of INexonApi for use
+        ///     Retrieves an instance of INexonApi for use
         /// </summary>
         /// <returns>Interface reference to the NexonApi wrapper class instance</returns>
         public INexonApi GetNexonApi()
@@ -103,7 +103,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        /// Creates an instnace of IPackEngine for use
+        ///     Creates an instnace of IPackEngine for use
         /// </summary>
         /// <returns></returns>
         public IPackEngine CreatePackEngine()
@@ -118,7 +118,7 @@ namespace HyddwnLauncher.Extensibility
         // TODO: Change to allow different dialog types
         // TODO: Change return type
         /// <summary>
-        /// Shows a message dialog to the user with desired message and title
+        ///     Shows a message dialog to the user with desired message and title
         /// </summary>
         /// <param name="title">Title of the dialog</param>
         /// <param name="message">Dialog message</param>
@@ -133,7 +133,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        /// Logs an exception to the global log file
+        ///     Logs an exception to the global log file
         /// </summary>
         /// <param name="exception">The exception to log</param>
         /// <param name="showMessagebox">Show a message box with the exception</param>
@@ -143,13 +143,13 @@ namespace HyddwnLauncher.Extensibility
             {
                 LogExceptionInternal.Invoke(exception, showMessagebox);
                 return;
-            }              
+            }
 
             ThrowExceptionForUninitializedApiCall();
         }
 
         /// <summary>
-        /// Logs a string to the global log file
+        ///     Logs a string to the global log file
         /// </summary>
         /// <param name="entry">The text to log</param>
         /// <param name="showMessagebox">Show a messagebox with the logged text</param>
@@ -165,7 +165,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        /// Updates the main progress reporter
+        ///     Updates the main progress reporter
         /// </summary>
         /// <param name="leftText">The text that should appear on the left side of the reporter</param>
         /// <param name="rightText">The text that should appear on the right side of the reporter</param>
@@ -185,7 +185,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        /// Requests the user to log in with their NX Login
+        ///     Requests the user to log in with their NX Login
         /// </summary>
         /// <param name="successCallback">The callback that should be called if a login is successful</param>
         /// <param name="cancelCallback">The callback that should be called if a login is cancelled</param>
@@ -201,7 +201,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        /// Sets the patching state for the launcher
+        ///     Sets the patching state for the launcher
         /// </summary>
         /// <param name="isEnabled">Whether the patching state should be active or not</param>
         public void SetPatcherState(bool isEnabled)
@@ -216,7 +216,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        /// Sets the active tab by plugin GUID
+        ///     Sets the active tab by plugin GUID
         /// </summary>
         /// <param name="guid">The GUID of the plugin tab to activate</param>
         public void SetActiveTab(string guid)
@@ -225,7 +225,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        /// Sets the active tab by plugin GUID
+        ///     Sets the active tab by plugin GUID
         /// </summary>
         /// <param name="guid">The GUID of the plugin tab to activate</param>
         public void SetActiveTab(Guid guid)

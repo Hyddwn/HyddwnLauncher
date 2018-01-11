@@ -23,7 +23,7 @@
                 <TextBox Margin="48 0 0 0" Width="180" ToolTip="The File Path to Client.exe">
                     <Binding Path="ClientProfile.Location" ElementName="This" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
-                            <validation:LocationValidationRule/>
+                            <validation:LocationValidationRule />
                         </Binding.ValidationRules>
                     </Binding>
                 </TextBox>
@@ -32,9 +32,13 @@
             <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="Save Crednetials">
                 <GroupBox Header="Saved Credentials" Margin="5">
                     <StackPanel>
-                        <TextBox x:Name="CredentialTextBox" Margin="10,5,10,0" IsEnabled="False" IsReadOnly="True" Text="{Binding ElementName=This, Path=CredentialUsername}"/>
+                        <TextBox x:Name="CredentialTextBox" Margin="10,5,10,0" IsEnabled="False" IsReadOnly="True"
+                                 Text="{Binding ElementName=This, Path=CredentialUsername}" />
                         <StackPanel Orientation="Horizontal" Margin="10 5">
-                            <Button Margin="0 0 0 0" IsEnabled="{Binding ElementName=CredentialTextBox, Path=Text.Length}" x:Name="ClientProfileSavedCredentialsRemoveButton" Content="Remove" Click="ClientProfileSavedCredentialsRemoveButtonOnClick"/>
+                            <Button Margin="0 0 0 0"
+                                    IsEnabled="{Binding ElementName=CredentialTextBox, Path=Text.Length}"
+                                    x:Name="ClientProfileSavedCredentialsRemoveButton" Content="Remove"
+                                    Click="ClientProfileSavedCredentialsRemoveButtonOnClick" />
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>

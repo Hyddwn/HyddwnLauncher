@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using HyddwnLauncher.Extensibility.Primitives;
 using HyddwnLauncher.Util;
@@ -16,101 +12,8 @@ namespace HyddwnLauncher.Core
 {
     public class PluginHost
     {
-        private readonly string _pluginRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Plugins";
-
-        [ImportMany]
-        public Collection<IPlugin> Plugins { get; protected set; }
-
-        public void ShutdownPlugins()
-        {
-            foreach (var plugin in Plugins)
-            {
-                try
-                {
-                    plugin.Shutdown();
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, $"Error shutting down {plugin.Name}");
-                }
-            }
-        }
-
-        public void PatchBegin()
-        {
-            foreach (var plugin in Plugins)
-            {
-                try
-                {
-                    plugin.PatchBegin();
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, $"Error calling PatchBegin {plugin.Name}");
-                }
-            }
-        }
-
-        public void PatchEnd()
-        {
-            foreach (var plugin in Plugins)
-            {
-                try
-                {
-                    plugin.PatchEnd();
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, $"Error called PatchEnd {plugin.Name}");
-                }
-            }
-        }
-
-        public void PreLaunch()
-        {
-            foreach (var plugin in Plugins)
-            {
-                plugin.PreLaunch();
-            }
-        }
-
-        public void PostLaunch()
-        {
-            foreach (var plugin in Plugins)
-            {
-                plugin.PostLaunch();
-            }
-        }
-
-        public void ClientProfileChanged(ClientProfile clientProfile)
-        {
-            foreach (var plugin in Plugins)
-            {
-                try
-                {
-                    plugin.ClientProfileChanged(clientProfile);
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, $"Error sending client profile update to {plugin.Name}");
-                }
-            }
-        }
-
-        public void ServerProfileChanged(ServerProfile serverProfile)
-        {
-            foreach (var plugin in Plugins)
-            {
-                try
-                {
-                    plugin.ServerProfileChanged(serverProfile);
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, $"Error sending server profile update to {plugin.Name}");
-                }
-            }
-        }
+        private readonly string _pluginRoot =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\Plugins";
 
         public PluginHost()
         {
@@ -142,6 +45,83 @@ namespace HyddwnLauncher.Core
                 Log.Exception(ex);
                 MessageBox.Show(ex.Message, "Plugin Load Failure");
             }
+        }
+
+        [ImportMany] public Collection<IPlugin> Plugins { get; protected set; }
+
+        public void ShutdownPlugins()
+        {
+            foreach (var plugin in Plugins)
+                try
+                {
+                    plugin.Shutdown();
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"Error shutting down {plugin.Name}");
+                }
+        }
+
+        public void PatchBegin()
+        {
+            foreach (var plugin in Plugins)
+                try
+                {
+                    plugin.PatchBegin();
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"Error calling PatchBegin {plugin.Name}");
+                }
+        }
+
+        public void PatchEnd()
+        {
+            foreach (var plugin in Plugins)
+                try
+                {
+                    plugin.PatchEnd();
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"Error called PatchEnd {plugin.Name}");
+                }
+        }
+
+        public void PreLaunch()
+        {
+            foreach (var plugin in Plugins) plugin.PreLaunch();
+        }
+
+        public void PostLaunch()
+        {
+            foreach (var plugin in Plugins) plugin.PostLaunch();
+        }
+
+        public void ClientProfileChanged(ClientProfile clientProfile)
+        {
+            foreach (var plugin in Plugins)
+                try
+                {
+                    plugin.ClientProfileChanged(clientProfile);
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"Error sending client profile update to {plugin.Name}");
+                }
+        }
+
+        public void ServerProfileChanged(ServerProfile serverProfile)
+        {
+            foreach (var plugin in Plugins)
+                try
+                {
+                    plugin.ServerProfileChanged(serverProfile);
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"Error sending server profile update to {plugin.Name}");
+                }
         }
     }
 }

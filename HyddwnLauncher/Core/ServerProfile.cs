@@ -43,6 +43,8 @@ namespace HyddwnLauncher.Core
             IsOfficial = true
         };
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public bool IsOfficial
         {
             get => _isOfficial;
@@ -220,8 +222,6 @@ namespace HyddwnLauncher.Core
                 OnPropertyChanged();
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public async void GetUpdates()
         {

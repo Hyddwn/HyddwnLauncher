@@ -2,18 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.UOTiara.Util;
@@ -21,15 +12,12 @@ using HyddwnLauncher.UOTiara.Util;
 namespace HyddwnLauncher.UOTiara
 {
     /// <summary>
-    /// Interaction logic for UOTiaraPluginUI.xaml
+    ///     Interaction logic for UOTiaraPluginUI.xaml
     /// </summary>
     public partial class UOTiaraPluginUI : UserControl
     {
-        public ObservableCollection<ModInfo> ModInfoList { get; set; } = new ObservableCollection<ModInfo>();
         private readonly PluginContext _pluginContext;
         private IClientProfile _clientProfile;
-
-        private string MabiRoot => Path.Combine(Path.GetDirectoryName(_clientProfile.Location), "..");
 
         public UOTiaraPluginUI(PluginContext pluginContext, IClientProfile clientProfile)
         {
@@ -38,6 +26,10 @@ namespace HyddwnLauncher.UOTiara
 
             InitializeComponent();
         }
+
+        public ObservableCollection<ModInfo> ModInfoList { get; set; } = new ObservableCollection<ModInfo>();
+
+        private string MabiRoot => Path.Combine(Path.GetDirectoryName(_clientProfile.Location), "..");
 
         private async void button3_Click(object sender, RoutedEventArgs e)
         {
@@ -51,7 +43,6 @@ namespace HyddwnLauncher.UOTiara
 
         private void listView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
         }
 
         public async Task LoadModList()
@@ -72,12 +63,11 @@ namespace HyddwnLauncher.UOTiara
             {
                 try
                 {
-
                     var registryHelper = new RegistryHelper();
                     var subkeyTemp = registryHelper.SubKey + "\\Components";
                     registryHelper.SubKey = subkeyTemp;
 
-                    List<ModInfo> list = new List<ModInfo>();
+                    var list = new List<ModInfo>();
 
                     foreach (var subkeyName in registryHelper.GetSubKeyNames())
                     {
@@ -106,10 +96,7 @@ namespace HyddwnLauncher.UOTiara
 
                     // ParseModInfo to build the structure
 
-                    Dispatcher.Invoke(() =>
-                    {
-                        LoadingOverlayText.Text = "Processing...";
-                    });
+                    Dispatcher.Invoke(() => { LoadingOverlayText.Text = "Processing..."; });
                 }
                 catch (Exception ex)
                 {
@@ -133,6 +120,9 @@ namespace HyddwnLauncher.UOTiara
             // packer.Pack("path to data folder", "packfile name", version, [optional] compresstionLevel);
         }
 
-        public void ClientProfileChanged(IClientProfile clientProfile) => _clientProfile = clientProfile;
+        public void ClientProfileChanged(IClientProfile clientProfile)
+        {
+            _clientProfile = clientProfile;
+        }
     }
 }

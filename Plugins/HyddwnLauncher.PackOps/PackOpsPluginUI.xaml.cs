@@ -15,345 +15,351 @@ using HyddwnLauncher.PackOps.Util;
 
 namespace HyddwnLauncher.PackOps
 {
-	/// <summary>
-	///     Interaction logic for PackOpsPluginUI.xaml
-	/// </summary>
-	public partial class PackOpsPluginUI : UserControl
-	{
-		public static readonly DependencyProperty MaximumPackVersionProperty = DependencyProperty.Register(
-			"MaximumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
+    /// <summary>
+    ///     Interaction logic for PackOpsPluginUI.xaml
+    /// </summary>
+    public partial class PackOpsPluginUI : UserControl
+    {
+        public static readonly DependencyProperty MaximumPackVersionProperty = DependencyProperty.Register(
+            "MaximumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
 
-		public static readonly DependencyProperty MinimumPackVersionProperty = DependencyProperty.Register(
-			"MinimumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
+        public static readonly DependencyProperty MinimumPackVersionProperty = DependencyProperty.Register(
+            "MinimumPackVersion", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
 
-		public static readonly DependencyProperty FromValueProperty = DependencyProperty.Register(
-			"FromValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
+        public static readonly DependencyProperty FromValueProperty = DependencyProperty.Register(
+            "FromValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
 
-		public static readonly DependencyProperty ToValueProperty = DependencyProperty.Register(
-			"ToValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
+        public static readonly DependencyProperty ToValueProperty = DependencyProperty.Register(
+            "ToValue", typeof(int), typeof(PackOpsPluginUI), new PropertyMetadata(0));
 
-		private IClientProfile _clientProfile;
-		private readonly PluginContext _pluginContext;
-		private IServerProfile _serverProfile;
+        private readonly PluginContext _pluginContext;
 
-		public PackOpsPluginUI(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
-		{
-			_pluginContext = pluginContext;
-			_clientProfile = clientProfile;
-			_serverProfile = serverProfile;
+        private IClientProfile _clientProfile;
+        private IServerProfile _serverProfile;
 
-			PackOpsSettings = PackOpsSettingsManager.Instance.PackOpsSettings;
+        public PackOpsPluginUI(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
+        {
+            _pluginContext = pluginContext;
+            _clientProfile = clientProfile;
+            _serverProfile = serverProfile;
 
-			PackViewEntries = new ObservableCollection<PackViewerEntry>();
-			PackOperationsViewModels = new ObservableCollection<PackOperationsViewModel>();
+            PackOpsSettings = PackOpsSettingsManager.Instance.PackOpsSettings;
 
-			MinimumPackVersion = MaximumPackVersion = FromValue = ToValue = 0;
+            PackViewEntries = new ObservableCollection<PackViewerEntry>();
+            PackOperationsViewModels = new ObservableCollection<PackOperationsViewModel>();
 
-			InitializeComponent();
-		}
+            MinimumPackVersion = MaximumPackVersion = FromValue = ToValue = 0;
 
-		public int MaximumPackVersion
-		{
-			get => (int) GetValue(MaximumPackVersionProperty);
-			set => SetValue(MaximumPackVersionProperty, value);
-		}
+            InitializeComponent();
+        }
 
-		public int MinimumPackVersion
-		{
-			get => (int) GetValue(MinimumPackVersionProperty);
-			set => SetValue(MinimumPackVersionProperty, value);
-		}
+        public int MaximumPackVersion
+        {
+            get => (int) GetValue(MaximumPackVersionProperty);
+            set => SetValue(MaximumPackVersionProperty, value);
+        }
 
-		public int FromValue
-		{
-			get => (int) GetValue(FromValueProperty);
-			set => SetValue(FromValueProperty, value);
-		}
+        public int MinimumPackVersion
+        {
+            get => (int) GetValue(MinimumPackVersionProperty);
+            set => SetValue(MinimumPackVersionProperty, value);
+        }
 
-		public int ToValue
-		{
-			get => (int) GetValue(ToValueProperty);
-			set => SetValue(ToValueProperty, value);
-		}
+        public int FromValue
+        {
+            get => (int) GetValue(FromValueProperty);
+            set => SetValue(FromValueProperty, value);
+        }
 
-		public PackOpsSettings PackOpsSettings { get; protected set; }
-		public List<PackListEntry> PackFileEntries { get; private set; }
-		public ObservableCollection<PackViewerEntry> PackViewEntries { get; private set; }
-		public ObservableCollection<PackOperationsViewModel> PackOperationsViewModels { get; }
+        public int ToValue
+        {
+            get => (int) GetValue(ToValueProperty);
+            set => SetValue(ToValueProperty, value);
+        }
 
-		public void ClientProfileChangedAsync(IClientProfile clientProfile)
-		{
-			_clientProfile = clientProfile;
+        public PackOpsSettings PackOpsSettings { get; protected set; }
+        public List<PackListEntry> PackFileEntries { get; private set; }
+        public ObservableCollection<PackViewerEntry> PackViewEntries { get; private set; }
+        public ObservableCollection<PackOperationsViewModel> PackOperationsViewModels { get; }
 
-			GetPacksForClientProfile();
-		}
+        public void ClientProfileChangedAsync(IClientProfile clientProfile)
+        {
+            _clientProfile = clientProfile;
 
-		internal async void GetPacksForClientProfile()
-		{
-			if (_clientProfile == null) return;
+            GetPacksForClientProfile();
+        }
 
-			PackOperationsViewModels.Clear();
+        internal async void GetPacksForClientProfile()
+        {
+            if (_clientProfile == null) return;
 
-			await Task.Run(() =>
-			{
-				foreach (var packFilePath in Directory.EnumerateFiles($"{Path.GetDirectoryName(_clientProfile.Location)}\\package",
-					"*.pack", SearchOption.TopDirectoryOnly).OrderBy(a => a))
-					Dispatcher.Invoke(() => PackOperationsViewModels.Add(new PackOperationsViewModel(packFilePath)));
+            PackOperationsViewModels.Clear();
 
-				var packViewModelWorkingSet = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable)
-					.OrderBy(pvm => pvm.PackVersion).ToList();
+            await Task.Run(() =>
+            {
+                foreach (var packFilePath in Directory.EnumerateFiles(
+                    $"{Path.GetDirectoryName(_clientProfile.Location)}\\package",
+                    "*.pack", SearchOption.TopDirectoryOnly).OrderBy(a => a))
+                    Dispatcher.Invoke(() => PackOperationsViewModels.Add(new PackOperationsViewModel(packFilePath)));
 
-				Dispatcher.Invoke(() =>
-				{
-					MaximumPackVersion = packViewModelWorkingSet.LastOrDefault().PackVersion;
-					MinimumPackVersion = FromValue = ToValue = packViewModelWorkingSet.FirstOrDefault().PackVersion;
-				});
-			});
-		}
+                var packViewModelWorkingSet = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable)
+                    .OrderBy(pvm => pvm.PackVersion).ToList();
 
-		public void ServerProfileChanged(IServerProfile serverProfile)
-		{
-			_serverProfile = serverProfile;
+                Dispatcher.Invoke(() =>
+                {
+                    MaximumPackVersion = packViewModelWorkingSet.LastOrDefault().PackVersion;
+                    MinimumPackVersion = FromValue = ToValue = packViewModelWorkingSet.FirstOrDefault().PackVersion;
+                });
+            });
+        }
 
-			GetPacksForClientProfile();
-		}
+        public void ServerProfileChanged(IServerProfile serverProfile)
+        {
+            _serverProfile = serverProfile;
 
-		private async void PackViewerRefreshOnClick(object sender, RoutedEventArgs e)
-		{
-			PackViewLoader.IsOpen = true;
-			await Task.Delay(500);
+            GetPacksForClientProfile();
+        }
 
-			await GetPackEntries();
-			await Refresh();
-		}
+        private async void PackViewerRefreshOnClick(object sender, RoutedEventArgs e)
+        {
+            PackViewLoader.IsOpen = true;
+            await Task.Delay(500);
 
-		private async Task GetPackEntries()
-		{
-			if (_clientProfile == null) return;
+            await GetPackEntries();
+            await Refresh();
+        }
 
-			var packagePath = $"{Path.GetDirectoryName(_clientProfile.Location)}\\package";
+        private async Task GetPackEntries()
+        {
+            if (_clientProfile == null) return;
 
-			await Task.Run(() =>
-			{
-				using (var packReader = new PackReader(packagePath))
-				{
-					PackFileEntries = packReader.GetEntries().OrderBy(g => g.PackFilePath).ToList();
-				}
-			});
-		}
+            var packagePath = $"{Path.GetDirectoryName(_clientProfile.Location)}\\package";
 
-		private async Task Refresh()
-		{
-			if (_clientProfile == null) return;
-			if (string.IsNullOrWhiteSpace(_clientProfile.Location)) return;
+            await Task.Run(() =>
+            {
+                using (var packReader = new PackReader(packagePath))
+                {
+                    PackFileEntries = packReader.GetEntries().OrderBy(g => g.PackFilePath).ToList();
+                }
+            });
+        }
 
-			await Populate();
+        private async Task Refresh()
+        {
+            if (_clientProfile == null) return;
+            if (string.IsNullOrWhiteSpace(_clientProfile.Location)) return;
 
-			PackViewLoader.IsOpen = false;
-		}
+            await Populate();
 
-		private async Task Populate()
-		{
-			await Task.Run(() =>
-			{
-				Dispatcher.Invoke(() =>
-				{
-					PackViewEntries.Clear();
-					PackViewTreeView.Items.SortDescriptions.Clear();
+            PackViewLoader.IsOpen = false;
+        }
 
-					foreach (var packFileEntry in PackFileEntries)
-					{
-						var root =
-							PackViewEntries.FirstOrDefault(
-								x => x.Name.Equals(Path.GetFileName(packFileEntry.PackFilePath)) && x.Level.Equals(1));
-						if (root == null)
-						{
-							root = new PackViewerEntry
-							{
-								Level = 1,
-								Name = Path.GetFileName(packFileEntry.PackFilePath)
-							};
-							PackViewEntries.Add(root);
-							PackViewEntries.OrderBy(p => p.Name);
-						}
+        private async Task Populate()
+        {
+            await Task.Run(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    PackViewEntries.Clear();
+                    PackViewTreeView.Items.SortDescriptions.Clear();
 
-						var fileItem = packFileEntry.FullName.Split('\\');
-						if (fileItem.Any())
-						{
-							var subRoot =
-								root.SubItems.FirstOrDefault(x => x.Name.Equals(fileItem[0]) && x.Level.Equals(2));
-							if (subRoot == null)
-							{
-								subRoot = new PackViewerEntry
-								{
-									Level = 2,
-									Name = fileItem[0]
-								};
-								root.SubItems.Add(subRoot);
-								root.SubItems.OrderBy(p => p.Name);
-							}
+                    foreach (var packFileEntry in PackFileEntries)
+                    {
+                        var root =
+                            PackViewEntries.FirstOrDefault(
+                                x => x.Name.Equals(Path.GetFileName(packFileEntry.PackFilePath)) && x.Level.Equals(1));
+                        if (root == null)
+                        {
+                            root = new PackViewerEntry
+                            {
+                                Level = 1,
+                                Name = Path.GetFileName(packFileEntry.PackFilePath)
+                            };
+                            PackViewEntries.Add(root);
+                            PackViewEntries.OrderBy(p => p.Name);
+                        }
 
-							if (fileItem.Length > 1)
-							{
-								var parentItem = subRoot;
-								var level = 3;
-								for (var i = 1; i < fileItem.Length; ++i)
-								{
-									var subItem =
-										parentItem.SubItems.FirstOrDefault(
-											x => x.Name.Equals(fileItem[i]) && x.Level.Equals(level));
-									if (subItem == null)
-									{
-										subItem = new PackViewerEntry
-										{
-											Name = fileItem[i],
-											Level = level
-										};
-										parentItem.SubItems.Add(subItem);
-										parentItem.SubItems.OrderBy(p => p.Name);
-									}
+                        var fileItem = packFileEntry.FullName.Split('\\');
+                        if (fileItem.Any())
+                        {
+                            var subRoot =
+                                root.SubItems.FirstOrDefault(x => x.Name.Equals(fileItem[0]) && x.Level.Equals(2));
+                            if (subRoot == null)
+                            {
+                                subRoot = new PackViewerEntry
+                                {
+                                    Level = 2,
+                                    Name = fileItem[0]
+                                };
+                                root.SubItems.Add(subRoot);
+                                root.SubItems.OrderBy(p => p.Name);
+                            }
 
-									parentItem = subItem;
-									level++;
-								}
-							}
-						}
-					}
+                            if (fileItem.Length > 1)
+                            {
+                                var parentItem = subRoot;
+                                var level = 3;
+                                for (var i = 1; i < fileItem.Length; ++i)
+                                {
+                                    var subItem =
+                                        parentItem.SubItems.FirstOrDefault(
+                                            x => x.Name.Equals(fileItem[i]) && x.Level.Equals(level));
+                                    if (subItem == null)
+                                    {
+                                        subItem = new PackViewerEntry
+                                        {
+                                            Name = fileItem[i],
+                                            Level = level
+                                        };
+                                        parentItem.SubItems.Add(subItem);
+                                        parentItem.SubItems.OrderBy(p => p.Name);
+                                    }
 
-					PackViewTreeView.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
-					PackViewTreeView.Items.Refresh();
-				});
-			});
-		}
+                                    parentItem = subItem;
+                                    level++;
+                                }
+                            }
+                        }
+                    }
 
-		private async void PackOperationsMergePacksOnClick(object sender, RoutedEventArgs e)
-		{
-			List<PackListEntry> packEntryCollection;
-			var selectedPackViewModels = PackOperationsViewModels
-				.Where(pvm => pvm.IsSequenceTargetable && pvm.PackVersion >= FromValue && pvm.PackVersion <= ToValue)
-				.OrderBy(pvm => pvm.PackVersion).ToList();
-			if (selectedPackViewModels.Count < 2) return;
+                    PackViewTreeView.Items.SortDescriptions.Add(
+                        new SortDescription("Name", ListSortDirection.Ascending));
+                    PackViewTreeView.Items.Refresh();
+                });
+            });
+        }
 
-			// Reader must be kept open to pull the data streams
-			using (var packReader = new PackReader())
-			{
-				_pluginContext.SetPatcherState(true);
-				PackOperationsLoader.IsOpen = true;
-				await Task.Delay(500);
+        private async void PackOperationsMergePacksOnClick(object sender, RoutedEventArgs e)
+        {
+            List<PackListEntry> packEntryCollection;
+            var selectedPackViewModels = PackOperationsViewModels
+                .Where(pvm => pvm.IsSequenceTargetable && pvm.PackVersion >= FromValue && pvm.PackVersion <= ToValue)
+                .OrderBy(pvm => pvm.PackVersion).ToList();
+            if (selectedPackViewModels.Count < 2) return;
 
-				ProgressBar.Value = 0;
-				ProgressBar.IsIndeterminate = true;
-				ProgressText.Text = "Getting Entries...";
+            // Reader must be kept open to pull the data streams
+            using (var packReader = new PackReader())
+            {
+                _pluginContext.SetPatcherState(true);
+                PackOperationsLoader.IsOpen = true;
+                await Task.Delay(500);
 
-				await Task.Run(() =>
-				{
-					// This will then only take the overrides between the selected pack files you would like to merge
-					foreach (var packViewModel in selectedPackViewModels)
-						try
-						{
-							packReader.Load(packViewModel.FilePath);
-						}
-						catch (Exception ex)
-						{
-							_pluginContext.LogException(ex, false);
-						}
-				});
+                ProgressBar.Value = 0;
+                ProgressBar.IsIndeterminate = true;
+                ProgressText.Text = "Getting Entries...";
 
-				packEntryCollection = packReader.GetEntries().OrderBy(ple => ple.PackFilePath).ThenBy(ple => ple.FullName).ToList();
+                await Task.Run(() =>
+                {
+                    // This will then only take the overrides between the selected pack files you would like to merge
+                    foreach (var packViewModel in selectedPackViewModels)
+                        try
+                        {
+                            packReader.Load(packViewModel.FilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            _pluginContext.LogException(ex, false);
+                        }
+                });
 
-				const string packagePath = "package";
+                packEntryCollection = packReader.GetEntries().OrderBy(ple => ple.PackFilePath)
+                    .ThenBy(ple => ple.FullName).ToList();
 
-				// Just in case
-				var version = await _pluginContext.GetNexonApi().GetLatestVersion();
+                const string packagePath = "package";
 
-				await Task.Run(() =>
-				{
-					double entries = packEntryCollection.Count;
-					var progress = 0;
+                // Just in case
+                var version = await _pluginContext.GetNexonApi().GetLatestVersion();
 
-					var bytes = packEntryCollection.Sum(p => p.DecompressedSize);
+                await Task.Run(() =>
+                {
+                    double entries = packEntryCollection.Count;
+                    var progress = 0;
 
-					Dispatcher.Invoke(() =>
-					{
-						ProgressBar.Value = 0;
-						ProgressBar.IsIndeterminate = false;
-						ProgressText.Text = $"0 of {entries} ({ByteSizeHelper.ToString(bytes)} left)";
-					});
+                    var bytes = packEntryCollection.Sum(p => p.DecompressedSize);
 
-					var packName = "";
+                    Dispatcher.Invoke(() =>
+                    {
+                        ProgressBar.Value = 0;
+                        ProgressBar.IsIndeterminate = false;
+                        ProgressText.Text = $"0 of {entries} ({ByteSizeHelper.ToString(bytes)} left)";
+                    });
 
-					var beginningPack = selectedPackViewModels.FirstOrDefault().PackName;
+                    var packName = "";
 
-					packName = beginningPack.EndsWith("full.pack", StringComparison.OrdinalIgnoreCase)
-						? $"{selectedPackViewModels.LastOrDefault().PackVersion}_full.pack"
-						: $"{selectedPackViewModels.FirstOrDefault().PackVersion}_to_{selectedPackViewModels.LastOrDefault().PackVersion}.pack";
+                    var beginningPack = selectedPackViewModels.FirstOrDefault().PackName;
 
-					using (var pw = new PackWriter($"{packagePath}\\{packName}", version))
-					{
-						foreach (var entry in packEntryCollection)
-						{
-							var fileStream = entry.GetCompressedDataAsStream();
+                    packName = beginningPack.EndsWith("full.pack", StringComparison.OrdinalIgnoreCase)
+                        ? $"{selectedPackViewModels.LastOrDefault().PackVersion}_full.pack"
+                        : $"{selectedPackViewModels.FirstOrDefault().PackVersion}_to_{selectedPackViewModels.LastOrDefault().PackVersion}.pack";
 
-							pw.WriteDirect(fileStream, entry.FullName, (int) entry.Seed, (int) entry.CompressedSize,
-								(int) entry.DecompressedSize, entry.IsCompressed, entry.CreationTime, entry.LastWriteTime,
-								entry.LastAccessTime);
-							fileStream.Dispose();
+                    using (var pw = new PackWriter($"{packagePath}\\{packName}", version))
+                    {
+                        foreach (var entry in packEntryCollection)
+                        {
+                            var fileStream = entry.GetCompressedDataAsStream();
 
-							progress++;
-							bytes -= entry.DecompressedSize;
+                            pw.WriteDirect(fileStream, entry.FullName, (int) entry.Seed, (int) entry.CompressedSize,
+                                (int) entry.DecompressedSize, entry.IsCompressed, entry.CreationTime,
+                                entry.LastWriteTime,
+                                entry.LastAccessTime);
+                            fileStream.Dispose();
 
-							var progressLocal = progress;
-							var bytesLocal = bytes;
-							Dispatcher.Invoke(() =>
-							{
-								ProgressBar.Value = progressLocal / entries * 100;
-								ProgressText.Text = $"{progressLocal} of {entries} ({ByteSizeHelper.ToString(bytesLocal)} left)";
-							});
-						}
+                            progress++;
+                            bytes -= entry.DecompressedSize;
 
-						Dispatcher.Invoke(() =>
-						{
-							ProgressBar.Value = 0;
-							ProgressBar.IsIndeterminate = true;
-							ProgressText.Text = "Creating Pack File...";
-						});
+                            var progressLocal = progress;
+                            var bytesLocal = bytes;
+                            Dispatcher.Invoke(() =>
+                            {
+                                ProgressBar.Value = progressLocal / entries * 100;
+                                ProgressText.Text =
+                                    $"{progressLocal} of {entries} ({ByteSizeHelper.ToString(bytesLocal)} left)";
+                            });
+                        }
 
-						pw.Pack();
-					}
-				});
-			}
+                        Dispatcher.Invoke(() =>
+                        {
+                            ProgressBar.Value = 0;
+                            ProgressBar.IsIndeterminate = true;
+                            ProgressText.Text = "Creating Pack File...";
+                        });
 
-			await Task.Run(() =>
-			{
-				if (!PackOpsSettingsManager.Instance.PackOpsSettings.DeletePackFilesAfterMerge) return;
-				Dispatcher.Invoke(() =>
-				{
-					ProgressBar.Value = 0;
-					ProgressBar.IsIndeterminate = true;
-					ProgressText.Text = "Cleaning Up...";
-				});
+                        pw.Pack();
+                    }
+                });
+            }
 
-				foreach (var model in selectedPackViewModels)
-					try
-					{
-						File.Delete(model.FilePath);
-					}
-					catch (Exception ex)
-					{
-						_pluginContext.LogString($"Unable to delete {model.PackName}", false);
-						_pluginContext.LogException(ex, false);
-					}
-			});
+            await Task.Run(() =>
+            {
+                if (!PackOpsSettingsManager.Instance.PackOpsSettings.DeletePackFilesAfterMerge) return;
+                Dispatcher.Invoke(() =>
+                {
+                    ProgressBar.Value = 0;
+                    ProgressBar.IsIndeterminate = true;
+                    ProgressText.Text = "Cleaning Up...";
+                });
 
-			ProgressBar.Value = 0;
-			ProgressBar.IsIndeterminate = true;
-			ProgressText.Text = "Getting Packs...";
+                foreach (var model in selectedPackViewModels)
+                    try
+                    {
+                        File.Delete(model.FilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _pluginContext.LogString($"Unable to delete {model.PackName}", false);
+                        _pluginContext.LogException(ex, false);
+                    }
+            });
 
-			GetPacksForClientProfile();
+            ProgressBar.Value = 0;
+            ProgressBar.IsIndeterminate = true;
+            ProgressText.Text = "Getting Packs...";
 
-			PackOperationsLoader.IsOpen = false;
+            GetPacksForClientProfile();
 
-			_pluginContext.SetPatcherState(false);
-		}
-	}
+            PackOperationsLoader.IsOpen = false;
+
+            _pluginContext.SetPatcherState(false);
+        }
+    }
 }

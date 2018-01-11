@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using HyddwnLauncher.UOTiara.Annotations;
@@ -9,6 +8,17 @@ namespace HyddwnLauncher.UOTiara.Util
     public class ModInfo : INotifyPropertyChanged
     {
         private bool _enabled;
+
+        public ModInfo(bool enabled, string name, string creator, string description)
+        {
+            IsEnabled = enabled;
+            Name = name;
+            Creator = creator;
+            Description = description;
+
+            PropertyChanged += OnPropertyChanged;
+        }
+
         public string Name { get; }
         public string Creator { get; }
         public string Description { get; }
@@ -24,15 +34,8 @@ namespace HyddwnLauncher.UOTiara.Util
         }
 
         public List<ModFileInfo> ModFiles { get; } = new List<ModFileInfo>();
-        public ModInfo(bool enabled, string name, string creator, string description)
-        {
-            IsEnabled = enabled;
-            Name = name;
-            Creator = creator;
-            Description = description;
 
-            PropertyChanged += OnPropertyChanged;
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
@@ -46,17 +49,22 @@ namespace HyddwnLauncher.UOTiara.Util
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     public class ModFileInfo : INotifyPropertyChanged
     {
         private bool _isEnabled;
+
+        public ModFileInfo(string modName, string fileName)
+        {
+            ModName = modName;
+            FileName = fileName;
+        }
+
         public string ModName { get; }
         public string FileName { get; }
 
-        public bool IsEnabled   
+        public bool IsEnabled
         {
             get => _isEnabled;
             set
@@ -67,18 +75,12 @@ namespace HyddwnLauncher.UOTiara.Util
             }
         }
 
-        public ModFileInfo(string modName, string fileName)
-        {
-            ModName = modName;
-            FileName = fileName;
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-               PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

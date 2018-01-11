@@ -9,8 +9,8 @@ namespace HyddwnUpdater.Util
 
         private static readonly string ClearString = "\r" + new string(' ', Console.WindowWidth - 1) + "\r";
 
-        private static readonly int MaxDescLength = Console.WindowWidth - ResultLen - 4
-            ; // [1 - 1 - 2], or bufferExtent - space - brackets
+        private static readonly int
+            MaxDescLength = Console.WindowWidth - ResultLen - 4; // [1 - 1 - 2], or bufferExtent - space - brackets
 
         private readonly string _desc;
 

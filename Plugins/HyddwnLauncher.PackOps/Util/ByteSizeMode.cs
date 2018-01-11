@@ -1,8 +1,8 @@
 ﻿namespace HyddwnLauncher.PackOps.Util
 {
-	public enum ByteSizeMode
-	{
-		Storage,
-		Network
-	}
+    public enum ByteSizeMode
+    {
+        Storage,
+        Network
+    }
 }

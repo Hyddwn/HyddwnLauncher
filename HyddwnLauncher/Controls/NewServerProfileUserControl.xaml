@@ -16,52 +16,46 @@
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The name of this server.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Server Name" />
                 <TextBox Margin="65 0 0 0" Width="180"
-                         Text="{Binding ElementName=This, Path=ServerProfile.Name}"
-                         />
+                         Text="{Binding ElementName=This, Path=ServerProfile.Name}" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The IP used to log into this server.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Login Ip" />
                 <TextBox Margin="90 0 0 0" Width="180"
-                         Text="{Binding ElementName=This, Path=ServerProfile.LoginIp}"
-                         />
+                         Text="{Binding ElementName=This, Path=ServerProfile.LoginIp}" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="The Port used to log into this server.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Login Port" />
                 <TextBox Margin="79 0 0 0" Width="180"
-                         Text="{Binding ElementName=This, Path=ServerProfile.LoginPort}"
-                         />
+                         Text="{Binding ElementName=This, Path=ServerProfile.LoginPort}" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="The IP used with chat operations (friends list, private messaging, etc.)">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Chat Ip" />
                 <TextBox Margin="95 0 0 0" Width="180"
-                         Text="{Binding ElementName=This, Path=ServerProfile.ChatIp}"
-                         />
+                         Text="{Binding ElementName=This, Path=ServerProfile.ChatIp}" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="The Port used with chat operations (friends list, private messaging, etc.)">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Chat Port" />
                 <TextBox Margin="84 0 0 0" Width="180"
-                         Text="{Binding ElementName=This, Path=ServerProfile.ChatPort}"
-                         />
+                         Text="{Binding ElementName=This, Path=ServerProfile.ChatPort}" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="Link to zip file containing files that will be packed into a pack file.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Pack Data Url" />
                 <TextBox Margin="62 0 0 0" Width="180"
-                         Text="{Binding ElementName=This, Path=ServerProfile.PackDataUrl}"
-                         />
+                         Text="{Binding ElementName=This, Path=ServerProfile.PackDataUrl}" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="Link to zip file that contains files that DO NOT belong in a pack file.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Root Data Url" />
                 <TextBox Margin="61 0 0 0" Width="180"
-                         Text="{Binding ElementName=This, Path=ServerProfile.RootDataUrl}"
-                         />
+                         Text="{Binding ElementName=This, Path=ServerProfile.RootDataUrl}" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="Link to text file containing current ip.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Profile Update Url" />
-                <TextBox x:Name="UpdateUrlTextbox" Margin="39 0 0 0" Width="180" Text="{Binding ElementName=This, Path=ServerProfile.ProfileUpdateUrl}"/>
+                <TextBox x:Name="UpdateUrlTextbox" Margin="39 0 0 0" Width="180"
+                         Text="{Binding ElementName=This, Path=ServerProfile.ProfileUpdateUrl}" />
             </StackPanel>
             <!--<StackPanel>
                 <StackPanel

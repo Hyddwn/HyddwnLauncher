@@ -40,9 +40,11 @@ namespace HyddwnUpdater.Util
 
                             File.Move(value, archiveFilePath);
                         }
+
                         File.Delete(value);
                     }
                 }
+
                 _logFile = value;
             }
         }

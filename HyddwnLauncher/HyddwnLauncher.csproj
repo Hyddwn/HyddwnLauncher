@@ -134,6 +134,7 @@
     <Compile Include="Core\PluginHost.cs" />
     <Compile Include="Core\ServerProfile.cs" />
     <Compile Include="Core\SettingsManager.cs" />
+    <Compile Include="Model\Updator.cs" />
     <Compile Include="Network\AsyncDownloader.cs" />
     <Compile Include="Network\Rest\ParameterType.cs" />
     <Compile Include="Network\Rest\RestClient.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="Core\ProfileManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Util\Design\DesignTimeResourceDictionary.cs" />
     <Compile Include="Util\Extentions.cs" />
     <Compile Include="Util\FileReader.cs" />
     <Compile Include="Util\Log.cs" />
@@ -230,8 +232,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="HyddwnLauncherSplashExact.png" />
     <Content Include="Libs\ImaBrokeDude.Controls.dll" />
     <Content Include="Libs\Ionic.Zip.Reduced.dll" />
+    <Content Include="Network\Hosted\HyddwnreCraptcha.html" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon_External_a.ico" />

@@ -42,8 +42,9 @@ namespace HyddwnUpdater
             }
             catch (Exception ex)
             {
-                Log.Error("Cannot start elevated instance:\r\n{0}", (object)ex);
+                Log.Error("Cannot start elevated instance:\r\n{0}", (object) ex);
             }
+
             Environment.Exit(0);
         }
 
@@ -53,15 +54,15 @@ namespace HyddwnUpdater
         }
 
         /// <summary>
-		/// Returns arguments parsed from line.
-		/// </summary>
-		/// <remarks>
-		/// Matches words and multiple words in quotation.
-		/// </remarks>
-		/// <example>
-		/// arg0 arg1 arg2 -- 3 args: "arg0", "arg1", and "arg2"
-		/// arg0 arg1 "arg2 arg3" -- 3 args: "arg0", "arg1", and "arg2 arg3"
-		/// </example>
+        ///     Returns arguments parsed from line.
+        /// </summary>
+        /// <remarks>
+        ///     Matches words and multiple words in quotation.
+        /// </remarks>
+        /// <example>
+        ///     arg0 arg1 arg2 -- 3 args: "arg0", "arg1", and "arg2"
+        ///     arg0 arg1 "arg2 arg3" -- 3 args: "arg0", "arg1", and "arg2 arg3"
+        /// </example>
         private static IEnumerable<string> ParseLine(string line)
         {
             var args = new List<string>();
@@ -130,7 +131,6 @@ namespace HyddwnUpdater
             }
 
 
-
 #if DEBUG
             Log.Debug("Skip administrator permissions check.");
 #else
@@ -149,7 +149,8 @@ namespace HyddwnUpdater
 
                     using (var fileStream = File.OpenRead(_args[1]))
                     {
-                        var calculatedHash = BitConverter.ToString(new SHA256Managed().ComputeHash(fileStream)).Replace("-", string.Empty);
+                        var calculatedHash = BitConverter.ToString(new SHA256Managed().ComputeHash(fileStream))
+                            .Replace("-", string.Empty);
                         Log.Info("Expected hash {0}", _args[2]);
                         Log.Info("Got hash {0}", calculatedHash);
 
@@ -161,6 +162,7 @@ namespace HyddwnUpdater
                             Console.ReadLine();
                             Environment.Exit(1);
                         }
+
                         Log.Info("Hash is good!");
                         changingOutput.PrintResult(true);
                     }
@@ -174,6 +176,7 @@ namespace HyddwnUpdater
                     Environment.Exit(1);
                 }
             }
+
             using (var changingOutput = new ChangingOutput("Unpacking update file..."))
             {
                 try
@@ -196,6 +199,7 @@ namespace HyddwnUpdater
                     Environment.Exit(1);
                 }
             }
+
             using (var changingOutput = new ChangingOutput("Copying files..."))
             {
                 try
@@ -231,7 +235,6 @@ namespace HyddwnUpdater
 
                     Directory.Delete(outputDirectory, true);
 #if DEBUG
-                    
 #else
                     File.Delete(_args[1]);
 #endif
@@ -247,6 +250,7 @@ namespace HyddwnUpdater
                     Environment.Exit(1);
                 }
             }
+
             try
             {
                 Log.Info("Starting Application...");
@@ -270,24 +274,18 @@ namespace HyddwnUpdater
             var dir = new DirectoryInfo(sourceDirName);
 
             if (!dir.Exists)
-            {
                 throw new DirectoryNotFoundException(
                     "Source directory does not exist or could not be found: "
                     + sourceDirName);
-            }
 
             var dirs = dir.GetDirectories();
             // If the destination directory doesn't exist, create it.
-            if (!Directory.Exists(destDirName))
-            {
-                Directory.CreateDirectory(destDirName);
-            }
+            if (!Directory.Exists(destDirName)) Directory.CreateDirectory(destDirName);
 
             // Get the files in the directory and copy them to the new location.
             var files = dir.GetFiles();
             foreach (var file in files)
             {
-
                 var temppath = Path.Combine(destDirName, file.Name);
                 Log.Info("Copying {0} to {1}", file.Name, temppath);
                 file.CopyTo(temppath, false);

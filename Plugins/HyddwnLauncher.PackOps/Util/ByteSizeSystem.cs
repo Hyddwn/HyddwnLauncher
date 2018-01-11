@@ -1,8 +1,8 @@
 ﻿namespace HyddwnLauncher.PackOps.Util
 {
-	public enum ByteSizeSystem
-	{
-		Binary,
-		Decimal
-	}
+    public enum ByteSizeSystem
+    {
+        Binary,
+        Decimal
+    }
 }

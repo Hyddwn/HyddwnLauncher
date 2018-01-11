@@ -111,7 +111,8 @@ namespace HyddwnLauncher.Util
         /// <summary>
         ///     Raises event with thread and null-ref safety.
         /// </summary>
-        public static void Raise<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> handler, T1 args1, T2 args2, T3 args3, T4 args4)
+        public static void Raise<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> handler, T1 args1, T2 args2, T3 args3,
+            T4 args4)
         {
             handler?.Invoke(args1, args2, args3, args4);
         }
@@ -119,7 +120,8 @@ namespace HyddwnLauncher.Util
         /// <summary>
         ///     Raises event with thread and null-ref safety.
         /// </summary>
-        public static void Raise<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> handler, T1 args1, T2 args2, T3 args3, T4 args4, T5 args5)
+        public static void Raise<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> handler, T1 args1, T2 args2,
+            T3 args3, T4 args4, T5 args5)
         {
             handler?.Invoke(args1, args2, args3, args4, args5);
         }

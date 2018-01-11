@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Win32;
 
 namespace HyddwnLauncher.UOTiara.Util
@@ -49,7 +47,7 @@ namespace HyddwnLauncher.UOTiara.Util
         }
 
         /// <summary>
-        /// Reads (Default) key as a string
+        ///     Reads (Default) key as a string
         /// </summary>
         /// <returns></returns>
         public string Read()
@@ -65,7 +63,7 @@ namespace HyddwnLauncher.UOTiara.Util
             {
                 // If the RegistryKey exists I get its value
                 // or null is returned.
-                return (string)sk1.GetValue(null);
+                return (string) sk1.GetValue(null);
             }
             catch (Exception e)
             {
@@ -75,7 +73,7 @@ namespace HyddwnLauncher.UOTiara.Util
         }
 
         /// <summary>
-        /// Reads key as string then converts to int
+        ///     Reads key as string then converts to int
         /// </summary>
         public int ReadInt(string KeyName)
         {
@@ -90,7 +88,7 @@ namespace HyddwnLauncher.UOTiara.Util
             {
                 // If the RegistryKey exists I get its value
                 // or null is returned.
-                var intString = (string)sk1.GetValue(KeyName.ToUpper());
+                var intString = (string) sk1.GetValue(KeyName.ToUpper());
                 int value;
                 return !int.TryParse(intString, out value) ? 0 : value;
             }
@@ -102,7 +100,7 @@ namespace HyddwnLauncher.UOTiara.Util
         }
 
         /// <summary>
-        /// Reads (Default) key value as int
+        ///     Reads (Default) key value as int
         /// </summary>
         /// <returns></returns>
         public int ReadInt()
@@ -118,7 +116,7 @@ namespace HyddwnLauncher.UOTiara.Util
             {
                 // If the RegistryKey exists I get its value
                 // or null is returned.
-                var intString = (string)sk1.GetValue(null);
+                var intString = (string) sk1.GetValue(null);
                 int value;
                 return !int.TryParse(intString, out value) ? 0 : value;
             }
@@ -142,7 +140,7 @@ namespace HyddwnLauncher.UOTiara.Util
             {
                 // If the RegistryKey exists I get its value
                 // or null is returned.
-                return (T)sk1.GetValue(KeyName.ToUpper());
+                return (T) sk1.GetValue(KeyName.ToUpper());
             }
             catch (Exception e)
             {
@@ -152,7 +150,7 @@ namespace HyddwnLauncher.UOTiara.Util
         }
 
         /// <summary>
-        /// Reads (Default) key value
+        ///     Reads (Default) key value
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -169,7 +167,7 @@ namespace HyddwnLauncher.UOTiara.Util
             {
                 // If the RegistryKey exists I get its value
                 // or null is returned.
-                return (T)sk1.GetValue(null);
+                return (T) sk1.GetValue(null);
             }
             catch (Exception e)
             {

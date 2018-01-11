@@ -43,6 +43,7 @@ namespace HyddwnLauncher
                     Console.WriteLine(HyddwnLauncher.Properties.Resources.usage___);
                     Environment.Exit(0);
                 }
+
                 if (e.Args[index].Contains("/noadmin"))
                     launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin = false;
                 if (e.Args[index].Contains("/clean"))
@@ -60,9 +61,10 @@ namespace HyddwnLauncher
             launcherContext.LauncherSettingsManager.LauncherSettings.FirstRun = true;
 #endif
             CheckForAdmin(launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin);
-            ServicePointManager.DefaultConnectionLimit = launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit;
+            ServicePointManager.DefaultConnectionLimit =
+                launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit;
             Log.Info("Application initialized, loading main window.");
-            var mainWindow = new MainWindow(launcherContext);
+            var mainWindow = new SplashScreen(); //new MainWindow(launcherContext);
             Current.MainWindow = mainWindow;
             mainWindow.Show();
             base.OnStartup(e);
@@ -143,6 +145,7 @@ namespace HyddwnLauncher
             {
                 Log.Error("Cannot start elevated instance:\r\n{0}", (object) ex);
             }
+
             Environment.Exit(0);
         }
 

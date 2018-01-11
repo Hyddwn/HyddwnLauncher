@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Xml.Serialization;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Extensibility.Primitives;
@@ -15,12 +10,13 @@ namespace HyddwnLauncher.UOTiara
     [Export(typeof(IPlugin))]
     public class UOTiaraPlugin : PluginBase
     {
+        private IClientProfile _clientProfile;
         private Guid _guid;
         private PluginContext _pluginContext;
-        private IClientProfile _clientProfile;
         private UOTiaraPluginUI _pluginUi;
 
-        public override void Initialize(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
+        public override void Initialize(PluginContext pluginContext, IClientProfile clientProfile,
+            IServerProfile serverProfile)
         {
             Name = "UOTiara";
             _guid = Guid.NewGuid();

@@ -35,9 +35,11 @@ namespace HyddwnLauncher.Util
                                 File.Delete(str2);
                             File.Move(value, str2);
                         }
+
                         File.Delete(value);
                     }
                 }
+
                 _logFile = value;
             }
         }

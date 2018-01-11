@@ -12,15 +12,12 @@ namespace HyddwnLauncher.Core
         private int _connectionLimit;
         private bool _firstRun;
         private bool _hyddwnProfileUpgrade;
+        private bool _rememberLogin;
         private bool _requiresAdmin;
         private int _serverProfileSelectedIndex;
-        private bool _rememberLogin;
         private bool _usePackFiles;
         private string _uuid;
         private bool _warnIfRootIsNotMabiRoot;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event Action<string> SaveOnChanged;
 
         public LauncherSettings()
         {
@@ -145,6 +142,9 @@ namespace HyddwnLauncher.Core
                 OnPropertyChanged();
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event Action<string> SaveOnChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
