@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Model;
+using MahApps.Metro;
 
 namespace HyddwnLauncher
 {
@@ -25,10 +26,15 @@ namespace HyddwnLauncher
             "IsProgressBarIndeterminate", typeof(bool), typeof(SplashScreen), new PropertyMetadata(default(bool)));
 
         private Updator _updator;
+        private LauncherContext _launcherContext;
 
         public SplashScreen()
         {
             InitializeComponent();
+            _launcherContext = new LauncherContext();
+
+            ChangeAppTheme();
+
             _updator = new Updator();
 
             _updator.ProgressChanged += (progress, progressText, isVisible, isIndeterminate) =>
@@ -48,8 +54,7 @@ namespace HyddwnLauncher
             {
                 Dispatcher.Invoke(() =>
                 {
-                    var launcherContext = new LauncherContext();
-                    var mainWindow = new MainWindow(launcherContext);
+                    var mainWindow = new MainWindow(_launcherContext);
 
                     Application.Current.MainWindow = mainWindow;
 
@@ -58,6 +63,13 @@ namespace HyddwnLauncher
                     Close();
                 });
             };
+        }
+
+        private void ChangeAppTheme()
+        {
+            ThemeManager.ChangeAppStyle(Application.Current,
+                ThemeManager.GetAccent(_launcherContext.LauncherSettingsManager.LauncherSettings.Accent),
+                ThemeManager.GetAppTheme(_launcherContext.LauncherSettingsManager.LauncherSettings.Theme));
         }
 
 
