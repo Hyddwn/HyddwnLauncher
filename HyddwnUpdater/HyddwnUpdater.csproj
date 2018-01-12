@@ -7,7 +7,7 @@
     <ProjectGuid>{39F71E88-1285-48F1-9228-F14823EEBC99}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>HyddwnUpdater</RootNamespace>
-    <AssemblyName>HyddwnUpdater</AssemblyName>
+    <AssemblyName>Updater</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

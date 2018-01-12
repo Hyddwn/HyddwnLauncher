@@ -714,13 +714,6 @@ namespace HyddwnLauncher
                             success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password,
                                 ActiveClientProfile.Guid);
 
-                            for (var i = 0; i < 10; i++)
-                            {
-                                success = await NexonApi.Instance.GetAccessToken(credentials.Username,
-                                    credentials.Password, ActiveClientProfile.Guid);
-                                await Task.Delay(3000);
-                            }
-
                             if (success)
                             {
                                 successAction.Raise();

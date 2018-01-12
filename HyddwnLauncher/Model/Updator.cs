@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -10,10 +11,10 @@ using System.Windows;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Network;
 using HyddwnLauncher.Util;
+using Ionic.Zip;
 
 namespace HyddwnLauncher.Model
 {
-    // TODO: check for updates to the small little update utility
     /// <summary>
     /// Logic for application update system
     /// </summary>
@@ -62,7 +63,7 @@ namespace HyddwnLauncher.Model
                 OnStatusChanged("Downloading Utility Update...");
                 OnProgressChanged(isIndeterminate: false);
 
-                DownloadUpdate(_updateInfo["UpdaterLink"], _updateInfo["UpdaterFile"]);
+                DownloadUpdate(_updateInfo["UpdateLink"], _updateInfo["UpdateFile"]);
             }
 
             var updateAvaialble = await CheckForApplicationUpdate();
@@ -76,7 +77,6 @@ namespace HyddwnLauncher.Model
 
                 if (result == MessageBoxResult.No)
                 {
-                    //TODO: Skip update and launch application
                     await FinializeUpdateCheck();
                     return;
                 }
@@ -85,7 +85,6 @@ namespace HyddwnLauncher.Model
                 OnProgressChanged(isIndeterminate: false);
 
                 DownloadUpdate(_updateInfo["Link"], _updateInfo["File"], true);
-                //TODO: Download update and run updater.
                 return;
             }
 
@@ -96,7 +95,7 @@ namespace HyddwnLauncher.Model
         {
             OnStatusChanged("Launching...");
             OnProgressChanged(isVisible: false);
-            await Task.Delay(3000);
+            await Task.Delay(500);
 
             LaunchApplication();
         }
@@ -124,11 +123,10 @@ namespace HyddwnLauncher.Model
         //Stub
         private void DownloadUpdateCompleted(bool requiresRestart)
         {
-            OnStatusChanged("Download complete!");
-            OnProgressChanged(progressText: "Updating...");
-
             if (requiresRestart)
             {
+                OnStatusChanged("Download complete!");
+                OnProgressChanged(progressText: "Updating...");
                 var processinfo = new ProcessStartInfo
                 {
                     Arguments =
@@ -141,7 +139,22 @@ namespace HyddwnLauncher.Model
                 Process.Start(processinfo);
 
                 Application.Current.Dispatcher.Invoke(() => { Application.Current.Shutdown(); });
+                return;
             }
+
+            OnStatusChanged("Utility Download complete!");
+            OnProgressChanged(progressText: "Applying...");
+
+            using (var zipFile = ZipFile.Read($".\\{_updateInfo["UpdateFile"]}"))
+            {
+                zipFile.ExtractExistingFile = ExtractExistingFileAction.OverwriteSilently;
+                zipFile.ExtractAll(".\\");
+            }
+
+            File.Delete($".\\{_updateInfo["UpdateFile"]}");
+
+            OnProgressChanged(isVisible: false);
+            OnStatusChanged("Utility Update Complete!");
         }
 
         private void OnProgressChanged(double progress = 0, string progressText = "", bool isVisible = true, bool isIndeterminate = true)
@@ -161,7 +174,37 @@ namespace HyddwnLauncher.Model
 
         private async Task<bool> CheckForUtilityUpdate()
         {
-            return await UpdateCheckInternal("http://launcher.hyddwnproject.com/updater/version", "UpdaterCurrent", "UpdaterNew");
+            try
+            {
+                await Task.Delay(100);
+                var webClient = new WebClient();
+
+                using (var fileReader = new FileReader(webClient.OpenRead("http://launcher.hyddwnproject.com/update/version")))
+                {
+                    foreach (var str in fileReader)
+                    {
+                        int length;
+                        if ((length = str.IndexOf(':')) >= 0)
+                            _updateInfo[str.Substring(0, length).Trim()] = str.Substring(length + 1).Trim();
+                    }
+                }
+
+                if (!File.Exists(".\\Updater.exe"))
+                    return true;
+
+                var utilityAssemblyName = AssemblyName.GetAssemblyName(".\\Updater.exe");
+
+                var localVersion = utilityAssemblyName.Version;
+
+                var remoteVersion = new Version(_updateInfo["UpdateVersion"]);
+
+                return localVersion < remoteVersion;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Unable to check for updates.");
+                return false;
+            }
         }
 
         private async Task<bool> CheckForApplicationUpdate()
