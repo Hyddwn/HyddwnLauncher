@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using HyddwnLauncher.Util;
+using HyddwnLauncher.Util.Helpers;
 
 namespace HyddwnLauncher.Network
 {

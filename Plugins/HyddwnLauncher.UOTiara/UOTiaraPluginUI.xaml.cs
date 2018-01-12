@@ -93,9 +93,8 @@ namespace HyddwnLauncher.UOTiara
 
                         list.Add(modInfo);
                     }
-
                     // ParseModInfo to build the structure
-
+                    
                     Dispatcher.Invoke(() => { LoadingOverlayText.Text = "Processing..."; });
                 }
                 catch (Exception ex)
@@ -115,9 +114,9 @@ namespace HyddwnLauncher.UOTiara
         public void PreLaunch()
         {
             // Create the pack here :D
-            // var packer = _pluginContext.GetPackEngine();
+            // var packer = _pluginContext.CreatePackEngine();
             // blah set up data folder for pack blah
-            // packer.Pack("path to data folder", "packfile name", version, [optional] compresstionLevel);
+            // packer.Pack("path to data folder", "packfile name", version, [optional] compressionLevel);
         }
 
         public void ClientProfileChanged(IClientProfile clientProfile)

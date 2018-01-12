@@ -143,10 +143,11 @@
     <Compile Include="SplashScreen.xaml.cs">
       <DependentUpon>SplashScreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Util\ByteSizeHelper.cs" />
+    <Compile Include="Util\Commands\SimpleCommand.cs" />
+    <Compile Include="Util\Helpers\ByteSizeHelper.cs" />
     <Compile Include="Network\NexonApi.cs" />
-    <Compile Include="Util\ByteSizeMode.cs" />
-    <Compile Include="Util\ByteSizeSystem.cs" />
+    <Compile Include="Util\Helpers\ByteSizeMode.cs" />
+    <Compile Include="Util\Helpers\ByteSizeSystem.cs" />
     <Compile Include="Util\Converters\InverseBooleanConverter.cs" />
     <Compile Include="Util\CustomPackFileMode.cs" />
     <Compile Include="ExceptionReporter.xaml.cs">
@@ -169,6 +170,7 @@
     <Compile Include="Util\MoreEnumerable.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
     <Compile Include="Util\RequestLimitExceededException.cs" />
+    <Compile Include="Util\ThemeUtil.cs" />
     <Compile Include="Util\Validation\LocationValidationRule.cs" />
     <Page Include="Controls\NewClientProfileUserControl.xaml">
       <SubType>Designer</SubType>

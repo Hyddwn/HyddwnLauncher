@@ -33,7 +33,6 @@
                 </design:DesignTimeResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-
     </UserControl.Resources>
     <Grid>
         <controls:MetroAnimatedSingleRowTabControl
@@ -61,11 +60,10 @@
                         VerticalAlignment="Top"
                         Height="189"
                         Margin="10 10 0 0"
-
                         ItemsSource="{Binding ElementName=This, Path=ModInfoList}"
                         DataContext="{Binding}"
                         SelectionChanged="listView1_SelectionChanged"
-                        ContextMenu="{StaticResource ContextMenu1}">
+                        ContextMenu="{StaticResource ContextMenu1}" >
                         <ListView.View>
                             <GridView>
                                 <GridView.ColumnHeaderContextMenu>
