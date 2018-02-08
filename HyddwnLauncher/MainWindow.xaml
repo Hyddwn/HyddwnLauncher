@@ -3,6 +3,7 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:cefwpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
@@ -17,7 +18,8 @@
                       Icon="Icon_Internal_a.ico"
                       Closed="OnClose" Loaded="OnLoaded"
                       SaveWindowPosition="True"
-                      x:Name="This" Title="Hyddwn Launcher" Height="480" Width="830" KeyDown="This_KeyDown"
+                      xmlns:cef="clr-namespace:CefSharp;assembly=CefSharp.Core"
+                      x:Name="This" Title="Hyddwn Launcher" Height="520" Width="830" KeyDown="This_KeyDown"
                       KeyUp="This_KeyUp">
     <FrameworkElement.Style>
         <Style TargetType="{x:Type controls:MetroWindow}">
@@ -202,8 +204,9 @@
                                                    Margin="0,0,0,130">
             <controls:MetroTabItem Header="News">
                 <Grid>
-                    <Image x:Name="HostImage" Source="{Binding ElementName=This, Path=LauncherContext.HostImage}"
-                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                    <!--<Image x:Name="HostImage" Source="{Binding ElementName=This, Path=LauncherContext.HostImage}"
+                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />-->
+                    <cefwpf:ChromiumWebBrowser HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Address="http://launcher.hyddwnproject.com/"/>
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Log">
@@ -329,40 +332,40 @@
                 </Grid>
             </controls:MetroTabItem>
         </controls:MetroAnimatedSingleRowTabControl>
-        <TextBlock Margin="628,438,1,2" TextWrapping="Wrap" Text="Copyright © 2016-2018 Sven (formally ImaBrokeDude)"
+        <TextBlock Margin="627,0,2,2" TextWrapping="Wrap" VerticalAlignment="Bottom" Text="Copyright © 2016-2018 Sven (formally ImaBrokeDude)"
                    FontSize="8" />
         <Button Click="LaunchButton_Click" x:Name="LaunchButton" Content="Launch" HorizontalAlignment="Left"
-                Margin="704,374,0,0" VerticalAlignment="Top" Width="112" Height="45" />
-        <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="185,374,0,0"
+                Margin="704,428,0,0" VerticalAlignment="Top" Width="112" Height="45" />
+        <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="185,406,0,0"
                                      VerticalAlignment="Top" Width="514" Height="44" />
         <ComboBox x:Name="ClientProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
                   SelectedIndex="{Binding ElementName=This, Path=Settings.LauncherSettings.ClientProfileSelectedIndex}"
                   SelectionChanged="ClientProfileComboBoxOnSelectionChanged"
-                  HorizontalAlignment="Left" Margin="13,331,0,0" VerticalAlignment="Top" Width="167" />
+                  HorizontalAlignment="Left" Margin="13,374,0,0" VerticalAlignment="Top" Width="167" />
         <ComboBox x:Name="ServerProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
                   SelectedIndex="{Binding ElementName=This, Path=Settings.LauncherSettings.ServerProfileSelectedIndex}"
                   SelectionChanged="ServerProfileComboBoxOnSelectionChanged"
-                  HorizontalAlignment="Left" Margin="13,374,0,0" VerticalAlignment="Top" Width="167" />
-        <TextBlock HorizontalAlignment="Left" Margin="464,419,0,0" TextWrapping="Wrap"
+                  HorizontalAlignment="Left" Margin="13,417,0,0" VerticalAlignment="Top" Width="167" />
+        <TextBlock HorizontalAlignment="Left" Margin="464,462,0,0" TextWrapping="Wrap"
                    Text="Launcher Version:" VerticalAlignment="Top" Width="102" />
-        <TextBlock HorizontalAlignment="Left" Height="16" Margin="333,419,0,0" TextWrapping="Wrap"
+        <TextBlock HorizontalAlignment="Left" Height="16" Margin="333,462,0,0" TextWrapping="Wrap"
                    Text="Client Version:" VerticalAlignment="Top" Width="82" />
-        <TextBlock x:Name="LauncherVersion" HorizontalAlignment="Left" Margin="566,419,0,0" TextWrapping="Wrap"
+        <TextBlock x:Name="LauncherVersion" HorizontalAlignment="Left" Margin="566,462,0,0" TextWrapping="Wrap"
                    Text="0" VerticalAlignment="Top" />
-        <TextBlock x:Name="ClientVersion" HorizontalAlignment="Left" Margin="415,419,0,0" TextWrapping="Wrap" Text="0"
+        <TextBlock x:Name="ClientVersion" HorizontalAlignment="Left" Margin="415,462,0,0" TextWrapping="Wrap" Text="0"
                    VerticalAlignment="Top" />
-        <Button x:Name="NewProfileButton" Content="Profiles" HorizontalAlignment="Left" Margin="185,331,0,0"
+        <Button x:Name="NewProfileButton" Content="Profiles" HorizontalAlignment="Left" Margin="185,374,0,0"
                 VerticalAlignment="Top" Width="100" Click="ProfilesButton_Click" Height="26" />
-        <TextBlock HorizontalAlignment="Left" Margin="13,316,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
+        <TextBlock HorizontalAlignment="Left" Margin="13,359,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
                    Text="Client Profile" />
-        <TextBlock HorizontalAlignment="Left" Margin="13,359,0,0" TextWrapping="Wrap" Text="Server Profile"
+        <TextBlock HorizontalAlignment="Left" Margin="13,402,0,0" TextWrapping="Wrap" Text="Server Profile"
                    VerticalAlignment="Top" />
-        <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="291,331,0,0"
+        <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="291,374,0,0"
                   VerticalAlignment="Top"
                   IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UsePackFiles}" Height="26" />
-        <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0"
+        <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,462,0,0"
                    TextWrapping="Wrap"
                    Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
                    FontWeight="Bold" VerticalAlignment="Top">
