@@ -48,6 +48,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientLocalization.cs" />
+    <Compile Include="Helpers\ByteSizeHelper.cs" />
+    <Compile Include="Helpers\ByteSizeMode.cs" />
+    <Compile Include="Helpers\ByteSizeSystem.cs" />
     <Compile Include="Interfaces\IClientProfile.cs" />
     <Compile Include="Interfaces\INexonApi.cs" />
     <Compile Include="Interfaces\IPackEngine.cs" />
@@ -58,6 +62,8 @@
     <Compile Include="PluginContext.cs" />
     <Compile Include="Primitives\IPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\MabiVersionUtil.cs" />
+    <Compile Include="Util\ObservableDictionary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
