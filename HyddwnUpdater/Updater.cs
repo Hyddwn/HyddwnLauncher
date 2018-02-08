@@ -288,7 +288,7 @@ namespace HyddwnUpdater
             {
                 var temppath = Path.Combine(destDirName, file.Name);
                 Log.Info("Copying {0} to {1}", file.Name, temppath);
-                file.CopyTo(temppath, false);
+                file.CopyTo(temppath, true);
             }
 
             // If copying subdirectories, copy them and their contents to new location.
