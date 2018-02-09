@@ -63,7 +63,7 @@ namespace HyddwnLauncher.Model
                 OnStatusChanged("Downloading Utility Update...");
                 OnProgressChanged(isIndeterminate: false);
 
-                DownloadUpdate(_updateInfo["UpdateLink"], _updateInfo["UpdateFile"]);
+                await DownloadUpdate(_updateInfo["UpdateLink"], _updateInfo["UpdateFile"]);
             }
 
             var updateAvaialble = await CheckForApplicationUpdate();
@@ -84,7 +84,7 @@ namespace HyddwnLauncher.Model
                 OnStatusChanged("Downloading Update...");
                 OnProgressChanged(isIndeterminate: false);
 
-                DownloadUpdate(_updateInfo["Link"], _updateInfo["File"], true);
+                await DownloadUpdate(_updateInfo["Link"], _updateInfo["File"], true);
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace HyddwnLauncher.Model
             OnCloseRequested();
         }
 
-        private async void DownloadUpdate(string url, string filename, bool requiresRestart = false)
+        private async Task DownloadUpdate(string url, string filename, bool requiresRestart = false)
         {
             OnProgressChanged(isIndeterminate: false);
 
