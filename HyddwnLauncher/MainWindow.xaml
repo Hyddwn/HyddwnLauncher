@@ -204,9 +204,9 @@
                                                    Margin="0,0,0,130">
             <controls:MetroTabItem Header="News">
                 <Grid>
-                    <Image x:Name="HostImage" Source="{Binding ElementName=This, Path=LauncherContext.HostImage}"
-                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-                    <!--<cefwpf:ChromiumWebBrowser HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Address="http://launcher.hyddwnproject.com/"/>-->
+                    <!--<Image x:Name="HostImage" Source="{Binding ElementName=This, Path=LauncherContext.HostImage}"
+                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />-->
+                    <cefwpf:ChromiumWebBrowser HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Address="http://launcher.hyddwnproject.com/"/>
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Log">
