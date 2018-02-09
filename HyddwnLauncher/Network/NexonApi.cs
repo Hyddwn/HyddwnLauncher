@@ -164,18 +164,18 @@ namespace HyddwnLauncher.Network
         /// </summary>
         /// <remarks>Confimed this gets the same UUID as 'wmic csproduct get uuid' </remarks>
         /// <returns></returns>
-        //TODO: Make this a little better.
         private string GetDeviceUuid()
         {
-            var Scope = new ManagementScope($@"\\{Environment.MachineName}\root\CIMV2", null);
-            Scope.Connect();
-            var Query = new ObjectQuery("SELECT UUID FROM Win32_ComputerSystemProduct");
-            var Searcher = new ManagementObjectSearcher(Scope, Query);
+            var scope = new ManagementScope($@"\\{Environment.MachineName}\root\CIMV2", null);
+            scope.Connect();
+            var query = new ObjectQuery("SELECT UUID FROM Win32_ComputerSystemProduct");
+            var searcher = new ManagementObjectSearcher(scope, query);
 
             var uuid = "";
 
-            foreach (ManagementObject wmiObject in Searcher.Get())
+            foreach (var o in searcher.Get())
             {
+                var wmiObject = (ManagementObject) o;
                 uuid = wmiObject["UUID"].ToString();
                 break;
             }
