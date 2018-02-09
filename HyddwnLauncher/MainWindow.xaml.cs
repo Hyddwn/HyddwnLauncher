@@ -842,7 +842,7 @@ namespace HyddwnLauncher
             PluginHost.ServerProfileChanged(ActiveServerProfile);
         }
 
-        private async void LaunchCustom()
+        private void LaunchCustom()
         {
             var arguments =
                 $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ActiveServerProfile.LoginIp} logport:{ActiveServerProfile.LoginPort} chatip:{ActiveServerProfile.ChatIp} chatport:{ActiveServerProfile.ChatPort} locale:USA env:Regular setting:file://data/features.xml";
