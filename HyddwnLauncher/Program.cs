@@ -14,12 +14,6 @@ namespace HyddwnLauncher
             Cef.EnableHighDPISupport();
             Cef.Initialize(new CefSettings());
 
-            var assemblypath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);   
-
-            if (!Directory.Exists(assemblypath + "\\Archived"))
-                Directory.CreateDirectory(assemblypath + "\\Archived");
-            Log.Archive = assemblypath + "\\Archived";
-
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {
                 try

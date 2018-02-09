@@ -21,13 +21,13 @@ namespace HyddwnLauncher
         private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
         public static string[] CmdArgs;
 
-        protected override async void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
             var packFileClean = false;
-            
-            Log.LogFile = Assemblypath + "\\Hyddwn Launcher.log";
 
-            await Task.Delay(1000);
+            if (!Directory.Exists($@"{Assemblypath}\Logs\Hyddwn Launcher"))
+                Directory.CreateDirectory($@"{Assemblypath}\Logs\Hyddwn Launcher");
+            Log.LogFile =  $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now}.log";
 
             Log.Info("=== Application Startup ===");
 
@@ -82,6 +82,7 @@ namespace HyddwnLauncher
 
             foreach (var mabiClient in mabiClients)
             {
+                clientCount++;
                 mabiClient.EnableRaisingEvents = true;
                 mabiClient.Exited += (sender, args) =>
                 {
@@ -99,7 +100,7 @@ namespace HyddwnLauncher
                         File.Delete(file);
                     Shutdown();
                 };
-                clientCount++;
+                
             }
         }
 
