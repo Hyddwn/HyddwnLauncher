@@ -134,8 +134,8 @@ namespace HyddwnLauncher
 
         #region Fields
 
-        private static readonly string ChatIpAddressPattern =
-            @"\bchatip\:(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b";
+        //private static readonly string ChatIpAddressPattern =
+        //    @"\bchatip\:(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b";
 
         private static readonly string AssemblyLocation = Assembly.GetExecutingAssembly().Location;
         private static readonly string Assemblypath = Path.GetDirectoryName(AssemblyLocation);
