@@ -88,9 +88,7 @@ namespace HyddwnLauncher.Network
 
             string match = Regex.Match(manifestUrl, versionSearch).Value;
 
-            int version;
-
-            int.TryParse(match.Replace('R', ' '), out version);
+            int.TryParse(match.Replace('R', ' '), out var version);
 
             return version;
         }
@@ -157,8 +155,7 @@ namespace HyddwnLauncher.Network
         {
             _accessTokenExpiryTimer?.Stop();
 
-            _accessTokenExpiryTimer = new DispatcherTimer();
-            _accessTokenExpiryTimer.Interval = TimeSpan.FromSeconds(timeout);
+            _accessTokenExpiryTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(timeout)};
             _accessTokenExpiryTimer.Tick += (sender, args) => _accessTokenIsExpired = true;
         }
 
