@@ -18,7 +18,7 @@ namespace HyddwnLauncher.Core
                     Directory.CreateDirectory(Path.GetDirectoryName(_configurationJson) ??
                                               throw new ApplicationException(
                                                   "An error occured when attempting to load the configuration data: Path is Null!!!"));
-                    
+
                 SettingsManager = new SettingsManager(_configurationJson);
                 LauncherSettings = LoadLauncherSettings();
                 LauncherSettings.SaveOnChanged += SaveOnChanged;

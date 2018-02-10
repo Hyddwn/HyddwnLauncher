@@ -63,7 +63,7 @@
                         ItemsSource="{Binding ElementName=This, Path=ModInfoList}"
                         DataContext="{Binding}"
                         SelectionChanged="listView1_SelectionChanged"
-                        ContextMenu="{StaticResource ContextMenu1}" >
+                        ContextMenu="{StaticResource ContextMenu1}">
                         <ListView.View>
                             <GridView>
                                 <GridView.ColumnHeaderContextMenu>

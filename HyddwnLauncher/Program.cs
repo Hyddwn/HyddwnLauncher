@@ -1,7 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using CefSharp;
 using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher
@@ -11,7 +8,6 @@ namespace HyddwnLauncher
         [STAThread]
         public static void Main(string[] args)
         {
-
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {
                 try

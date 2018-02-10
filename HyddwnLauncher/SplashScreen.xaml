@@ -8,9 +8,10 @@
                       xmlns:design="clr-namespace:HyddwnLauncher.Util.Design"
                       x:Name="This"
                       mc:Ignorable="d" ResizeMode="NoResize" UseNoneWindowStyle="True" WindowStyle="None"
-                      Title="SplashScreen" Height="300" Width="538" WindowStartupLocation="CenterScreen" Loaded="SplashScreenLoaded" >
+                      Title="SplashScreen" Height="300" Width="538" WindowStartupLocation="CenterScreen"
+                      Loaded="SplashScreenLoaded">
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="VisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -18,25 +19,25 @@
             <RowDefinition Height="78" />
         </Grid.RowDefinitions>
         <Image HorizontalAlignment="Stretch" VerticalAlignment="Top" Source="HyddwnLauncherSplashExact.png" />
-        <controls:MetroProgressBar x:Name="SplashProgressBar" 
+        <controls:MetroProgressBar x:Name="SplashProgressBar"
                                    Visibility="{Binding ElementName=This, Path=IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}"
                                    Foreground="{DynamicResource AccentColorBrush}" Grid.Row="1"
                                    Value="{Binding ElementName=This, Path=ProgressPercentage}"
                                    VerticalAlignment="Center"
-                                   
-                                   IsIndeterminate="{Binding ElementName=This, Path=IsProgressBarIndeterminate}" Margin="25,18,25,54" />
+
+                                   IsIndeterminate="{Binding ElementName=This, Path=IsProgressBarIndeterminate}"
+                                   Margin="25,18,25,54" />
         <TextBlock x:Name="SplashStatusText" HorizontalAlignment="Left"
                    Margin="3,61,0,0" Grid.Row="1"
-                   TextWrapping="Wrap" 
-                   VerticalAlignment="Top" Text="{Binding ElementName=This, Path=StatusText}"
-                   />
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Top" Text="{Binding ElementName=This, Path=StatusText}" />
         <!--  -->
         <TextBlock HorizontalAlignment="Left" Margin="342,65,0,0" FontSize="8" Grid.Row="1"
                    Text="Copyright © 2016-2018 Sven (formally ImaBrokeDude)" VerticalAlignment="Top" />
         <TextBlock x:Name="ProgressTextBlock" HorizontalAlignment="Left"
-            Margin="25,29,0,0" Grid.Row="1"
-            TextWrapping="Wrap" 
-            VerticalAlignment="Top"
-            Text="{Binding ElementName=This, Path=ProgressText}"/>
+                   Margin="25,29,0,0" Grid.Row="1"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Top"
+                   Text="{Binding ElementName=This, Path=ProgressText}" />
     </Grid>
 </controls:MetroWindow>

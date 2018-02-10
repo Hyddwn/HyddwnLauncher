@@ -12,10 +12,12 @@
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ErrorWindow"
                                        Grid.RowSpan="2" TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
-                                       IsModal="true" ShowTitleBar="True" ShowCloseButton="True" Title="No Profile Selected"
-                                       ChildWindowWidth="300" ChildWindowHeight="80" >
+                                       IsModal="true" ShowTitleBar="True" ShowCloseButton="True"
+                                       Title="No Profile Selected"
+                                       ChildWindowWidth="300" ChildWindowHeight="80">
             <Grid>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0" TextWrapping="Wrap" TextAlignment="Center"
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0"
+                           TextWrapping="Wrap" TextAlignment="Center"
                            Text="You must select or create a Client Profile before setting properties." />
             </Grid>
         </simpleChildWindow:ChildWindow>
@@ -38,7 +40,9 @@
                         </Binding.ValidationRules>
                     </Binding>
                 </TextBox>
-                <Button Margin="5 0 0 0" Content=". . ." IsEnabled="{Binding Path=ClientProfile, TargetNullValue=False}" Height="26" Click="BrowseButtonOnClick" />
+                <Button Margin="5 0 0 0" Content=". . ."
+                        IsEnabled="{Binding Path=ClientProfile, TargetNullValue=False}" Height="26"
+                        Click="BrowseButtonOnClick" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="The locale for this instance of Mabinogi.">
@@ -48,7 +52,7 @@
                         <Binding ElementName="This" Path="ClientProfile.Localization" Mode="TwoWay"
                                  UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
-                                <validation:LocationValidationRule/>
+                                <validation:LocationValidationRule />
                             </Binding.ValidationRules>
                         </Binding>
                     </TextBox.Text>

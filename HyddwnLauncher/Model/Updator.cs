@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using HyddwnLauncher.Core;
 using HyddwnLauncher.Network;
 using HyddwnLauncher.Util;
 using Ionic.Zip;
@@ -16,30 +13,15 @@ using Ionic.Zip;
 namespace HyddwnLauncher.Model
 {
     /// <summary>
-    /// Logic for application update system
+    ///     Logic for application update system
     /// </summary>
     public class Updator
     {
         private readonly Dictionary<string, string> _updateInfo;
 
-        /// <summary>
-        /// Called to notify the UI of progress changes
-        /// </summary>
-        public event Action<double, string, bool, bool> ProgressChanged;
 
         /// <summary>
-        /// Called to notify UI of status changes
-        /// </summary>
-        public event Action<string> StatusChanged;
-
-        /// <summary>
-        /// Called when the updater is finished and is ready to close wrapping object.
-        /// </summary>
-        public event Action CloseRequested;
-
-
-        /// <summary>
-        /// Create and updator to be used anywehere within the application
+        ///     Create and updator to be used anywehere within the application
         /// </summary>
         public Updator()
         {
@@ -47,7 +29,22 @@ namespace HyddwnLauncher.Model
         }
 
         /// <summary>
-        /// Check for updates to the launcher
+        ///     Called to notify the UI of progress changes
+        /// </summary>
+        public event Action<double, string, bool, bool> ProgressChanged;
+
+        /// <summary>
+        ///     Called to notify UI of status changes
+        /// </summary>
+        public event Action<string> StatusChanged;
+
+        /// <summary>
+        ///     Called when the updater is finished and is ready to close wrapping object.
+        /// </summary>
+        public event Action CloseRequested;
+
+        /// <summary>
+        ///     Check for updates to the launcher
         /// </summary>
         public async void Run()
         {
@@ -157,7 +154,8 @@ namespace HyddwnLauncher.Model
             OnStatusChanged("Utility Update Complete!");
         }
 
-        private void OnProgressChanged(double progress = 0, string progressText = "", bool isVisible = true, bool isIndeterminate = true)
+        private void OnProgressChanged(double progress = 0, string progressText = "", bool isVisible = true,
+            bool isIndeterminate = true)
         {
             ProgressChanged?.Raise(progress, progressText, isVisible, isIndeterminate);
         }
@@ -179,7 +177,8 @@ namespace HyddwnLauncher.Model
                 await Task.Delay(100);
                 var webClient = new WebClient();
 
-                using (var fileReader = new FileReader(webClient.OpenRead("http://launcher.hyddwnproject.com/update/version")))
+                using (var fileReader =
+                    new FileReader(webClient.OpenRead("http://launcher.hyddwnproject.com/update/version")))
                 {
                     foreach (var str in fileReader)
                     {
@@ -212,7 +211,8 @@ namespace HyddwnLauncher.Model
             return await UpdateCheckInternal("http://launcher.hyddwnproject.com/version", "Current", "Version");
         }
 
-        private async Task<bool> UpdateCheckInternal(string url, string currentVersionString, string remoteVersionString)
+        private async Task<bool> UpdateCheckInternal(string url, string currentVersionString,
+            string remoteVersionString)
         {
             try
             {

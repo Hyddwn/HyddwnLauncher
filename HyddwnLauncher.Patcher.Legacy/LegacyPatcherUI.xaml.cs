@@ -1,19 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using HyddwnLauncher.Extensibility;
+﻿using System.Windows.Controls;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Extensibility.Util;
 using HyddwnLauncher.Patcher.Legacy.Core;
@@ -23,16 +8,14 @@ namespace HyddwnLauncher.Patcher.Legacy
 {
     // TODO: Throwing comments everywhere for source divers. (so lazy right now)
     /// <summary>
-    /// Interaction logic for LegacyPatcherUI.xaml
+    ///     Interaction logic for LegacyPatcherUI.xaml
     /// </summary>
     public partial class LegacyPatcherUI : UserControl
     {
         private IClientProfile _clientProfile;
-        private IServerProfile _serverProfile;
 
         private LegacyPatcher _legacyPatcher;
-
-        public ObservableDictionary<ProgressReporterViewModel, ProgressReporter> Reporters { get; set; }
+        private IServerProfile _serverProfile;
 
         public LegacyPatcherUI(IServerProfile serverProfile)
         {
@@ -50,6 +33,8 @@ namespace HyddwnLauncher.Patcher.Legacy
             PatcherContext.Instance.DestroyProgressIndecator += model => { Reporters.Remove(model); };
         }
 
+        public ObservableDictionary<ProgressReporterViewModel, ProgressReporter> Reporters { get; set; }
+
         public async void ClientProfileUpdated(IClientProfile clientProfile)
         {
             // set the client profile in the codebehind for the GUI
@@ -60,7 +45,7 @@ namespace HyddwnLauncher.Patcher.Legacy
 
             // Client profile and server profile must be selected.
             // If Client profile's location is invalid OR server profile is not offical don't patch!
-            if (string.IsNullOrWhiteSpace(_clientProfile?.Location) 
+            if (string.IsNullOrWhiteSpace(_clientProfile?.Location)
                 || _serverProfile?.IsOfficial == false) return;
 
             // I call this legacy patcher but.... final build this class will be renamed
@@ -70,10 +55,7 @@ namespace HyddwnLauncher.Patcher.Legacy
 
             var updateAvailable = await _legacyPatcher.CheckForUpdates();
 
-            if (updateAvailable)
-            {
-                await _legacyPatcher.Update();
-            }
+            if (updateAvailable) await _legacyPatcher.Update();
         }
 
         public void ServerProfileUpdated(IServerProfile serverProfile)

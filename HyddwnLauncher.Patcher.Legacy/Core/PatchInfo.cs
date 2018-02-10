@@ -24,6 +24,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                 StartVersion = 0;
                 EndVersion = int.Parse(new string(name.TakeWhile(c => c != 95).ToArray()));
             }
+
             Files = new List<PatchFileInfo>();
             using (var stringReader = new StringReader(info))
             {
@@ -51,7 +52,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
 
         public long PatchSize
         {
-            get { return Files.Sum(f => (long)f.Size); }
+            get { return Files.Sum(f => (long) f.Size); }
         }
 
         public string PatchName

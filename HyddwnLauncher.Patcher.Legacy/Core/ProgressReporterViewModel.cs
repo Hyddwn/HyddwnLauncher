@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Patcher.Legacy.Annotations;
 
@@ -13,20 +7,15 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
 {
     public class ProgressReporterViewModel : IProgressIndicator, INotifyPropertyChanged
     {
-        private double _progressBarPercent;
         private bool _isIndeterminate;
         private string _leftText;
+        private double _progressBarPercent;
         private string _rightText;
 
-        public double ProgressBarPercent
+        public ProgressReporterViewModel(string leftText = "", string rightText = "")
         {
-            get => _progressBarPercent;
-            set
-            {
-                if (value.Equals(_progressBarPercent)) return;
-                _progressBarPercent = value;
-                OnPropertyChanged();
-            }
+            LeftText = leftText;
+            RightText = rightText;
         }
 
         public bool IsIndeterminate
@@ -62,10 +51,17 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
             }
         }
 
-        public ProgressReporterViewModel(string leftText = "", string rightText = "")
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public double ProgressBarPercent
         {
-            LeftText = leftText;
-            RightText = rightText;
+            get => _progressBarPercent;
+            set
+            {
+                if (value.Equals(_progressBarPercent)) return;
+                _progressBarPercent = value;
+                OnPropertyChanged();
+            }
         }
 
         public void SetIsIndeterminate(bool value)
@@ -99,8 +95,6 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         {
             SetRightText(string.Format(format, args));
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)

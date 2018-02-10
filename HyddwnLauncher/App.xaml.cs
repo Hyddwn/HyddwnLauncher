@@ -4,10 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
-using System.Threading.Tasks;
 using System.Windows;
 using HyddwnLauncher.Core;
-using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher
@@ -27,7 +25,7 @@ namespace HyddwnLauncher
 
             if (!Directory.Exists($@"{Assemblypath}\Logs\Hyddwn Launcher"))
                 Directory.CreateDirectory($@"{Assemblypath}\Logs\Hyddwn Launcher");
-            Log.LogFile =  $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm}.log";
+            Log.LogFile = $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm}.log";
 
             Log.Info("=== Application Startup ===");
 
@@ -100,7 +98,6 @@ namespace HyddwnLauncher
                         File.Delete(file);
                     Shutdown();
                 };
-                
             }
         }
 

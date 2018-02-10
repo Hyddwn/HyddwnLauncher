@@ -5,10 +5,10 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
 {
     public class FileCopier
     {
-        public ProgressReporterViewModel ProgressReporter;
-        private Stopwatch _stopwatch = new Stopwatch();
-        private long _totalRead;
         private double _fileSize;
+        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private long _totalRead;
+        public ProgressReporterViewModel ProgressReporter;
 
         public FileCopier(ProgressReporterViewModel progressReporter)
         {
@@ -18,7 +18,8 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         public void Start()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(ProgressReporter.RightText));
-            PatcherContext.Instance.PluginContext.LogString($"Copying {ProgressReporter.LeftText} to {ProgressReporter.RightText}");
+            PatcherContext.Instance.PluginContext.LogString(
+                $"Copying {ProgressReporter.LeftText} to {ProgressReporter.RightText}");
 
             using (var destinationFiileStream = new FileStream(ProgressReporter.RightText, FileMode.Create))
             {

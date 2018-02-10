@@ -3,28 +3,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HyddwnLauncher.Extensibility.Helpers;
-
 
 namespace HyddwnLauncher.Patcher.Legacy.Core
 {
     public class PatchDownloader
     {
-        private bool _prepared = false;
         private string _clientDirectory;
 
         private DownloadQueue _downloadQueue;
-        private OfficialPatchInfo _officialPatchInfo;
-
-        private List<PatchInfo> Patches { get; }
+        private readonly OfficialPatchInfo _officialPatchInfo;
+        private bool _prepared;
 
         /// <summary>
-        /// Creates a new instance of PatcherDownloader that accepts a PatchSequence
+        ///     Creates a new instance of PatcherDownloader that accepts a PatchSequence
         /// </summary>
         /// <param name="patchSequence">PatchSequence representing a collection of patches</param>
         public PatchDownloader(PatchSequence patchSequence, OfficialPatchInfo officialPatchInfo) : this()
@@ -34,7 +29,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         }
 
         /// <summary>
-        /// Creates a new instance of PatchDownloader that accepts a PatchInfo
+        ///     Creates a new instance of PatchDownloader that accepts a PatchInfo
         /// </summary>
         /// <param name="patchInfo">PatchInfo representing a single patch.</param>
         public PatchDownloader(PatchInfo patchInfo) : this()
@@ -47,8 +42,10 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
             Patches = new List<PatchInfo>();
         }
 
+        private List<PatchInfo> Patches { get; }
+
         /// <summary>
-        /// Initializes the download queue and stores each patch in order
+        ///     Initializes the download queue and stores each patch in order
         /// </summary>
         public void Prepare()
         {
@@ -63,14 +60,15 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         }
 
         /// <summary>
-        /// Begins downloading the patches by invoking the download queue's download process.
+        ///     Begins downloading the patches by invoking the download queue's download process.
         /// </summary>
         public void Patch()
         {
             if (!_prepared)
             {
                 // Failsafe to ensure when patch is started.... there is something to download!
-                PatcherContext.Instance.PluginContext.LogString("[WARNING]: Patch Downloader was not prepared ahead of time, calling prepare...");
+                PatcherContext.Instance.PluginContext.LogString(
+                    "[WARNING]: Patch Downloader was not prepared ahead of time, calling prepare...");
                 Prepare();
             }
 
@@ -83,15 +81,8 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
     public class PatchTask
     {
         /// <summary>
-        /// The PatchInfo this class wraps
+        ///     Creates a task which represent an individual patch operation
         /// </summary>
-        public PatchInfo PatchInfo { get; }
-
-        public OfficialPatchInfo OfficialPatchInfo { get; }
-
-        /// <summary>
-        /// Creates a task which represent an individual patch operation
-        /// </summary>  
         /// <param name="patchInfo"></param>
         /// <param name="officialPatchInfo"></param>
         public PatchTask(PatchInfo patchInfo, OfficialPatchInfo officialPatchInfo)
@@ -101,7 +92,14 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         }
 
         /// <summary>
-        /// Starts the patching process for this patch set
+        ///     The PatchInfo this class wraps
+        /// </summary>
+        public PatchInfo PatchInfo { get; }
+
+        public OfficialPatchInfo OfficialPatchInfo { get; }
+
+        /// <summary>
+        ///     Starts the patching process for this patch set
         /// </summary>
         public void Start()
         {
@@ -120,7 +118,8 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         public List<PatchFileInfo> Verify()
         {
             PatcherContext.Instance.PluginContext.LogString("Beginning file verification");
-            PatcherContext.Instance.PluginContext.UpdateMainProgress("Beginning file verification...", isIndeterminate: true,
+            PatcherContext.Instance.PluginContext.UpdateMainProgress("Beginning file verification...",
+                isIndeterminate: true,
                 isProgressbarVisible: true);
 
             var list = new List<PatchFileInfo>();
@@ -139,7 +138,8 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                         break;
                     }
 
-                    PatcherContext.Instance.PluginContext.UpdateMainProgress($"Verifying {patchFileInfo.Filename}...", isIndeterminate: true,
+                    PatcherContext.Instance.PluginContext.UpdateMainProgress($"Verifying {patchFileInfo.Filename}...",
+                        isIndeterminate: true,
                         isProgressbarVisible: true);
 
                     try
@@ -210,10 +210,10 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                         Interlocked.Increment(ref completed);
 
                         PatcherContext.Instance.PluginContext.UpdateMainProgress("Downloading files...",
-                            $"{completed}/{files.Count}", completed / (double)files.Count * 100.0,
+                            $"{completed}/{files.Count}", completed / (double) files.Count * 100.0,
                             isProgressbarVisible: true);
                     }
-                    catch 
+                    catch
                     {
                         // Don't log anything here right away, we try again until we can't go without an exception since
                         // This allows us to check for partial files and redownload them if needed.
@@ -257,13 +257,14 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                 {
                     PatcherContext.Instance.PluginContext.UpdateMainProgress("Combining files...",
                         $"{completed}/{PatchInfo.Files.Count} at {ByteSizeHelper.ToString(totalRead / stopwatch.Elapsed.TotalSeconds)}/s",
-                        progress: completed / (double) PatchInfo.Files.Count * 100.0);
+                        completed / (double) PatchInfo.Files.Count * 100.0);
                 }, null, 200, 200);
 
                 foreach (var patchFileInfo in PatchInfo.Files)
                 {
                     PatcherContext.Instance.PluginContext.LogString($"Adding {patchFileInfo.Filename}");
-                    using (var inputFileStream = new FileStream(Path.Combine(PatchInfo.PatchName, patchFileInfo.Filename), FileMode.Open))
+                    using (var inputFileStream =
+                        new FileStream(Path.Combine(PatchInfo.PatchName, patchFileInfo.Filename), FileMode.Open))
                     {
                         int count;
                         while ((count = inputFileStream.Read(buffer, 0, buffer.Length)) > 0)
@@ -316,7 +317,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                         PatcherContext.Instance.OnCreateProgressIndicator(
                             new ProgressReporterViewModel(file, file.Replace(source, destination))))
                     .Select(reporter => new FileCopier(reporter))
-                    .Select(copier => (Action)(() =>
+                    .Select(copier => (Action) (() =>
                     {
                         try
                         {
@@ -362,7 +363,8 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
             // TODO: Setting for each part of the cleanup process
             {
                 PatcherContext.Instance.PluginContext.LogString("Deleting part files");
-                PatcherContext.Instance.PluginContext.UpdateMainProgress("Cleaning up...", "Deleting part files", isIndeterminate: true,
+                PatcherContext.Instance.PluginContext.UpdateMainProgress("Cleaning up...", "Deleting part files",
+                    isIndeterminate: true,
                     isProgressbarVisible: true);
                 foreach (var file in PatchInfo.Files.Select(f => Path.Combine(PatchInfo.PatchName, f.Filename)))
                     TryDeleteFile(file);
@@ -370,7 +372,8 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
 
             {
                 PatcherContext.Instance.PluginContext.LogString("Deleting zip files");
-                PatcherContext.Instance.PluginContext.UpdateMainProgress("Cleaning up...", "Deleting zip files", isIndeterminate: true,
+                PatcherContext.Instance.PluginContext.UpdateMainProgress("Cleaning up...", "Deleting zip files",
+                    isIndeterminate: true,
                     isProgressbarVisible: true);
                 var strArray = new string[2]
                 {
@@ -383,14 +386,16 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
 
             {
                 PatcherContext.Instance.PluginContext.LogString("Deleting content");
-                PatcherContext.Instance.PluginContext.UpdateMainProgress("Cleaning up...", "Deleting content", isIndeterminate: true,
+                PatcherContext.Instance.PluginContext.UpdateMainProgress("Cleaning up...", "Deleting content",
+                    isIndeterminate: true,
                     isProgressbarVisible: true);
                 TryDeleteDirectory(PatchInfo.ContentDirectory);
             }
 
             {
                 PatcherContext.Instance.PluginContext.LogString("Deleting empty patch folder");
-                PatcherContext.Instance.PluginContext.UpdateMainProgress("Cleaning up...", "Deleting empty patch folder", isIndeterminate: true,
+                PatcherContext.Instance.PluginContext.UpdateMainProgress("Cleaning up...",
+                    "Deleting empty patch folder", isIndeterminate: true,
                     isProgressbarVisible: true);
                 TryDeleteDirectory(PatchInfo.PatchName);
             }
@@ -408,7 +413,8 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                 }
                 catch (Exception ex)
                 {
-                    PatcherContext.Instance.PluginContext.LogString($"Warning: Couldn't delete '{filename}': {ex.Message}");
+                    PatcherContext.Instance.PluginContext.LogString(
+                        $"Warning: Couldn't delete '{filename}': {ex.Message}");
                 }
             }
 
@@ -420,24 +426,25 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                 }
                 catch (Exception ex)
                 {
-                    PatcherContext.Instance.PluginContext.LogString($"Warning: Couldn't delete '{directory}': {ex.Message}");
+                    PatcherContext.Instance.PluginContext.LogString(
+                        $"Warning: Couldn't delete '{directory}': {ex.Message}");
                 }
             }
-        } 
+        }
     }
 
     /// <summary>
-    /// Manages patches so that
+    ///     Manages patches so that
     /// </summary>
     public class DownloadQueue
     {
-        private readonly List<PatchInfo> _patchInfos;
         private readonly OfficialPatchInfo _officialPatchInfo;
+        private readonly List<PatchInfo> _patchInfos;
         private List<PatchTask> _patchTasks;
 
 
         /// <summary>
-        /// Creates a download queue but does not initialize it
+        ///     Creates a download queue but does not initialize it
         /// </summary>
         /// <param name="patchInfos"></param>
         /// <param name="officialPatchInfo"></param>
@@ -448,7 +455,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         }
 
         /// <summary>
-        /// Sets up the download queue for downloading and ensures patch ordering
+        ///     Sets up the download queue for downloading and ensures patch ordering
         /// </summary>
         public void Initialize()
         {
@@ -460,14 +467,11 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         }
 
         /// <summary>
-        /// Begins downloading each "patch" in order
+        ///     Begins downloading each "patch" in order
         /// </summary>
         public void Start()
         {
-            foreach (var patchTask in _patchTasks)
-            {
-                patchTask.Start();
-            }
+            foreach (var patchTask in _patchTasks) patchTask.Start();
         }
     }
 }

@@ -95,7 +95,7 @@ namespace HyddwnLauncher.Network
 
         public async Task<bool> GetAccessToken(string username, string password, string profileGuid)
         {
-           if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == profileGuid)
+            if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == profileGuid)
                 return true;
 
             _restClient = new RestClient(new Uri("https://accounts.nexon.net"), null);

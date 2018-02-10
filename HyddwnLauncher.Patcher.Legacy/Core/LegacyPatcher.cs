@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using HyddwnLauncher.Extensibility.Interfaces;
 
@@ -11,12 +9,11 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
 {
     public class LegacyPatcher
     {
+        private readonly int _currentVersion;
         private INexonApi _nexonApi;
         private OfficialPatchInfo _officialPatchInfo;
-
-        private int _currentVersion;
-        private int _remoteVersion;
         private PatchSequence _patchSequence;
+        private int _remoteVersion;
 
         public LegacyPatcher()
         {
@@ -30,9 +27,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                 .Find(version => version.Name == PatcherContext.Instance.ClientProfile.Localization).PatchUrl);
 
             if (int.TryParse(_officialPatchInfo["main_version"], out var versionConverted))
-            {
                 _remoteVersion = versionConverted;
-            }
 
             if (_currentVersion == _remoteVersion) return false;
 
@@ -53,7 +48,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
         {
             await Task.Run(() =>
             {
-                PatchDownloader downloader = new PatchDownloader(_patchSequence, _officialPatchInfo);
+                var downloader = new PatchDownloader(_patchSequence, _officialPatchInfo);
 
                 downloader.Prepare();
 

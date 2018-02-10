@@ -5,10 +5,6 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
 {
     public class MabiVersion
     {
-        public string Name { get; protected set; }
-        public string PatchUrl { get; protected set; } 
-        public bool SmartPatch { get; protected set; }
-
         public static readonly List<MabiVersion> Versions = new List<MabiVersion>(5)
         {
             new MabiVersion(ClientLocalization.Japan, "http://patch.mabinogi.jp/patch/patch.txt"),
@@ -20,12 +16,10 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
 
         static MabiVersion()
         {
-            
         }
 
         public MabiVersion()
         {
-            
         }
 
         public MabiVersion(string name, string url)
@@ -34,5 +28,9 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
             PatchUrl = url;
             SmartPatch = false;
         }
+
+        public string Name { get; protected set; }
+        public string PatchUrl { get; protected set; }
+        public bool SmartPatch { get; protected set; }
     }
 }

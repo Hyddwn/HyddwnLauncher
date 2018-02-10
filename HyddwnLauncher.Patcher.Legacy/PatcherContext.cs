@@ -1,17 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Patcher.Legacy.Core;
-using HyddwnLauncher.Patcher.Legacy.Core.Controls;
 
 namespace HyddwnLauncher.Patcher.Legacy
 {
     public class PatcherContext
     {
+        public static PatcherContext Instance = new PatcherContext();
+
+        public PluginContext PluginContext { get; private set; }
+        public Guid Guid { get; private set; }
+        public IClientProfile ClientProfile { get; protected set; }
+        public IServerProfile ServerProfile { get; protected set; }
         public event Func<ProgressReporterViewModel, ProgressReporterViewModel> CreateProgressIndicator;
         public event Action<ProgressReporterViewModel> DestroyProgressIndecator;
 
@@ -26,14 +27,8 @@ namespace HyddwnLauncher.Patcher.Legacy
             DestroyProgressIndecator?.Invoke(progressIndicator);
         }
 
-        public PluginContext PluginContext { get; private set; }
-        public Guid Guid { get; private set; }
-        public IClientProfile ClientProfile { get; protected set; }
-        public IServerProfile ServerProfile { get; protected set; }
-
-        public static PatcherContext Instance = new PatcherContext();
-
-        public void Initialize(IClientProfile clientProfile, IServerProfile serverProfile, PluginContext pluginContext, Guid guid)
+        public void Initialize(IClientProfile clientProfile, IServerProfile serverProfile, PluginContext pluginContext,
+            Guid guid)
         {
             ClientProfile = clientProfile;
             ServerProfile = serverProfile;
@@ -58,10 +53,7 @@ namespace HyddwnLauncher.Patcher.Legacy
             var legacyPatcher = new LegacyPatcher();
 
             // If there is an update, UPDATE FOOL
-            if (await legacyPatcher.CheckForUpdates())
-            {
-                await legacyPatcher.Update();
-            }
+            if (await legacyPatcher.CheckForUpdates()) await legacyPatcher.Update();
         }
 
         public void SetServerProfile(IServerProfile serverProfile)
@@ -70,14 +62,14 @@ namespace HyddwnLauncher.Patcher.Legacy
         }
 
         /// <summary>
-        /// Determines if a function or action should or can be performed
+        ///     Determines if a function or action should or can be performed
         /// </summary>
         /// <returns></returns>
         private bool VerifyAction()
         {
             if (ClientProfile == null)
             {
-                PluginContext.ShowDialog("Client Profile Not Selected", 
+                PluginContext.ShowDialog("Client Profile Not Selected",
                     "There must be an active client profile in order to use this function.");
                 return false;
             }

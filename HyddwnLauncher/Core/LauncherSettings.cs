@@ -8,6 +8,7 @@ namespace HyddwnLauncher.Core
 {
     public class LauncherSettings : INotifyPropertyChanged
     {
+        private string _accent;
         private int _clientProfileSelectedIndex;
         private int _connectionLimit;
         private bool _firstRun;
@@ -15,10 +16,9 @@ namespace HyddwnLauncher.Core
         private bool _rememberLogin;
         private bool _requiresAdmin;
         private int _serverProfileSelectedIndex;
+        private string _theme;
         private bool _usePackFiles;
         private bool _warnIfRootIsNotMabiRoot;
-        private string _theme;
-        private string _accent;
 
         public LauncherSettings()
         {
@@ -144,6 +144,7 @@ namespace HyddwnLauncher.Core
                 OnPropertyChanged();
             }
         }
+
         public string Accent
         {
             get => _accent;

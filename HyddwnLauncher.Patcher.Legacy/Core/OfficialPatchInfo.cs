@@ -79,6 +79,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                     }
                 }
             }
+
             opi.PatchAccept = Convert.ToBoolean(int.Parse(opi["patch_accept"]));
             opi.MainVersion = int.Parse(opi["main_version"]);
             opi.MainFtp = ParseFtp(opi, "main_ftp");
@@ -94,6 +95,7 @@ namespace HyddwnLauncher.Patcher.Legacy.Core
                 opi["username"] = match.Groups[3].Value;
                 opi["password"] = match.Groups[4].Value;
             }
+
             if (!input.Contains("://"))
                 input = (input.Contains(":80") ? "http://" : "ftp://") + input;
             opi[id] = input;

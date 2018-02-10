@@ -58,19 +58,19 @@ namespace HyddwnLauncher
 
             AccentColors = ThemeManager.Accents
                 .Select(a =>
-                        new AccentColorMenuData
-                        {
-                            Name = a.Name,
-                            ColorBrush = a.Resources["AccentColorBrush"] as Brush
-                        }).ToList();
+                    new AccentColorMenuData
+                    {
+                        Name = a.Name,
+                        ColorBrush = a.Resources["AccentColorBrush"] as Brush
+                    }).ToList();
             AppThemes = ThemeManager.AppThemes
                 .Select(a =>
-                        new AppThemeMenuData
-                        {
-                            Name = a.Name,
-                            BorderColorBrush = a.Resources["BlackColorBrush"] as Brush,
-                            ColorBrush = a.Resources["WhiteColorBrush"] as Brush
-                        }).ToList();
+                    new AppThemeMenuData
+                    {
+                        Name = a.Name,
+                        BorderColorBrush = a.Resources["BlackColorBrush"] as Brush,
+                        ColorBrush = a.Resources["WhiteColorBrush"] as Brush
+                    }).ToList();
 
             InitializeComponent();
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
@@ -83,13 +83,12 @@ namespace HyddwnLauncher
             };
 
             _updateClose = false;
-
-
         }
 
         #endregion
 
         #region Properties
+
         public string Theme { get; set; }
         public string Accent { get; set; }
         private PluginHost PluginHost { get; set; }
@@ -97,7 +96,7 @@ namespace HyddwnLauncher
         public ServerProfile ActiveServerProfile { get; set; }
         public ClientProfile ActiveClientProfile { get; set; }
 
-        public LauncherContext LauncherContext { get; private set; }
+        public LauncherContext LauncherContext { get; }
 
         // Very bad, will need to adjust the method of access.
         public static MainWindow Instance { get; private set; }
@@ -807,7 +806,8 @@ namespace HyddwnLauncher
 
                         Dispatcher.Invoke(async () =>
                         {
-                             var result = await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative);
+                            var result = await this.ShowMessageAsync(title, message,
+                                MessageDialogStyle.AffirmativeAndNegative);
 
                             returnResult = result == MessageDialogResult.Affirmative;
                         });

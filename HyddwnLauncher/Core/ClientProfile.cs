@@ -8,9 +8,9 @@ namespace HyddwnLauncher.Core
     public class ClientProfile : INotifyPropertyChanged, IClientProfile
     {
         private string _guid;
+        private string _localization;
         private string _location;
         private string _name;
-        private string _localization;
 
         public string Name
         {

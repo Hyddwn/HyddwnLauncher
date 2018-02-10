@@ -39,7 +39,9 @@
                         <Grid>
                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,17,10,43"
                                        Text="Merging Pack Files, this might take some time..." />
-                            <controls:MetroProgressBar x:Name="ProgressBar" Foreground="{DynamicResource AccentColorBrush}" Margin="10,47,10,23" />
+                            <controls:MetroProgressBar x:Name="ProgressBar"
+                                                       Foreground="{DynamicResource AccentColorBrush}"
+                                                       Margin="10,47,10,23" />
                             <TextBlock x:Name="ProgressText" HorizontalAlignment="Center" VerticalAlignment="Center"
                                        Margin="10,53,10,7" />
                         </Grid>

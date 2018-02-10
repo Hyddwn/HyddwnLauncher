@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Xml.Serialization;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Extensibility.Primitives;
@@ -17,7 +12,8 @@ namespace HyddwnLauncher.Patcher.Legacy
     {
         private LegacyPatcherUI _legacyPatcherUi;
 
-        public override void Initialize(PluginContext pluginContext, IClientProfile activeClientProfile, IServerProfile activeServerProfile)
+        public override void Initialize(PluginContext pluginContext, IClientProfile activeClientProfile,
+            IServerProfile activeServerProfile)
         {
             base.Initialize(pluginContext, activeClientProfile, activeServerProfile);
 

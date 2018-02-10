@@ -42,7 +42,7 @@ namespace HyddwnLauncher.Network
             {
                 var bytesPerSecond = args.BytesReceived / sw.Elapsed.TotalSeconds;
 
-                callback?.Raise(args.BytesReceived / (double)args.TotalBytesToReceive * 100,
+                callback?.Raise(args.BytesReceived / (double) args.TotalBytesToReceive * 100,
                     $"{ByteSizeHelper.ToString(args.BytesReceived)}/{ByteSizeHelper.ToString(args.TotalBytesToReceive)} @ {ByteSizeHelper.ToString(bytesPerSecond, mode: ByteSizeMode.Network)}/s");
             };
             sw.Start();

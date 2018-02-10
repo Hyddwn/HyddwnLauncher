@@ -94,7 +94,7 @@ namespace HyddwnLauncher.UOTiara
                         list.Add(modInfo);
                     }
                     // ParseModInfo to build the structure
-                    
+
                     Dispatcher.Invoke(() => { LoadingOverlayText.Text = "Processing..."; });
                 }
                 catch (Exception ex)
