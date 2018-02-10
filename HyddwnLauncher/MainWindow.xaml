@@ -321,6 +321,10 @@
                                 <Run FontWeight="Bold" Text="ShaggyZE" /><Run Text=" - QA and Testing" />
                             </TextBlock>
                             <TextBlock>
+                                <Run FontWeight="Bold" Text="Ursus" />
+                                <Run Text=" - Hyddwn Launcher splash screen logo" />
+                            </TextBlock>
+                            <TextBlock>
                                 <Run FontWeight="Bold" Text="Playtime" />
                                 <Run Text=" - Reminds me that all Apple products suck" />
                             </TextBlock>
