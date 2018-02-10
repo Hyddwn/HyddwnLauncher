@@ -10,6 +10,7 @@ namespace HyddwnLauncher.Core
         private string _guid;
         private string _location;
         private string _name;
+        private string _localization;
 
         public string Name
         {
@@ -40,6 +41,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _guid) return;
                 _guid = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Localization
+        {
+            get => _localization;
+            set
+            {
+                if (value == _localization) return;
+                _localization = value;
                 OnPropertyChanged();
             }
         }

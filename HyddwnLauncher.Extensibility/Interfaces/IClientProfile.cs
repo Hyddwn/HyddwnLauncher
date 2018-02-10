@@ -17,5 +17,9 @@
         /// The Unique GUID for the profile
         /// </summary>
         string Guid { get; }
+        /// <summary>
+        /// The locale for the Mabinogi instance represented by this file.
+        /// </summary>
+        string Localization { get; }
     }
 }
