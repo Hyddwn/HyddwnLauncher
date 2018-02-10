@@ -11,8 +11,6 @@ namespace HyddwnLauncher
         [STAThread]
         public static void Main(string[] args)
         {
-            Cef.EnableHighDPISupport();
-            Cef.Initialize(new CefSettings());
 
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {
