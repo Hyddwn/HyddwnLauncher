@@ -27,7 +27,7 @@ namespace HyddwnLauncher
 
             if (!Directory.Exists($@"{Assemblypath}\Logs\Hyddwn Launcher"))
                 Directory.CreateDirectory($@"{Assemblypath}\Logs\Hyddwn Launcher");
-            Log.LogFile =  $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now}.log";
+            Log.LogFile =  $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm}.log";
 
             Log.Info("=== Application Startup ===");
 
