@@ -8,7 +8,7 @@
              xmlns:validation="clr-namespace:HyddwnLauncher.Util.Validation"
              xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="222">
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="260">
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ErrorWindow"
                                        Grid.RowSpan="2" TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
@@ -39,6 +39,20 @@
                     </Binding>
                 </TextBox>
                 <Button Margin="5 0 0 0" Content=". . ." IsEnabled="{Binding Path=ClientProfile, TargetNullValue=False}" Height="26" Click="BrowseButtonOnClick" />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
+                        ToolTip="The locale for this instance of Mabinogi.">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Localization" />
+                <TextBox Margin="57 0 0 0" Width="180" ToolTip="A Friendly Name for your Client Profile">
+                    <TextBox.Text>
+                        <Binding ElementName="This" Path="ClientProfile.Localization" Mode="TwoWay"
+                                 UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validation:LocationValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
             </StackPanel>
             <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="Saved Crednetials">
                 <GroupBox Header="Saved Credentials" Margin="5">
