@@ -18,7 +18,6 @@
                       Icon="Icon_Internal_a.ico"
                       Closed="OnClose" Loaded="OnLoaded"
                       SaveWindowPosition="True"
-                      xmlns:cef="clr-namespace:CefSharp;assembly=CefSharp.Core"
                       x:Name="This" Title="Hyddwn Launcher" Height="520" Width="830" KeyDown="This_KeyDown"
                       KeyUp="This_KeyUp">
     <FrameworkElement.Style>
