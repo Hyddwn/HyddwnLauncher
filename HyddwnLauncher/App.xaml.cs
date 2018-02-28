@@ -30,8 +30,8 @@ namespace HyddwnLauncher
 
             Log.Info("=== Application Startup ===");
 
-            Log.Info("Initialize Launcher Context");
             var launcherContext = new LauncherContext();
+            Log.Info("Initializing Launcher Context");
 
 #if DEBUG
             launcherContext.LauncherSettingsManager.Reset();
