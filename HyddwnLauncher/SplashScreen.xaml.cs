@@ -29,10 +29,10 @@ namespace HyddwnLauncher
 
         private readonly Updator _updator;
 
-        public SplashScreen()
+        public SplashScreen(LauncherContext launcherContext)
         {
             InitializeComponent();
-            _launcherContext = new LauncherContext();
+            _launcherContext = launcherContext;
 
             ChangeAppTheme();
 

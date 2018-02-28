@@ -83,7 +83,7 @@ namespace HyddwnLauncher
             Log.Info($"Applied max download limit of {launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit} based off of user settings.");
 
             Log.Info("Application preinitialized, beginning startup tasks.");
-            var splashScreen = new SplashScreen();
+            var splashScreen = new SplashScreen(launcherContext);
             Current.MainWindow = splashScreen;
             splashScreen.Show();
             base.OnStartup(e);
