@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
 using HyddwnLauncher.Core;
@@ -15,8 +16,8 @@ namespace HyddwnLauncher
     /// </summary>
     public partial class App : Application
     {
-        private static readonly string Assembly = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
+        private static readonly string LauncherAssembly = Assembly.GetExecutingAssembly().Location;
+        private static readonly string Assemblypath = Path.GetDirectoryName(LauncherAssembly);
         public static string[] CmdArgs;
 
         protected override void OnStartup(StartupEventArgs e)
@@ -110,8 +111,8 @@ namespace HyddwnLauncher
                 UseShellExecute = true,
                 WorkingDirectory = Environment.CurrentDirectory
             };
-            if (Assembly != null)
-                startInfo.FileName = Assembly;
+            if (LauncherAssembly != null)
+                startInfo.FileName = LauncherAssembly;
             startInfo.Arguments = string.Join(" ", Environment.GetCommandLineArgs());
             startInfo.Verb = "runas";
             try
