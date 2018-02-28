@@ -9,7 +9,7 @@ namespace HyddwnLauncher.Model
     public enum DownloadType
     {
         Launcher,
-        Utility,
+        Updater,
         Plugin,
         PluginData
     }

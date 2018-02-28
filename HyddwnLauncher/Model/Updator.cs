@@ -54,17 +54,17 @@ namespace HyddwnLauncher.Model
             // Minor hack because the following operation makes the splashscreen lag a little
             await Task.Delay(1500);
 
-            var utilityUpdateAvailable = await CheckForUtilityUpdate();
-            if (utilityUpdateAvailable)
+            var updaterUpdateAvailable = await CheckForUpdaterUpdate();
+            if (updaterUpdateAvailable)
             {
-                OnStatusChanged("Downloading Utility Update...");
+                OnStatusChanged("Downloading Updater Update...");
                 OnProgressChanged(isIndeterminate: false);
 
                 await DownloadUpdate(_updateInfo["UpdateLink"], _updateInfo["UpdateFile"]);
             }
 
-            var updateAvaialble = await CheckForApplicationUpdate();
-            if (updateAvaialble)
+            var launcherUpdateAvailable = await CheckForLauncherUpdate();
+            if (launcherUpdateAvailable)
             {
                 var result = MessageBox.Show(
                     "There is a newer version of this launcher avaiable for download.\r\n\r\n" +
@@ -139,7 +139,7 @@ namespace HyddwnLauncher.Model
                 return;
             }
 
-            OnStatusChanged("Utility Download complete!");
+            OnStatusChanged("Updater Download complete!");
             OnProgressChanged(progressText: "Applying...");
 
             using (var zipFile = ZipFile.Read($".\\{_updateInfo["UpdateFile"]}"))
@@ -151,7 +151,7 @@ namespace HyddwnLauncher.Model
             File.Delete($".\\{_updateInfo["UpdateFile"]}");
 
             OnProgressChanged(isVisible: false);
-            OnStatusChanged("Utility Update Complete!");
+            OnStatusChanged("Updater Update Complete!");
         }
 
         private void OnProgressChanged(double progress = 0, string progressText = "", bool isVisible = true,
@@ -170,55 +170,23 @@ namespace HyddwnLauncher.Model
             CloseRequested?.Raise();
         }
 
-        private async Task<bool> CheckForUtilityUpdate()
+        private async Task<bool> CheckForUpdaterUpdate()
         {
-            try
-            {
-                await Task.Delay(100);
-                var webClient = new WebClient();
-
-                using (var fileReader =
-                    new FileReader(webClient.OpenRead("http://launcher.hyddwnproject.com/update/version")))
-                {
-                    foreach (var str in fileReader)
-                    {
-                        int length;
-                        if ((length = str.IndexOf(':')) >= 0)
-                            _updateInfo[str.Substring(0, length).Trim()] = str.Substring(length + 1).Trim();
-                    }
-                }
-
-                if (!File.Exists(".\\Updater.exe"))
-                    return true;
-
-                var utilityAssemblyName = AssemblyName.GetAssemblyName(".\\Updater.exe");
-
-                var localVersion = utilityAssemblyName.Version;
-
-                var remoteVersion = new Version(_updateInfo["UpdateVersion"]);
-
-                return localVersion < remoteVersion;
-            }
-            catch (Exception ex)
-            {
-                Log.Exception(ex, "Unable to check for updates.");
-                return false;
-            }
+            return await UpdateCheckInternal("http://launcher.hyddwnproject.com/update/version", "UpdateCurrent", "UpdateVersion", DownloadType.Updater);
         }
 
-        private async Task<bool> CheckForApplicationUpdate()
+        private async Task<bool> CheckForLauncherUpdate()
         {
-            return await UpdateCheckInternal("http://launcher.hyddwnproject.com/version", "Current", "Version");
+            return await UpdateCheckInternal("http://launcher.hyddwnproject.com/version", "Current", "Version", DownloadType.Launcher);
         }
 
         private async Task<bool> UpdateCheckInternal(string url, string currentVersionString,
-            string remoteVersionString)
+            string remoteVersionString, DownloadType downloadType)
         {
             try
             {
                 await Task.Delay(100);
                 var webClient = new WebClient();
-                var localVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
                 using (var fileReader = new FileReader(webClient.OpenRead(url)))
                 {
@@ -230,6 +198,35 @@ namespace HyddwnLauncher.Model
                     }
                 }
 
+                Version localVersion = new Version();
+
+                switch (downloadType)
+                {
+                    case DownloadType.Launcher:
+                        localVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                        break;
+                    case DownloadType.Updater:
+                        if (File.Exists(".\\Updater.exe"))
+                        {
+                            try
+                            {
+                                localVersion = AssemblyName.GetAssemblyName(".\\Updater.exe").Version;
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Warning($"Failed to detect the version of the updater: {ex.Message}");
+                                // Just in case
+                                localVersion = new Version();
+                            }
+                        }   
+                        break;
+                    case DownloadType.Plugin:
+                    case DownloadType.PluginData:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(downloadType), downloadType, null);
+                }
+
                 _updateInfo[currentVersionString] = localVersion.ToString();
 
                 var remoteVersion = new Version(_updateInfo[remoteVersionString]);
@@ -238,7 +235,7 @@ namespace HyddwnLauncher.Model
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Unable to check for updates.");
+                Log.Exception(ex, $"Unable to check for {downloadType} updates.");
                 return false;
             }
         }
