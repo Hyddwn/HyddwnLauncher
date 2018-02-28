@@ -122,9 +122,14 @@ namespace HyddwnLauncher
                         uiElement.IsEnabled = !value;
 
                     if (!value)
+                    {
                         PluginHost?.PatchEnd();
+                        ClientVersion.SetTextBlockSafe(ReadVersion().ToString());
+                    }    
                     else
                         PluginHost?.PatchBegin();
+
+                    
                 });
             }
         }
