@@ -188,7 +188,7 @@ namespace HyddwnLauncher.Model
                 await Task.Delay(100);
                 var webClient = new WebClient();
 
-                using (var fileReader = new FileReader(webClient.OpenRead(url)))
+                using (var fileReader = new FileReader(await webClient.OpenReadTaskAsync(url)))
                 {
                     foreach (var str in fileReader)
                     {
