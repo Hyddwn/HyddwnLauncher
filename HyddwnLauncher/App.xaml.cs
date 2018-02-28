@@ -65,7 +65,7 @@ namespace HyddwnLauncher
             CheckForAdmin(launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin);
             ServicePointManager.DefaultConnectionLimit =
                 launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit;
-            Log.Info("Application initialized, loading main window.");
+            Log.Info("Application preinitialized, beginning startup tasks.");
             var mainWindow = new SplashScreen(); //new MainWindow(launcherContext);
             Current.MainWindow = mainWindow;
             mainWindow.Show();
