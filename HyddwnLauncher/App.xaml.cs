@@ -26,12 +26,18 @@ namespace HyddwnLauncher
 
             if (!Directory.Exists($@"{Assemblypath}\Logs\Hyddwn Launcher"))
                 Directory.CreateDirectory($@"{Assemblypath}\Logs\Hyddwn Launcher");
-            Log.LogFile = $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm}.log";
+
+            var logFileString = $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm}.log";;
+            var launcherVersionString = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            Log.LogFile = logFileString;
 
             Log.Info("=== Application Startup ===");
 
-            var launcherContext = new LauncherContext();
+            Log.Info($"Hyddwn Launcher version: {launcherVersionString}");
+
             Log.Info("Initializing Launcher Context");
+            var launcherContext = new LauncherContext(logFileString, launcherVersionString);
 
 #if DEBUG
             launcherContext.LauncherSettingsManager.Reset();

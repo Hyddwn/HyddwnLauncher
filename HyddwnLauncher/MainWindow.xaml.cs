@@ -180,6 +180,7 @@ namespace HyddwnLauncher
             IsPatching = true;
 
             ImporterTextBlock.SetTextBlockSafe("Starting...");
+            Log.Info($"The log can be found at {LauncherContext.LogFileLocation}");
 
             ImportWindow.IsOpen = true;
 
@@ -198,7 +199,7 @@ namespace HyddwnLauncher
             ConfigureLauncher();
 
             ImporterTextBlock.SetTextBlockSafe("Getting launcher version...");
-            var mblVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var mblVersion = LauncherContext.Version;
             Log.Info("Hyddwn Launcher Version {0}", mblVersion);
             LauncherVersion.SetTextBlockSafe(mblVersion);
 

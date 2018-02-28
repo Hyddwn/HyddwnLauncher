@@ -18,8 +18,13 @@ namespace HyddwnLauncher.Core
             "vans.png"
         };
 
-        public LauncherContext()
+        public string LogFileLocation { get; protected set; }
+        public string Version { get; protected set; }
+
+        public LauncherContext(string logFileLocation, string version)
         {
+            LogFileLocation = logFileLocation;
+            Version = version;
             LauncherSettingsManager = new LauncherSettingsManager();
         }
 
