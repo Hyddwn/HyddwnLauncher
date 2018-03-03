@@ -59,6 +59,12 @@ namespace HyddwnLauncher
                     Log.Info("/noadmin was declared. Disabled admin elevation requirement.");
                 }
 
+                if (e.Args[index].Contains("/noupdate"))
+                {
+                    launcherContext.LauncherSettingsManager.LauncherSettings.AutomaticallyCheckForUpdates = false;
+                    Log.Info("/noupdate was declared. Disabled automatic update checking.");
+                }
+
                 if (e.Args[index].Contains("/clean"))
                 {
                     packFileClean = true;
