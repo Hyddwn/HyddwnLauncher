@@ -40,5 +40,11 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// <param name="guid">The currently active profile GUID</param>
         /// <returns></returns>
         bool IsAccessTokenValid(string guid);
+
+        /// <summary>
+        /// Retrieves official product information about Mabinogi
+        /// </summary>
+        /// <returns></returns>
+        Task<dynamic> GetMabinogiMetadata();
     }
 }

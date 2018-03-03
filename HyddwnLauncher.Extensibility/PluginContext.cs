@@ -153,7 +153,7 @@ namespace HyddwnLauncher.Extensibility
         /// </summary>
         /// <param name="entry">The text to log</param>
         /// <param name="showMessagebox">Show a messagebox with the logged text</param>
-        public void LogString(string entry, bool showMessagebox)
+        public void LogString(string entry, bool showMessagebox = false)
         {
             if (LogStringInternal != null)
             {

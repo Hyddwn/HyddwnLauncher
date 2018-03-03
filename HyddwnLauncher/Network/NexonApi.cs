@@ -35,6 +35,22 @@ namespace HyddwnLauncher.Network
 
         private RestClient _restClient;
 
+        public async Task<dynamic> GetMabinogiMetadata()
+        {
+            if (_accessToken == null || _accessTokenIsExpired)
+                throw new Exception("Invalid or expired access token!");
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+            var restResponse = await _restClient.Create("/products/10200").ExecuteGet<string>();
+            if (restResponse.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return default(dynamic);
+
+            }
+            var body = await restResponse.GetContent();
+
+            return JsonConvert.DeserializeObject<dynamic>(body);
+        }
+
         public bool IsAccessTokenValid(string guid)
         {
             return _accessToken != null && !_accessTokenIsExpired &&
