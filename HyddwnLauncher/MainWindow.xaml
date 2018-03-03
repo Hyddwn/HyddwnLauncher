@@ -211,7 +211,11 @@
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Log">
                 <Grid>
-                    <TextBox BorderBrush="Transparent" FocusVisualStyle="{x:Null}" BorderThickness="0"
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="289*"/>
+                        <RowDefinition Height="33*"/>
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" BorderBrush="Transparent" FocusVisualStyle="{x:Null}" BorderThickness="0"
                              IsReadOnly="True" IsReadOnlyCaretVisible="False" x:Name="LogView"
                              VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" Grid.ColumnSpan="3" />
                     <StackPanel Orientation="Horizontal" Grid.Row="1">
@@ -364,40 +368,40 @@
                    Text="Copyright © 2016-2018 Sven (formally ImaBrokeDude)"
                    FontSize="8" />
         <Button Click="LaunchButton_Click" x:Name="LaunchButton" Content="Launch" HorizontalAlignment="Left"
-                Margin="704,428,0,0" VerticalAlignment="Top" Width="112" Height="45" />
-        <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="185,406,0,0"
-                                     VerticalAlignment="Top" Width="514" Height="44" />
+                Margin="704,0,0,18" VerticalAlignment="Bottom" Width="112" Height="45" />
+        <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="185,0,0,30"
+                                     VerticalAlignment="Bottom" Width="514" Height="44" />
         <ComboBox x:Name="ClientProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
                   SelectedIndex="{Binding ElementName=This, Path=Settings.LauncherSettings.ClientProfileSelectedIndex}"
                   SelectionChanged="ClientProfileComboBoxOnSelectionChanged"
-                  HorizontalAlignment="Left" Margin="13,374,0,0" VerticalAlignment="Top" Width="167" />
+                  HorizontalAlignment="Left" Margin="13,0,0,91" VerticalAlignment="Bottom" Width="167" />
         <ComboBox x:Name="ServerProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
                   SelectedIndex="{Binding ElementName=This, Path=Settings.LauncherSettings.ServerProfileSelectedIndex}"
                   SelectionChanged="ServerProfileComboBoxOnSelectionChanged"
-                  HorizontalAlignment="Left" Margin="13,417,0,0" VerticalAlignment="Top" Width="167" />
-        <TextBlock HorizontalAlignment="Left" Margin="464,462,0,0" TextWrapping="Wrap"
-                   Text="Launcher Version:" VerticalAlignment="Top" Width="102" />
-        <TextBlock HorizontalAlignment="Left" Height="16" Margin="333,462,0,0" TextWrapping="Wrap"
-                   Text="Client Version:" VerticalAlignment="Top" Width="82" />
-        <TextBlock x:Name="LauncherVersion" HorizontalAlignment="Left" Margin="566,462,0,0" TextWrapping="Wrap"
-                   Text="0" VerticalAlignment="Top" />
-        <TextBlock x:Name="ClientVersion" HorizontalAlignment="Left" Margin="415,462,0,0" TextWrapping="Wrap" Text="0"
-                   VerticalAlignment="Top" />
-        <Button x:Name="NewProfileButton" Content="Profiles" HorizontalAlignment="Left" Margin="185,374,0,0"
-                VerticalAlignment="Top" Width="100" Click="ProfilesButton_Click" Height="26" />
-        <TextBlock HorizontalAlignment="Left" Margin="13,359,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
+                  HorizontalAlignment="Left" Margin="13,0,0,48" VerticalAlignment="Bottom" Width="167" />
+        <TextBlock HorizontalAlignment="Left" Margin="464,0,0,13" TextWrapping="Wrap"
+                   Text="Launcher Version:" VerticalAlignment="Bottom" Width="102" />
+        <TextBlock HorizontalAlignment="Left" Height="16" Margin="333,0,0,13" TextWrapping="Wrap"
+                   Text="Client Version:" VerticalAlignment="Bottom" Width="82" />
+        <TextBlock x:Name="LauncherVersion" HorizontalAlignment="Left" Margin="566,0,0,13" TextWrapping="Wrap"
+                   Text="0" VerticalAlignment="Bottom" />
+        <TextBlock x:Name="ClientVersion" HorizontalAlignment="Left" Margin="415,0,0,13" TextWrapping="Wrap" Text="0"
+                   VerticalAlignment="Bottom" />
+        <Button x:Name="NewProfileButton" Content="Profiles" HorizontalAlignment="Left" Margin="185,0,0,91"
+                VerticalAlignment="Bottom" Width="100" Click="ProfilesButton_Click" Height="26" />
+        <TextBlock HorizontalAlignment="Left" Margin="13,0,0,116" TextWrapping="Wrap" VerticalAlignment="Bottom"
                    Text="Client Profile" />
-        <TextBlock HorizontalAlignment="Left" Margin="13,402,0,0" TextWrapping="Wrap" Text="Server Profile"
-                   VerticalAlignment="Top" />
-        <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="291,374,0,0"
-                  VerticalAlignment="Top"
+        <TextBlock HorizontalAlignment="Left" Margin="13,0,0,73" TextWrapping="Wrap" Text="Server Profile"
+                   VerticalAlignment="Bottom" />
+        <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="290,0,0,91"
+                  VerticalAlignment="Bottom"
                   IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UsePackFiles}" Height="26" />
-        <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,462,0,0"
+        <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,0,0,13"
                    TextWrapping="Wrap"
                    Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
-                   FontWeight="Bold" VerticalAlignment="Top">
+                   FontWeight="Bold" VerticalAlignment="Bottom">
             <Hyperlink Foreground="{DynamicResource AccentColorBrush}" Click="UpdateAvailableLinkClick">Update Available!</Hyperlink>
         </TextBlock>
     </Grid>
