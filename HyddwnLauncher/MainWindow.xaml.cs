@@ -191,7 +191,7 @@ namespace HyddwnLauncher
 
             // Trick to get the UI to display
             await Task.Delay(2000);
-            IsUpdateAvailable = await CheckForUpdates();
+            //IsUpdateAvailable = await CheckForUpdates();
 
             ImporterTextBlock.SetTextBlockSafe("Check Client Profiles...");
             _settingUpProfile = true;

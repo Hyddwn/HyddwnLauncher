@@ -19,7 +19,6 @@ namespace HyddwnLauncher.Model
     {
         private readonly Dictionary<string, string> _updateInfo;
 
-
         /// <summary>
         ///     Create and updator to be used anywehere within the application
         /// </summary>
@@ -85,6 +84,11 @@ namespace HyddwnLauncher.Model
                 return;
             }
 
+            await FinializeUpdateCheck();
+        }
+
+        public async void StartLauncherAsync()
+        {
             await FinializeUpdateCheck();
         }
 

@@ -121,6 +121,12 @@ namespace HyddwnLauncher
 
         private void SplashScreenLoaded(object sender, RoutedEventArgs e)
         {
+            if (!_launcherContext.LauncherSettingsManager.LauncherSettings.AutomaticallyCheckForUpdates)
+            {
+                _updator.StartLauncherAsync();
+                return;
+            }
+
             _updator.Run();
         }
     }

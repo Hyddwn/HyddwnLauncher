@@ -19,6 +19,7 @@ namespace HyddwnLauncher.Core
         private string _theme;
         private bool _usePackFiles;
         private bool _warnIfRootIsNotMabiRoot;
+        private bool _automaticallyCheckForUpdates;
 
         public LauncherSettings()
         {
@@ -33,6 +34,7 @@ namespace HyddwnLauncher.Core
             WarnIfRootIsNotMabiRoot = true;
             Theme = "BaseDark";
             Accent = "Cobalt";
+            AutomaticallyCheckForUpdates = false;
         }
 
         public bool UsePackFiles
@@ -152,6 +154,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _accent) return;
                 _accent = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool AutomaticallyCheckForUpdates
+        {
+            get => _automaticallyCheckForUpdates;
+            set
+            {
+                if (value == _automaticallyCheckForUpdates) return;
+                _automaticallyCheckForUpdates = value;
                 OnPropertyChanged();
             }
         }
