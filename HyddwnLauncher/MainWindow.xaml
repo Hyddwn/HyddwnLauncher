@@ -213,7 +213,12 @@
                 <Grid>
                     <TextBox BorderBrush="Transparent" FocusVisualStyle="{x:Null}" BorderThickness="0"
                              IsReadOnly="True" IsReadOnlyCaretVisible="False" x:Name="LogView"
-                             VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" />
+                             VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" Grid.ColumnSpan="3" />
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <Button HorizontalAlignment="Left" VerticalAlignment="Center" Content="Open Log File" Height="28" Margin="5,3,0,2" Width="83"></Button>
+                        <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,9,0,8"><Run FontWeight="Bold">LogFile Location:</Run></TextBlock>
+                        <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,9,0,8" Text="{Binding ElementName=This, Path=LauncherContext.LogFileLocationTruncated}"/>
+                    </StackPanel>
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Options">

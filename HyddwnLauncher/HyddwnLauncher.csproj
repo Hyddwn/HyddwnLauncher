@@ -136,6 +136,7 @@
     <Compile Include="Core\PluginHost.cs" />
     <Compile Include="Core\ServerProfile.cs" />
     <Compile Include="Core\SettingsManager.cs" />
+    <Compile Include="Core\Unmanaged.cs" />
     <Compile Include="Model\DownloadType.cs" />
     <Compile Include="Model\Updator.cs" />
     <Compile Include="Network\AsyncDownloader.cs" />

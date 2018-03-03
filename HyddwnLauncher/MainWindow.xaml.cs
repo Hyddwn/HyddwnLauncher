@@ -185,7 +185,6 @@ namespace HyddwnLauncher
             IsPatching = true;
 
             ImporterTextBlock.SetTextBlockSafe("Starting...");
-            Log.Info($"The log can be found at {LauncherContext.LogFileLocation}");
 
             ImportWindow.IsOpen = true;
 
