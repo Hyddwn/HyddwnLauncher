@@ -241,6 +241,17 @@
                                                   SelectionChanged="ComboBox_SelectionChanged" />
                                     </StackPanel>
                                 </StackPanel>
+                                <TextBlock Margin="5" Text="Update Options" FontWeight="Bold" />
+                                <StackPanel Margin="5">
+                                    <StackPanel Margin="5 2.5">
+                                        <CheckBox Margin="5 2.5"
+                                                  Content="Automatically Check for Updates"
+                                                  IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.AutomaticallyCheckForUpdates}" />
+                                    </StackPanel>
+                                    <StackPanel Margin="5 2.5" Orientation="Horizontal">
+                                        <Button Content="Check For Updates"/>
+                                    </StackPanel>
+                                </StackPanel>
                                 <TextBlock Margin="5" Text="Profile Options" FontWeight="Bold" />
                                 <StackPanel Margin="5">
                                     <StackPanel Margin="5 2.5">
