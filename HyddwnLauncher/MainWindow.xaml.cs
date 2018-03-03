@@ -460,6 +460,20 @@ namespace HyddwnLauncher
             OnLoginCancel();
         }
 
+        private async void OpenLogFileOnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(LauncherContext.LogFileLocation);
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                await this.ShowMessageAsync("Error opening file.",
+                    $"The following error occured when trying to open the log file:\r\n\r\n{ex.Message}");
+            }
+        }
+
         private async void ProfileEditorIsOpenChanged(object sender, RoutedEventArgs e)
         {
             if (ProfileEditor.IsOpen && ProfileManager.ClientProfiles.Count == 0 && _settingUpProfile)
