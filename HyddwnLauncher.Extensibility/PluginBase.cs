@@ -7,10 +7,10 @@ namespace HyddwnLauncher.Extensibility
 {
     public abstract class PluginBase : IPlugin
     {
-        protected IClientProfile ClientProfile;
-        protected IServerProfile ServerProfile;
-        protected PluginContext PluginContext;
-        protected Guid Guid;
+        protected internal IClientProfile ClientProfile;
+        protected internal IServerProfile ServerProfile;
+        protected internal PluginContext PluginContext;
+        protected internal Guid Guid;
 
         public string Name { get; set; }
 
