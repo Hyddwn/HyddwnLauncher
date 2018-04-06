@@ -6,6 +6,7 @@ using System.Net;
 using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
+using CefSharp;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Util;
 
@@ -22,6 +23,11 @@ namespace HyddwnLauncher
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            var settings = new CefSettings();
+            settings.CefCommandLineArgs.Add("disable-gpu-vsync", "1");
+            settings.CefCommandLineArgs.Add("disable-gpu", "1");
+            Cef.Initialize();
+
             var packFileClean = false;
 
             if (!Directory.Exists($@"{Assemblypath}\Logs\Hyddwn Launcher"))
