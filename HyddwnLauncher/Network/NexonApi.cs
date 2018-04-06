@@ -201,7 +201,8 @@ namespace HyddwnLauncher.Network
 
         private struct AccountLoginJson
         {
-            [JsonProperty(PropertyName = "id")] public string Id { get; set; }
+            [JsonProperty(PropertyName = "id")]
+            public string Id { get; set; }
 
             [JsonProperty(PropertyName = "password")]
             public string Password { get; set; }
@@ -212,7 +213,8 @@ namespace HyddwnLauncher.Network
             [JsonProperty(PropertyName = "client_id")]
             public string ClientId { get; set; }
 
-            [JsonProperty(PropertyName = "scope")] public string Scope { get; set; }
+            [JsonProperty(PropertyName = "scope")]
+            public string Scope { get; set; }
 
             [JsonProperty(PropertyName = "device_id")]
             public string DeviceId { get; set; }
