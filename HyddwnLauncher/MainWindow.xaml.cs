@@ -39,6 +39,7 @@ namespace HyddwnLauncher
 
         public MainWindow(LauncherContext launcherContext)
         {
+            ContentRendered += CustomOnContentRendered;
             Instance = this;
 #if DEBUG
            launcherContext.LauncherSettingsManager.Reset();
@@ -47,7 +48,7 @@ namespace HyddwnLauncher
             Settings = new LauncherSettingsManager();
             ProfileManager = new ProfileManager();
             ProfileManager.Load();
-            //Populate for the first time
+            // Populate for the first time
             if (ProfileManager.ServerProfiles.Count == 0)
             {
                 ProfileManager.ServerProfiles.Insert(0, ServerProfile.OfficialProfile);
@@ -73,7 +74,8 @@ namespace HyddwnLauncher
                     }).ToList();
 
             InitializeComponent();
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Loading...");
+            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
             _disableWhilePatching = new Control[]
             {
                 LaunchButton,
@@ -82,7 +84,52 @@ namespace HyddwnLauncher
                 ServerProfileComboBox
             };
 
+            IsPatching = true;
+
             _updateClose = false;
+        }
+
+        private async void CustomOnContentRendered(object sender, EventArgs eventArgs)
+        {
+            // Unload the delegate as soon as possible
+            ContentRendered -= CustomOnContentRendered;
+
+            if (_initialized) return;
+
+            _settingUpProfile = true;
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Loading Client Profiles...");
+            CheckClientProfiles();
+
+            while (_settingUpProfile)
+                await Task.Delay(100);
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Configuring Launcher...");
+            ConfigureLauncher();
+
+            var mblVersion = LauncherContext.Version;
+            Log.Info("Hyddwn Launcher Version {0}", mblVersion);
+            LauncherVersion.SetTextBlockSafe(mblVersion);
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting Client Version...");
+            var mabiVers = ReadVersion();
+            Log.Info("Mabinogi Version {0}", mabiVers);
+            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting Profile Updates...");
+            await ProfileManager.UpdateProfiles();
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Loading Plugins...");
+            InitializePlugins();
+
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+
+            IsPatching = false;
+
+            // Prevent this method from being ran more than once
+            _initialized = true;
         }
 
         #endregion
@@ -108,6 +155,12 @@ namespace HyddwnLauncher
         {
             get => (bool) GetValue(IsUpdateAvailableProperty);
             set => SetValue(IsUpdateAvailableProperty, value);
+        }
+
+        public object NewsGridCollection
+        {
+            get => (object)GetValue(NewsGridCollectionProperty);
+            set => SetValue(NewsGridCollectionProperty, value);
         }
 
         public bool IsPatching
@@ -151,6 +204,7 @@ namespace HyddwnLauncher
         private bool _updateClose;
         private bool _settingUpProfile;
         private Dictionary<string, MetroTabItem> _pluginTabs;
+        private bool _initialized;
 
         public event Action LoginSuccess;
         public event Action LoginCancel;
@@ -175,51 +229,7 @@ namespace HyddwnLauncher
                 Process.Start(processinfo);
             }
 
-            PluginHost.ShutdownPlugins();
-
-            Application.Current.Shutdown();
-        }
-
-        private async void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            IsPatching = true;
-
-            ImporterTextBlock.SetTextBlockSafe("Starting...");
-
-            ImportWindow.IsOpen = true;
-
-            // Trick to get the UI to display
-            await Task.Delay(2000);
-            //IsUpdateAvailable = await CheckForUpdates();
-
-            ImporterTextBlock.SetTextBlockSafe("Check Client Profiles...");
-            _settingUpProfile = true;
-            CheckClientProfiles();
-
-            while (_settingUpProfile)
-                await Task.Delay(250);
-
-            ImporterTextBlock.SetTextBlockSafe("Applying settings...");
-            ConfigureLauncher();
-
-            ImporterTextBlock.SetTextBlockSafe("Getting launcher version...");
-            var mblVersion = LauncherContext.Version;
-            Log.Info("Hyddwn Launcher Version {0}", mblVersion);
-            LauncherVersion.SetTextBlockSafe(mblVersion);
-
-            ImporterTextBlock.SetTextBlockSafe("Getting mabinogi version...");
-            var mabiVers = ReadVersion();
-            Log.Info("Mabinogi Version {0}", mabiVers);
-            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
-
-            ImporterTextBlock.Text = "Updating server profiles...";
-            await Task.Run(() => ProfileManager.UpdateProfiles());
-
-            ImporterTextBlock.Text = "Initializing Plugins...";
-            InitializePlugins();
-
-            ImportWindow.IsOpen = false;
-            IsPatching = false;
+            LauncherShutdown();
         }
 
         private void Updater_Closing(object sender, CancelEventArgs e)
@@ -589,7 +599,7 @@ namespace HyddwnLauncher
                                        "Please enter the url where your server profile can be located.") ?? "";
 
             serverProfile.ProfileUpdateUrl = profileUpdateUrl;
-            serverProfile.GetUpdates();
+            await serverProfile.GetUpdates();
 
             ProfileManager.ServerProfiles.Add(serverProfile);
             ServerProfileListBox.SelectedItem = serverProfile;
@@ -609,7 +619,6 @@ namespace HyddwnLauncher
         {
             Text.Text = "Building server pack file...";
             Loading.IsOpen = true;
-            await Task.Delay(300);
 
             var maxVersion = 0;
 
@@ -654,13 +663,12 @@ namespace HyddwnLauncher
         {
             try
             {
-                await Task.Delay(100);
                 var webClient = new WebClient();
                 var current = Assembly.GetExecutingAssembly().GetName().Version;
                 using (
                     var fileReader =
-                        new FileReader(
-                            webClient.OpenRead(
+                        new FileReader(await 
+                            webClient.OpenReadTaskAsync(
                                 "http://launcher.hyddwnproject.com/version")))
                 {
                     foreach (var str in fileReader)
@@ -727,9 +735,7 @@ namespace HyddwnLauncher
 
         private async Task DeletePackFiles()
         {
-            Text.Text = "Cleaning generated pack files...";
-            Loading.IsOpen = true;
-            await Task.Delay(300);
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Cleaning generated pack files...");
             await Task.Run(() =>
             {
                 var files = Directory.GetFiles(Path.GetDirectoryName(ActiveClientProfile.Location) + "\\package")
@@ -744,7 +750,7 @@ namespace HyddwnLauncher
                         Log.Exception(ex, $"Failed to delete '{file}'!");
                     }
             });
-            Loading.IsOpen = false;
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
         }
 
         private bool DependencyObjectIsValid(DependencyObject node)
@@ -867,12 +873,12 @@ namespace HyddwnLauncher
                 $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ActiveServerProfile.LoginIp} logport:{ActiveServerProfile.LoginPort} chatip:{ActiveServerProfile.ChatIp} chatport:{ActiveServerProfile.ChatPort} locale:USA env:Regular setting:file://data/features.xml";
 
             Log.Info("Beginning client launch...");
+            PluginHost.PreLaunch();
 
             Log.Info("Starting client.exe with the following args: {0}", arguments);
             try
             {
                 Process.Start(ActiveClientProfile.Location, arguments);
-                PluginHost.PostLaunch();
             }
             catch (Exception ex)
             {
@@ -881,10 +887,15 @@ namespace HyddwnLauncher
             }
 
             Log.Info("Client start success");
+            PluginHost.PostLaunch();
+
+            LauncherShutdown();
+        }
+
+        private void LauncherShutdown()
+        {
             Settings.SaveLauncherSettings();
-
             PluginHost.ShutdownPlugins();
-
             Application.Current.Shutdown();
         }
 
@@ -895,11 +906,8 @@ namespace HyddwnLauncher
             ImporterTextBlock.SetTextBlockSafe("Special thanks to cursey");
             ImportWindow.IsOpen = true;
             await Task.Delay(2000);
-            ImportWindow.IsOpen = false;
-
-            Text.Text = "Launching...";
-            Loading.IsOpen = true;
-            await Task.Delay(500);
+            ImporterTextBlock.SetTextBlockSafe("Launching...");
+            PluginHost.PreLaunch();
 
             var launchArgs =
                 "code:1622 verstr:248 ver:248 locale:USA env:Regular setting:file://data/features.xml " +
@@ -907,11 +915,10 @@ namespace HyddwnLauncher
 
             try
             {
+                Log.Info($"Starting client with the following parameters: {launchArgs}");
                 try
                 {
-                    Log.Info($"Starting client with the following parameters: {launchArgs}");
                     Process.Start(ActiveClientProfile.Location, launchArgs);
-                    PluginHost.PostLaunch();
                 }
                 catch (Exception ex)
                 {
@@ -920,13 +927,13 @@ namespace HyddwnLauncher
                 }
 
                 Log.Info("Client start success");
-                Settings.SaveLauncherSettings();
-                PluginHost.ShutdownPlugins();
-                Application.Current.Shutdown();
+                PluginHost.PostLaunch();
+
+                LauncherShutdown();
             }
             catch (IOException ex)
             {
-                Loading.IsOpen = false;
+                ImportWindow.IsOpen = false;
                 await this.ShowMessageAsync("Launch Failed", "Cannot start Mabinogi: " + ex.Message);
                 Log.Exception(ex, "Client start finished with errors");
             }

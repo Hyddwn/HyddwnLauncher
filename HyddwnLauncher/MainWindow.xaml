@@ -10,12 +10,13 @@
                       xmlns:core="clr-namespace:HyddwnLauncher.Core"
                       xmlns:design="clr-namespace:HyddwnLauncher.Util.Design"
                       xmlns:util="clr-namespace:HyddwnLauncher.Util"
+                      xmlns:converters="clr-namespace:HyddwnLauncher.Util.Converters"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}" WindowTransitionsEnabled="true"
                       NonActiveGlowBrush="Red"
                       Icon="Icon_Internal_a.ico"
-                      Closed="OnClose" Loaded="OnLoaded"
+                      Closed="OnClose"
                       
                       x:Name="This" Title="Hyddwn Launcher" Height="520" Width="830" KeyDown="This_KeyDown"
                       KeyUp="This_KeyUp">
@@ -224,7 +225,7 @@
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Options">
-                <Grid>
+                <Grid Background="Black">
                     <ScrollViewer>
                         <StackPanel x:Name="OptionStackPanel" Margin="10">
                             <TextBlock Margin="5" Text="Options" FontWeight="Bold" FontSize="16" />
@@ -288,6 +289,13 @@
                                             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
                                                        Text="Delete Custom Server Pack Files" />
                                             <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                                                       Text="Use the new news view." />
+                                            <CheckBox IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UseNewNewsView}" />
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
