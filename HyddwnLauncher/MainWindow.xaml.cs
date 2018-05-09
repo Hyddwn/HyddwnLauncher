@@ -157,12 +157,6 @@ namespace HyddwnLauncher
             set => SetValue(IsUpdateAvailableProperty, value);
         }
 
-        public object NewsGridCollection
-        {
-            get => (object)GetValue(NewsGridCollectionProperty);
-            set => SetValue(NewsGridCollectionProperty, value);
-        }
-
         public bool IsPatching
         {
             get => _patching;

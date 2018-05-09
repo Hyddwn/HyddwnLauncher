@@ -225,7 +225,7 @@
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Options">
-                <Grid Background="Black">
+                <Grid>
                     <ScrollViewer>
                         <StackPanel x:Name="OptionStackPanel" Margin="10">
                             <TextBlock Margin="5" Text="Options" FontWeight="Bold" FontSize="16" />
@@ -289,13 +289,6 @@
                                             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
                                                        Text="Delete Custom Server Pack Files" />
                                             <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="5 2.5">
-                                        <StackPanel Orientation="Horizontal" Margin="5">
-                                            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
-                                                       Text="Use the new news view." />
-                                            <CheckBox IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UseNewNewsView}" />
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
