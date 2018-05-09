@@ -89,49 +89,6 @@ namespace HyddwnLauncher
             _updateClose = false;
         }
 
-        private async void CustomOnContentRendered(object sender, EventArgs eventArgs)
-        {
-            // Unload the delegate as soon as possible
-            ContentRendered -= CustomOnContentRendered;
-
-            if (_initialized) return;
-
-            _settingUpProfile = true;
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Loading Client Profiles...");
-            CheckClientProfiles();
-
-            while (_settingUpProfile)
-                await Task.Delay(100);
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Configuring Launcher...");
-            ConfigureLauncher();
-
-            var mblVersion = LauncherContext.Version;
-            Log.Info("Hyddwn Launcher Version {0}", mblVersion);
-            LauncherVersion.SetTextBlockSafe(mblVersion);
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting Client Version...");
-            var mabiVers = ReadVersion();
-            Log.Info("Mabinogi Version {0}", mabiVers);
-            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting Profile Updates...");
-            await ProfileManager.UpdateProfiles();
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Loading Plugins...");
-            InitializePlugins();
-
-            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
-            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
-
-            IsPatching = false;
-
-            // Prevent this method from being ran more than once
-            _initialized = true;
-        }
-
         #endregion
 
         #region Properties
@@ -219,11 +176,54 @@ namespace HyddwnLauncher
                 };
 
                 // Process.Start is different that var process = new Process(processinfo).Start();
-                // It launches the process as it's own process instead of a child process.
+                // It launches the process as it's own process instead of as a child process.
                 Process.Start(processinfo);
             }
 
             LauncherShutdown();
+        }
+
+        private async void CustomOnContentRendered(object sender, EventArgs eventArgs)
+        {
+            // Unload the delegate as soon as possible
+            ContentRendered -= CustomOnContentRendered;
+
+            if (_initialized) return;
+
+            _settingUpProfile = true;
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Loading Client Profiles...");
+            CheckClientProfiles();
+
+            while (_settingUpProfile)
+                await Task.Delay(100);
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Configuring Launcher...");
+            ConfigureLauncher();
+
+            var mblVersion = LauncherContext.Version;
+            Log.Info("Hyddwn Launcher Version {0}", mblVersion);
+            LauncherVersion.SetTextBlockSafe(mblVersion);
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting Client Version...");
+            var mabiVers = ReadVersion();
+            Log.Info("Mabinogi Version {0}", mabiVers);
+            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting Profile Updates...");
+            await ProfileManager.UpdateProfiles();
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Loading Plugins...");
+            await InitializePlugins();
+
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+
+            IsPatching = false;
+
+            // Prevent this method from being ran more than once
+            _initialized = true;
         }
 
         private void Updater_Closing(object sender, CancelEventArgs e)
@@ -758,7 +758,7 @@ namespace HyddwnLauncher
             return false;
         }
 
-        private void InitializePlugins()
+        private async Task InitializePlugins()
         {
             PluginHost = new PluginHost();
             _pluginTabs = new Dictionary<string, MetroTabItem>();
@@ -766,96 +766,104 @@ namespace HyddwnLauncher
             if (PluginHost.Plugins == null) return;
 
             foreach (var plugin in PluginHost.Plugins)
-                try
+                await Task.Run(() =>
                 {
-                    var pluginContext = new PluginContext();
-                    pluginContext.MainUpdaterInternal += PluginMainUpdator;
-                    pluginContext.SetPatcherStateInternal +=
-                        isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
-                    pluginContext.LogExceptionInternal += async (exception, b) =>
+                    try
                     {
-                        Log.Exception(exception);
-                        if (b)
-                            await Dispatcher.Invoke(async () =>
-                                await this.ShowMessageAsync("Error", exception.Message));
-                    };
-                    pluginContext.LogStringInternal += async (s, b) =>
-                    {
-                        Log.Info(s);
-                        if (b)
-                            await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
-                    };
-                    pluginContext.GetNexonApiInternal += () => NexonApi.Instance;
-                    pluginContext.CreatePackEngineInternal += () => new PackEngine();
-                    pluginContext.RequestUserLoginInternal += async (successAction, cancelAction) =>
-                    {
-                        var credentials =
-                            CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
-
-                        if (credentials != null)
+                        var pluginContext = new PluginContext();
+                        pluginContext.MainUpdaterInternal += PluginMainUpdator;
+                        pluginContext.SetPatcherStateInternal +=
+                            isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
+                        pluginContext.LogExceptionInternal += async (exception, b) =>
                         {
-                            var success = false;
+                            Log.Exception(exception);
+                            if (b)
+                                await Dispatcher.Invoke(async () =>
+                                    await this.ShowMessageAsync("Error", exception.Message));
+                        };
+                        pluginContext.LogStringInternal += async (s, b) =>
+                        {
+                            Log.Info(s);
+                            if (b)
+                                await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
+                        };
+                        pluginContext.GetNexonApiInternal += () => NexonApi.Instance;
+                        pluginContext.CreatePackEngineInternal += () => new PackEngine();
+                        pluginContext.RequestUserLoginInternal += async (successAction, cancelAction) =>
+                        {
+                            var credentials =
+                                CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
 
-                            success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password,
-                                ActiveClientProfile.Guid);
-
-                            if (success)
+                            if (credentials != null)
                             {
-                                successAction.Raise();
-                                return;
-                            }
-                        }
+                                var success = false;
 
-                        LoginSuccess += successAction;
-                        LoginCancel += cancelAction;
-                        NxAuthLogin.IsOpen = true;
-                    };
-                    pluginContext.GetPatcherStateInternal += () => IsPatching;
-                    pluginContext.SetActiveTabInternal += guid =>
-                    {
+                                success = await NexonApi.Instance.GetAccessToken(credentials.Username,
+                                    credentials.Password,
+                                    ActiveClientProfile.Guid);
+
+                                if (success)
+                                {
+                                    successAction.Raise();
+                                    return;
+                                }
+                            }
+
+                            LoginSuccess += successAction;
+                            LoginCancel += cancelAction;
+                            NxAuthLogin.IsOpen = true;
+                        };
+                        pluginContext.GetPatcherStateInternal += () => IsPatching;
+                        pluginContext.SetActiveTabInternal += guid =>
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                if (_pluginTabs.TryGetValue($"{guid}", out var tab))
+                                    MainTabControl.SelectedItem = tab;
+                            });
+                        };
+                        pluginContext.ShowDialogInternal += (title, message) =>
+                        {
+                            var returnResult = false;
+
+                            Dispatcher.Invoke(async () =>
+                            {
+                                var result = await this.ShowMessageAsync(title, message,
+                                    MessageDialogStyle.AffirmativeAndNegative);
+
+                                returnResult = result == MessageDialogResult.Affirmative;
+                            });
+
+                            return returnResult;
+                        };
+                        pluginContext.CreateSettingsManagerInternal += (configPath, settingsSuffix) =>
+                            new SettingsManager(configPath, settingsSuffix);
+                        
                         Dispatcher.Invoke(() =>
                         {
-                            if (_pluginTabs.TryGetValue($"{guid}", out var tab))
-                                MainTabControl.SelectedItem = tab;
+                            plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
+
+                            var pluginUi = plugin.GetPluginUi();
+
+                            if (pluginUi == null) return;
+
+                            var pluginTabItem = new MetroTabItem
+                            {
+                                Header = plugin.Name,
+                                Content = pluginUi
+                            };
+
+                            _pluginTabs.Add($"{plugin.GetGuid()}", pluginTabItem);
+
+                            MainTabControl.Items.Add(pluginTabItem);
                         });
-                    };
-                    pluginContext.ShowDialogInternal += (title, message) =>
+                    }
+                    catch (Exception ex)
                     {
-                        var returnResult = false;
-
-                        Dispatcher.Invoke(async () =>
-                        {
-                            var result = await this.ShowMessageAsync(title, message,
-                                MessageDialogStyle.AffirmativeAndNegative);
-
-                            returnResult = result == MessageDialogResult.Affirmative;
-                        });
-
-                        return returnResult;
-                    };
-                    pluginContext.CreateSettingsManagerInternal += (configPath, settingsSuffix) =>
-                        new SettingsManager(configPath, settingsSuffix);
-                    plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
-
-                    var pluginUi = plugin.GetPluginUi();
-
-                    if (pluginUi == null) return;
-
-                    var pluginTabItem = new MetroTabItem
-                    {
-                        Header = plugin.Name,
-                        Content = pluginUi
-                    };
-
-                    _pluginTabs.Add($"{plugin.GetGuid()}", pluginTabItem);
-
-                    MainTabControl.Items.Add(pluginTabItem);
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, $"Error occured when loading plugin: {plugin.Name}");
-                    MessageBox.Show($"Error loading {plugin.Name}, {ex.GetType().Name}: {ex.Message}", "Error");
-                }
+                        Log.Exception(ex, $"Error occured when loading plugin: {plugin.Name}");
+                        MessageBox.Show($"Error loading {plugin.Name}, {ex.GetType().Name}: {ex.Message}", "Error");
+                    }
+                });
 
             PluginHost.ClientProfileChanged(ActiveClientProfile);
             PluginHost.ServerProfileChanged(ActiveServerProfile);
