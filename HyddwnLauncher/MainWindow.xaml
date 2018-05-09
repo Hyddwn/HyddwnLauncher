@@ -3,7 +3,6 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:cefwpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
@@ -202,12 +201,11 @@
                                                    TabStripPlacement="Bottom"
                                                    Margin="0,0,0,130">
             <controls:MetroTabItem Header="News">
-                <Grid>
-                    <!--<Image x:Name="HostImage" Source="{Binding ElementName=This, Path=LauncherContext.HostImage}"
-                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />-->
-                    <cefwpf:ChromiumWebBrowser HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                               Address="http://launcher.hyddwnproject.com/" />
-                </Grid>
+                <ContentPresenter>
+                    <ContentPresenter.Content >
+                        <Binding Path="LauncherContext.HostImage" ElementName="This"/>
+                    </ContentPresenter.Content>
+                </ContentPresenter>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Log">
                 <Grid>
