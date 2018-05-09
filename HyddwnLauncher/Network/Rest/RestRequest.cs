@@ -271,7 +271,7 @@ namespace HyddwnLauncher.Network.Rest
                         if (retryAfter.Value.TotalSeconds > 0)
                             await Task.Delay(retryAfter.Value).ConfigureAwait(false);
                         else
-                            // TMDb sometimes gives us 0-second waits, which can lead to rapid succession of requests
+                            // sometimes gives us 0-second waits, which can lead to rapid succession of requests
                             await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
                     }
 
