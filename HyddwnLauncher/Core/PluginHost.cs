@@ -71,31 +71,54 @@ namespace HyddwnLauncher.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, $"Error calling PatchBegin {plugin.Name}");
+                    Log.Exception(ex, $"An exception occured in {plugin.Name}'s PatchBegin method");
                 }
         }
 
         public void PatchEnd()
         {
             foreach (var plugin in Plugins)
+            {
                 try
                 {
                     plugin.PatchEnd();
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, $"Error called PatchEnd {plugin.Name}");
+                    Log.Exception(ex, $"An exception occured in {plugin.Name}'s PatchEnd method");
                 }
+            }
+               
         }
 
         public void PreLaunch()
         {
-            foreach (var plugin in Plugins) plugin.PreLaunch();
+            foreach (var plugin in Plugins)
+            {
+                try
+                {
+                    plugin.PreLaunch();
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"An exception occured in {plugin.Name}'s PreLaunch method");
+                }
+            }
         }
 
         public void PostLaunch()
         {
-            foreach (var plugin in Plugins) plugin.PostLaunch();
+            foreach (var plugin in Plugins)
+            {
+                try
+                {
+                    plugin.PostLaunch();
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, $"An exception occured in {plugin.Name}'s PostLaunch method");
+                }
+            }
         }
 
         public void ClientProfileChanged(ClientProfile clientProfile)
