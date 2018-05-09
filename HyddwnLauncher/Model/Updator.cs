@@ -50,9 +50,6 @@ namespace HyddwnLauncher.Model
             OnStatusChanged("Checking for updates...");
             OnProgressChanged();
 
-            // Minor hack because the following operation makes the splashscreen lag a little
-            await Task.Delay(1500);
-
             var updaterUpdateAvailable = await CheckForUpdaterUpdate();
             if (updaterUpdateAvailable)
             {
@@ -96,7 +93,6 @@ namespace HyddwnLauncher.Model
         {
             OnStatusChanged("Launching...");
             OnProgressChanged(isVisible: false);
-            await Task.Delay(500);
 
             LaunchApplication();
         }
@@ -189,7 +185,6 @@ namespace HyddwnLauncher.Model
         {
             try
             {
-                await Task.Delay(100);
                 var webClient = new WebClient();
 
                 using (var fileReader = new FileReader(await webClient.OpenReadTaskAsync(url)))
