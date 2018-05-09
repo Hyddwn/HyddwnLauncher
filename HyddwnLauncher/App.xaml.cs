@@ -19,6 +19,7 @@ namespace HyddwnLauncher
         private static readonly string LauncherAssembly = Assembly.GetExecutingAssembly().Location;
         private static readonly string Assemblypath = Path.GetDirectoryName(LauncherAssembly);
         public static string[] CmdArgs;
+        private readonly LauncherContext _launcherContext;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -27,7 +28,7 @@ namespace HyddwnLauncher
             if (!Directory.Exists($@"{Assemblypath}\Logs\Hyddwn Launcher"))
                 Directory.CreateDirectory($@"{Assemblypath}\Logs\Hyddwn Launcher");
 
-            var logFileString = $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm}.log";;
+            var logFileString = $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log";;
             var launcherVersionString = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             Log.LogFile = logFileString;
@@ -39,9 +40,9 @@ namespace HyddwnLauncher
             Log.Info("Initializing Launcher Context");
             var launcherContext = new LauncherContext(logFileString, launcherVersionString);
 
-#if DEBUG
-            launcherContext.LauncherSettingsManager.Reset();
-#endif
+//#if DEBUG
+//            launcherContext.LauncherSettingsManager.Reset();
+//#endif
             Log.Info("Checking for launch arguments...");
             CmdArgs = Environment.GetCommandLineArgs();
             for (var index = 0; index != e.Args.Length; ++index)
@@ -88,7 +89,7 @@ namespace HyddwnLauncher
                 launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit;
             Log.Info($"Applied max download limit of {launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit} based off of user settings.");
 
-            Log.Info("Application preinitialized, beginning startup tasks.");
+            Log.Info("Application initialized, beginning startup tasks...");
             var splashScreen = new SplashScreen(launcherContext);
             Current.MainWindow = splashScreen;
             splashScreen.Show();
@@ -157,6 +158,7 @@ namespace HyddwnLauncher
         protected override void OnExit(ExitEventArgs e)
         {
             Log.Info("=== Application Shutdown ===");
+
             base.OnExit(e);
         }
     }
