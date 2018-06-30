@@ -20,6 +20,7 @@ namespace HyddwnLauncher.Core
         private bool _usePackFiles;
         private bool _warnIfRootIsNotMabiRoot;
         private bool _automaticallyCheckForUpdates;
+        private Guid _defaultClientProfile;
 
         public LauncherSettings()
         {
@@ -35,6 +36,7 @@ namespace HyddwnLauncher.Core
             Theme = "BaseDark";
             Accent = "Cobalt";
             AutomaticallyCheckForUpdates = false;
+            DefaultClientProfile = Guid.Empty;
         }
 
         public bool UsePackFiles
@@ -165,6 +167,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _automaticallyCheckForUpdates) return;
                 _automaticallyCheckForUpdates = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Guid DefaultClientProfile
+        {
+            get => _defaultClientProfile;
+            set
+            {
+                if (value == _defaultClientProfile) return;
+                _defaultClientProfile = value;
                 OnPropertyChanged();
             }
         }
