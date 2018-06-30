@@ -91,8 +91,10 @@ namespace HyddwnLauncher.Util
 
         private static void WriteLine(LogLevel level, string format, params object[] args)
         {
-            OnLogged(format, args);
-            Write(level, format + Environment.NewLine, args);
+            var newLineFormat = format + Environment.NewLine;
+
+            OnLogged(newLineFormat, args);
+            Write(level, newLineFormat, args);
         }
 
         private static void Write(LogLevel level, string format, params object[] args)
