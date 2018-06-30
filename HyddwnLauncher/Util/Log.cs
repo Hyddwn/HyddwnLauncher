@@ -1,10 +1,13 @@
 ﻿using System;
 using System.IO;
+using HyddwnLauncher.Properties;
 
 namespace HyddwnLauncher.Util
 {
     public static class Log
     {
+        public static event Action<string> Logged;
+
         private static string _logFile;
         private static StreamWriter _file;
         private static readonly object _lockObject = new object();
@@ -81,8 +84,14 @@ namespace HyddwnLauncher.Util
             WriteLine(LogLevel.Exception, ex.ToString());
         }
 
+        internal static void OnLogged(string format, params object[] args)
+        {
+            Logged?.Raise(string.Format(format, args));
+        }
+
         private static void WriteLine(LogLevel level, string format, params object[] args)
         {
+            OnLogged(format, args);
             Write(level, format + Environment.NewLine, args);
         }
 
@@ -98,8 +107,6 @@ namespace HyddwnLauncher.Util
                 if (level != LogLevel.None)
                     _file.Write("[{0}] - ", level);
                 _file.Write(format, args);
-                if (MainWindow.Instance != null)
-                    MainWindow.Instance.Dispatcher.Invoke(() => MainWindow.Instance.AddToLog(format, args));
                 _file.Flush();
             }
         }

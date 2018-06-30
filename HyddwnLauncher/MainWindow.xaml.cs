@@ -41,6 +41,7 @@ namespace HyddwnLauncher
         {
             ContentRendered += CustomOnContentRendered;
             Instance = this;
+            Log.Logged += s => LogView.AppendText(s);
 #if DEBUG
            launcherContext.LauncherSettingsManager.Reset();
 #endif
@@ -597,16 +598,6 @@ namespace HyddwnLauncher
 
             ProfileManager.ServerProfiles.Add(serverProfile);
             ServerProfileListBox.SelectedItem = serverProfile;
-        }
-
-        public void AddToLog(string text)
-        {
-            LogView.AppendText(text);
-        }
-
-        public void AddToLog(string format, params object[] args)
-        {
-            AddToLog(string.Format(format, args));
         }
 
         private async Task BuildServerPackFile()
