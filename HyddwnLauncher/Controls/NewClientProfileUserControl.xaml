@@ -52,7 +52,7 @@
                         <Binding ElementName="This" Path="ClientProfile.Localization" Mode="TwoWay"
                                  UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
-                                <validation:LocationValidationRule />
+                                <validation:MabiLocalizationValidationRule />
                             </Binding.ValidationRules>
                         </Binding>
                     </TextBox.Text>
