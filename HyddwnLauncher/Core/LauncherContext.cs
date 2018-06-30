@@ -9,13 +9,7 @@ namespace HyddwnLauncher.Core
     {
         private readonly string[] _images =
         {
-            "bangor.png",
-            "damage.png",
-            "duncan.png",
-            "leehuga.png",
-            "lucifer.png",
-            "uniqueflyingpuppet.png",
-            "vans.png"
+            "splash.png",
         };
 
         public string LogFileLocation { get; protected set; }

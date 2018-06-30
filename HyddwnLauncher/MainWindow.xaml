@@ -202,11 +202,7 @@
                                                    TabStripPlacement="Bottom"
                                                    Margin="0,0,0,130">
             <controls:MetroTabItem Header="News">
-                <ContentPresenter>
-                    <ContentPresenter.Content >
-                        <Binding Path="LauncherContext.HostImage" ElementName="This"/>
-                    </ContentPresenter.Content>
-                </ContentPresenter>
+                <Image Source="{Binding Path=LauncherContext.HostImage, ElementName=This}"/>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="Log">
                 <Grid>

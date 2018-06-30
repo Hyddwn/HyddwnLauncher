@@ -235,6 +235,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="HyddwnLauncherSplashExact.png" />
+    <Resource Include="Images\splash.png" />
     <Content Include="Libs\ImaBrokeDude.Controls.dll" />
     <Content Include="Libs\Ionic.Zip.Reduced.dll" />
     <Content Include="Network\Hosted\HyddwnreCraptcha.html" />
@@ -264,15 +265,6 @@
       <Project>{FC944C15-6479-444A-8FA5-00A967DD0600}</Project>
       <Name>HyddwnLauncher.Extensibility</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\bangor.png" />
-    <Resource Include="Images\damage.png" />
-    <Resource Include="Images\duncan.png" />
-    <Resource Include="Images\leehuga.png" />
-    <Resource Include="Images\lucifer.png" />
-    <Resource Include="Images\uniqueflyingpuppet.png" />
-    <Resource Include="Images\vans.png" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
