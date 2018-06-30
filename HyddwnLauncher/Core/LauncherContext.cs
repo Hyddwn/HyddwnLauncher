@@ -13,7 +13,7 @@ namespace HyddwnLauncher.Core
         };
 
         public string LogFileLocation { get; protected set; }
-        public string LogFileLocationTruncated => Unmanaged.TruncatePath(LogFileLocation, 80);
+        public string LogFileLocationTruncated => Unmanaged.TruncatePath(LogFileLocation, 100);
         public string Version { get; protected set; }
 
         public LauncherContext(string logFileLocation, string version)
