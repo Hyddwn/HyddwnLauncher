@@ -41,7 +41,7 @@ namespace HyddwnLauncher
         {
             ContentRendered += CustomOnContentRendered;
             Instance = this;
-            Log.Logged += s => LogView.AppendText(s);
+            Log.Logged += s => Dispatcher.Invoke(() => LogView.AppendText(s));
 #if DEBUG
            launcherContext.LauncherSettingsManager.Reset();
 #endif
