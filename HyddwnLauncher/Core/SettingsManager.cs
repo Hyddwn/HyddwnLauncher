@@ -66,8 +66,6 @@ namespace HyddwnLauncher.Core
 		public void Save(Type type, object value)
 		{
 			var jsonFile = JsonConvert.SerializeObject(value, type, Formatting.Indented, JsonSerializerSettings);
-			if (File.Exists(_configurationFilePath))
-				File.Delete(_configurationFilePath);
 
 		    WriteAllTextWithBackup(_configurationFilePath, jsonFile);
 		}
@@ -85,9 +83,8 @@ namespace HyddwnLauncher.Core
 				settingsData = JsonConvert.DeserializeObject<dynamic>(jsonFile, JsonSerializerSettings);
 				settingsData[sectionName] = JsonConvert.SerializeObject(value, type, Formatting.Indented, JsonSerializerSettings);
 				jsonFile = JsonConvert.SerializeObject(settingsData, Formatting.Indented);
-				File.Delete(_configurationFilePath);
-				File.WriteAllText(_configurationFilePath, jsonFile);
-				return;
+			    WriteAllTextWithBackup(_configurationFilePath, jsonFile);
+                return;
 			}
 
 			settingsData[sectionName] = JsonConvert.SerializeObject(value, type, Formatting.Indented, JsonSerializerSettings);
@@ -131,6 +128,12 @@ namespace HyddwnLauncher.Core
         /// <param name="contents"></param>
 	    private static void WriteAllTextWithBackup(string path, string contents)
 	    {
+	        if (!File.Exists(path))
+	        {
+                File.WriteAllText(path, contents);
+	            return;
+	        }
+
 	        // generate a temp filename
 	        var tempPath = Path.GetTempFileName();
 
