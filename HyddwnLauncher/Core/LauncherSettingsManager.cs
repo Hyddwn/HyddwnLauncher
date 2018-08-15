@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Windows;
@@ -9,28 +9,34 @@ namespace HyddwnLauncher.Core
 {
 	public class LauncherSettingsManager
 	{
-		private readonly string _configurationJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\configuration.json";
+	    private readonly string _configurationJson =
+	        $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\configuration.json";
 
 		public LauncherSettings LauncherSettings { get; protected set; }
 		private SettingsManager SettingsManager {  get; }
 
-	    public LauncherSettingsManager()
-	    {
-	        try
-	        {
-	            if (!Directory.Exists(Path.GetDirectoryName(_configurationJson)))
-	                Directory.CreateDirectory(Path.GetDirectoryName(_configurationJson) ?? throw new ApplicationException("An error occured when attempting to load the configuration data: Path is Null!!!"));
+        public bool ConfigurationDirty { get; }
 
-	            SettingsManager = new SettingsManager(_configurationJson);
-	            LauncherSettings = LoadLauncherSettings();
-	            LauncherSettings.SaveOnChanged += SaveOnChanged;
-	        }
-	        catch (Exception e)
-	        {
-	            try
-	            {
-	                Log.Debug(e.Message);
-	                Log.Debug(e.StackTrace);
+		public LauncherSettingsManager()
+		{
+		    try
+		    {
+		        if (!Directory.Exists(Path.GetDirectoryName(_configurationJson)))
+		            Directory.CreateDirectory(Path.GetDirectoryName(_configurationJson) 
+		            ?? throw new ApplicationException("An error occured when attempting to load the configuration data: Path is Null!!!"));
+
+		        SettingsManager = new SettingsManager(_configurationJson);
+		        LauncherSettings = LoadLauncherSettings();
+		        LauncherSettings.SaveOnChanged += SaveOnChanged;
+            }
+		    catch (Exception e)
+		    {
+		        ConfigurationDirty = true;
+
+		        try
+		        {
+                    Log.Debug(e.Message);
+                    Log.Debug(e.StackTrace);
 
 	                File.Delete(_configurationJson);
 	                SettingsManager = new SettingsManager(_configurationJson);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -213,6 +213,10 @@ namespace HyddwnLauncher
 
             ImportWindow.IsOpen = false;
             IsPatching = false;
+
+            if (Settings.ConfigurationDirty)
+                await this.ShowMessageAsync("Configuration Error",
+                    "An error occured when loading the configuration file that required it to be reset.");
         }
 
         private void Updater_Closing(object sender, CancelEventArgs e)
