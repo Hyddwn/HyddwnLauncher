@@ -166,6 +166,7 @@
     <Compile Include="Util\ObservableDictionary.cs" />
     <Compile Include="Util\RequestLimitExceededException.cs" />
     <Compile Include="Util\ThemeUtil.cs" />
+    <Compile Include="Util\Validation\MabiLocalizationValidationRule.cs" />
     <Compile Include="Util\Validation\LocationValidationRule.cs" />
     <Page Include="Controls\NewClientProfileUserControl.xaml">
       <SubType>Designer</SubType>
