@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -120,7 +120,10 @@ namespace HyddwnLauncher
                         uiElement.IsEnabled = !value;
 
                     if (!value)
+                    {
                         PluginHost?.PatchEnd();
+                        ClientVersion.SetTextBlockSafe(ReadVersion().ToString());
+                    }
                     else
                         PluginHost?.PatchBegin();
                 });
