@@ -7,9 +7,10 @@ namespace HyddwnLauncher.Core
 {
     public class ClientProfile : INotifyPropertyChanged, IClientProfile
     {
+        private string _guid;
+        private string _localization;
         private string _location;
         private string _name;
-        private string _guid;
 
         public string Name
         {
@@ -40,6 +41,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _guid) return;
                 _guid = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Localization
+        {
+            get => _localization;
+            set
+            {
+                if (value == _localization) return;
+                _localization = value;
                 OnPropertyChanged();
             }
         }

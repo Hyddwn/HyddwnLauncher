@@ -742,7 +742,7 @@ namespace HyddwnLauncher
             return false;
         }
 
-        private void InitializePlugins()
+        private async Task InitializePlugins()
         {
             PluginHost = new PluginHost();
             _pluginTabs = new Dictionary<string, MetroTabItem>();
@@ -750,91 +750,104 @@ namespace HyddwnLauncher
             if (PluginHost.Plugins == null) return;
 
             foreach (var plugin in PluginHost.Plugins)
-            {
-                try
+                await Task.Run(() =>
                 {
-                    var pluginContext = new PluginContext();
-                    pluginContext.MainUpdater += PluginMainUpdator;
-                    pluginContext.SetPatcherState += isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
-                    pluginContext.LogException += async (exception, b) =>
+                    try
                     {
-                        Log.Exception(exception);
-                        if (b)
-                            await Dispatcher.Invoke(async () =>
-                                await this.ShowMessageAsync("Error", exception.Message));
-
-                    };
-                    pluginContext.LogString += async (s, b) =>
-                    {
-                        Log.Info(s);
-                        if (b)
-                            await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
-                    };
-                    pluginContext.GetNexonApi += () => NexonApi.Instance;
-                    pluginContext.CreatePackEngine += () => new PackEngine();
-                    pluginContext.RequestUserLogin += async (successAction, cancelAction) =>
-                    {
-                        var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
-
-                        if (credentials != null)
+                        var pluginContext = new PluginContext();
+                        pluginContext.MainUpdaterInternal += PluginMainUpdator;
+                        pluginContext.SetPatcherStateInternal +=
+                            isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
+                        pluginContext.LogExceptionInternal += async (exception, b) =>
                         {
-                            var success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password, ActiveClientProfile.Guid);
-                            if (success)
-                            {
-                                successAction.Raise();
-                                return;
-                            }
-                        }
+                            Log.Exception(exception);
+                            if (b)
+                                await Dispatcher.Invoke(async () =>
+                                    await this.ShowMessageAsync("Error", exception.Message));
+                        };
+                        pluginContext.LogStringInternal += async (s, b) =>
+                        {
+                            Log.Info(s);
+                            if (b)
+                                await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
+                        };
+                        pluginContext.GetNexonApiInternal += () => NexonApi.Instance;
+                        pluginContext.CreatePackEngineInternal += () => new PackEngine();
+                        pluginContext.RequestUserLoginInternal += async (successAction, cancelAction) =>
+                        {
+                            var credentials =
+                                CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
 
-                        LoginSuccess += successAction;
-                        LoginCancel += cancelAction;
-                        NxAuthLogin.IsOpen = true;
-                    };
-                    pluginContext.GetPatcherState += () => IsPatching;
-                    pluginContext.SetActiveTab += guid =>
-                    {
+                            if (credentials != null)
+                            {
+                                var success = false;
+
+                                success = await NexonApi.Instance.GetAccessToken(credentials.Username,
+                                    credentials.Password,
+                                    ActiveClientProfile.Guid);
+
+                                if (success)
+                                {
+                                    successAction.Raise();
+                                    return;
+                                }
+                            }
+
+                            LoginSuccess += successAction;
+                            LoginCancel += cancelAction;
+                            NxAuthLogin.IsOpen = true;
+                        };
+                        pluginContext.GetPatcherStateInternal += () => IsPatching;
+                        pluginContext.SetActiveTabInternal += guid =>
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                if (_pluginTabs.TryGetValue($"{guid}", out var tab))
+                                    MainTabControl.SelectedItem = tab;
+                            });
+                        };
+                        pluginContext.ShowDialogInternal += (title, message) =>
+                        {
+                            var returnResult = false;
+
+                            Dispatcher.Invoke(async () =>
+                            {
+                                var result = await this.ShowMessageAsync(title, message,
+                                    MessageDialogStyle.AffirmativeAndNegative);
+
+                                returnResult = result == MessageDialogResult.Affirmative;
+                            });
+
+                            return returnResult;
+                        };
+                        pluginContext.CreateSettingsManagerInternal += (configPath, settingsSuffix) =>
+                            new SettingsManager(configPath, settingsSuffix);
+
                         Dispatcher.Invoke(() =>
                         {
-                            if (_pluginTabs.TryGetValue($"{guid}", out var tab))
-                                MainTabControl.SelectedItem = tab;
+                            plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
+
+                            var pluginUi = plugin.GetPluginUi();
+
+                            if (pluginUi == null) return;
+
+                            var pluginTabItem = new MetroTabItem
+                            {
+                                Header = plugin.Name,
+                                Content = pluginUi
+                            };
+
+                            _pluginTabs.Add($"{plugin.GetGuid()}", pluginTabItem);
+
+                            MainTabControl.Items.Add(pluginTabItem);
                         });
-                    };
-                    pluginContext.ShowDialog += (title, message) =>
+                    }
+                    catch (Exception ex)
                     {
-                        var returnResult = false;
-
-                        Dispatcher.Invoke(async () =>
-                        {
-                             var result = await this.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative);
-
-                            returnResult = result == MessageDialogResult.Affirmative;
-                        });
-
-                        return returnResult;
-                    };
-                    pluginContext.CreateSettingsManager += (configPath, settingsSuffix) => new SettingsManager(configPath, settingsSuffix);
-                    plugin.Initialize(pluginContext, ActiveClientProfile, ActiveServerProfile);
-
-                    var pluginUi = plugin.GetPluginUi();
-
-                    if (pluginUi == null) return;
-
-                    var pluginTabItem = new MetroTabItem
-                    {
-                        Header = plugin.Name,
-                        Content = pluginUi
-                    };
-
-                    _pluginTabs.Add($"{plugin.GetGuid()}", pluginTabItem);
-
-                    MainTabControl.Items.Add(pluginTabItem);
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, $"Error occured when loading plugin: {plugin.Name}");
-                    MessageBox.Show($"Error loading {plugin.Name}, {ex.GetType().Name}: {ex.Message}", "Error");
-                }
-            }
+                        Log.Exception(ex, $"Error occured when loading plugin: {plugin.Name}");
+                        MessageBox.Show($"Error loading {plugin.Name}, {ex.GetType().Name}: {ex.Message}", "Error");
+                    }
+                });
 
             PluginHost.ClientProfileChanged(ActiveClientProfile);
             PluginHost.ServerProfileChanged(ActiveServerProfile);
