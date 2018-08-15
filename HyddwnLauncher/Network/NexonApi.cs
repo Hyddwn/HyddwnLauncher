@@ -23,21 +23,38 @@ namespace HyddwnLauncher.Network
 
         public static readonly NexonApi Instance = new NexonApi();
 
-        private RestClient _restClient;
-
         //Tokens
         private string _accessToken;
 
         //Token Expiry Timer
         private int _accessTokenExpiration;
-        private bool _accessTokenIsExpired;
         private DispatcherTimer _accessTokenExpiryTimer;
+        private bool _accessTokenIsExpired;
 
         private string _lastAuthenticationProfileGuid;
 
+        private RestClient _restClient;
+
+        public async Task<dynamic> GetMabinogiMetadata()
+        {
+            if (_accessToken == null || _accessTokenIsExpired)
+                throw new Exception("Invalid or expired access token!");
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+            var restResponse = await _restClient.Create("/products/10200").ExecuteGet<string>();
+            if (restResponse.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return default(dynamic);
+
+            }
+            var body = await restResponse.GetContent();
+
+            return JsonConvert.DeserializeObject<dynamic>(body);
+        }
+
         public bool IsAccessTokenValid(string guid)
         {
-            return _accessToken != null && !_accessTokenIsExpired && (_accessToken != LoginFailed || _accessToken != DevError) && guid == _lastAuthenticationProfileGuid;
+            return _accessToken != null && !_accessTokenIsExpired &&
+                   (_accessToken != LoginFailed || _accessToken != DevError) && guid == _lastAuthenticationProfileGuid;
         }
 
         public async Task<string> GetNxAuthHash()
@@ -87,9 +104,7 @@ namespace HyddwnLauncher.Network
 
             string match = Regex.Match(manifestUrl, versionSearch).Value;
 
-            int version;
-
-            int.TryParse(match.Replace('R', ' '), out version);
+            int.TryParse(match.Replace('R', ' '), out var version);
 
             return version;
         }
@@ -123,10 +138,16 @@ namespace HyddwnLauncher.Network
             // Compiler tricks to ensure it isn't optimized away
             var ps = password;
 
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-                return false;
+            var data = "";
 
-            var data = await response.GetContent();
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                data = await response.GetContent();
+                return false;
+            }
+
+
+            data = await response.GetContent();
             var body = JsonConvert.DeserializeObject<dynamic>(data);
             _accessToken = body["access_token"];
             _accessTokenExpiration = body["access_token_expires_in"];
@@ -139,12 +160,18 @@ namespace HyddwnLauncher.Network
             return true;
         }
 
+        public void HashPassword(ref string password)
+        {
+            // ToLower is required here, otherwise the password is incorrect.
+            password = BitConverter.ToString(Sha512.ComputeHash(Encoding.UTF8.GetBytes(password))).Replace("-", "")
+                .ToLower();
+        }
+
         private void StartAccessTokenExpiryTimer(int timeout = 7200)
         {
             _accessTokenExpiryTimer?.Stop();
 
-            _accessTokenExpiryTimer = new DispatcherTimer();
-            _accessTokenExpiryTimer.Interval = TimeSpan.FromSeconds(timeout);
+            _accessTokenExpiryTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(timeout) };
             _accessTokenExpiryTimer.Tick += (sender, args) => _accessTokenIsExpired = true;
         }
 
@@ -153,30 +180,23 @@ namespace HyddwnLauncher.Network
         /// </summary>
         /// <remarks>Confimed this gets the same UUID as 'wmic csproduct get uuid' </remarks>
         /// <returns></returns>
-        //TODO: Make this a little better.
         private string GetDeviceUuid()
         {
-            var Scope = new ManagementScope($@"\\{Environment.MachineName}\root\CIMV2", null);
-            Scope.Connect();
-            var Query = new ObjectQuery("SELECT UUID FROM Win32_ComputerSystemProduct");
-            var Searcher = new ManagementObjectSearcher(Scope, Query);
+            var scope = new ManagementScope($@"\\{Environment.MachineName}\root\CIMV2", null);
+            scope.Connect();
+            var query = new ObjectQuery("SELECT UUID FROM Win32_ComputerSystemProduct");
+            var searcher = new ManagementObjectSearcher(scope, query);
 
             var uuid = "";
 
-            foreach (ManagementObject wmiObject in Searcher.Get())
+            foreach (var o in searcher.Get())
             {
+                var wmiObject = (ManagementObject)o;
                 uuid = wmiObject["UUID"].ToString();
                 break;
             }
 
             return uuid;
-        }
-
-        public void HashPassword(ref string password)
-        {
-            // ToLower is required here, otherwise the password is incorrect.
-            password = BitConverter.ToString(Sha512.ComputeHash(Encoding.UTF8.GetBytes(password))).Replace("-", "")
-                .ToLower();
         }
 
         private struct AccountLoginJson

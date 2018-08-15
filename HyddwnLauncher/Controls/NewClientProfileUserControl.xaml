@@ -8,14 +8,16 @@
              xmlns:validation="clr-namespace:HyddwnLauncher.Util.Validation"
              xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="222">
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="260">
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ErrorWindow"
                                        Grid.RowSpan="2" TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
-                                       IsModal="true" ShowTitleBar="True" ShowCloseButton="True" Title="No Profile Selected"
-                                       ChildWindowWidth="300" ChildWindowHeight="80" >
+                                       IsModal="true" ShowTitleBar="True" ShowCloseButton="True"
+                                       Title="No Profile Selected"
+                                       ChildWindowWidth="300" ChildWindowHeight="80">
             <Grid>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0" TextWrapping="Wrap" TextAlignment="Center"
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0"
+                           TextWrapping="Wrap" TextAlignment="Center"
                            Text="You must select or create a Client Profile before setting properties." />
             </Grid>
         </simpleChildWindow:ChildWindow>
@@ -34,18 +36,38 @@
                 <TextBox Margin="48 0 0 0" Width="180" ToolTip="The File Path to Client.exe">
                     <Binding Path="ClientProfile.Location" ElementName="This" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
-                            <validation:LocationValidationRule/>
+                            <validation:LocationValidationRule />
                         </Binding.ValidationRules>
                     </Binding>
                 </TextBox>
-                <Button Margin="5 0 0 0" Content=". . ." IsEnabled="{Binding Path=ClientProfile, TargetNullValue=False}" Height="26" Click="BrowseButtonOnClick" />
+                <Button Margin="5 0 0 0" Content=". . ."
+                        IsEnabled="{Binding Path=ClientProfile, TargetNullValue=False}" Height="26"
+                        Click="BrowseButtonOnClick" />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
+                        ToolTip="The locale for this instance of Mabinogi.">
+                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Localization" />
+                <TextBox Margin="57 0 0 0" Width="180" ToolTip="A Friendly Name for your Client Profile">
+                    <TextBox.Text>
+                        <Binding ElementName="This" Path="ClientProfile.Localization" Mode="TwoWay"
+                                 UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <validation:MabiLocalizationValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
             </StackPanel>
             <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="Saved Crednetials">
                 <GroupBox Header="Saved Credentials" Margin="5">
                     <StackPanel>
-                        <TextBox x:Name="CredentialTextBox" Margin="10,5,10,0" IsEnabled="False" IsReadOnly="True" Text="{Binding ElementName=This, Path=CredentialUsername}"/>
+                        <TextBox x:Name="CredentialTextBox" Margin="10,5,10,0" IsEnabled="False" IsReadOnly="True"
+                                 Text="{Binding ElementName=This, Path=CredentialUsername}" />
                         <StackPanel Orientation="Horizontal" Margin="10 5">
-                            <Button Margin="0 0 0 0" IsEnabled="{Binding ElementName=CredentialTextBox, Path=Text.Length}" x:Name="ClientProfileSavedCredentialsRemoveButton" Content="Remove" Click="ClientProfileSavedCredentialsRemoveButtonOnClick"/>
+                            <Button Margin="0 0 0 0"
+                                    IsEnabled="{Binding ElementName=CredentialTextBox, Path=Text.Length}"
+                                    x:Name="ClientProfileSavedCredentialsRemoveButton" Content="Remove"
+                                    Click="ClientProfileSavedCredentialsRemoveButtonOnClick" />
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>

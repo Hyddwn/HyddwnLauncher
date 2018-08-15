@@ -48,6 +48,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientLocalization.cs" />
     <Compile Include="Interfaces\IClientProfile.cs" />
     <Compile Include="Interfaces\INexonApi.cs" />
     <Compile Include="Interfaces\IPackEngine.cs" />

@@ -9,17 +9,22 @@ namespace HyddwnLauncher.Core
 {
 	public class LauncherSettingsManager
 	{
-		private readonly string _configurationJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\configuration.json";
+	    private readonly string _configurationJson =
+	        $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\configuration.json";
 
 		public LauncherSettings LauncherSettings { get; protected set; }
 		private SettingsManager SettingsManager {  get; }
+
+        public bool ConfigurationDirty { get; }
 
 	    public LauncherSettingsManager()
 	    {
 	        try
 	        {
 	            if (!Directory.Exists(Path.GetDirectoryName(_configurationJson)))
-	                Directory.CreateDirectory(Path.GetDirectoryName(_configurationJson) ?? throw new ApplicationException("An error occured when attempting to load the configuration data: Path is Null!!!"));
+	                Directory.CreateDirectory(Path.GetDirectoryName(_configurationJson)
+	              ?? throw new ApplicationException(
+	                  "An error occured when attempting to load the configuration data: Path is Null!!!"));
 
 	            SettingsManager = new SettingsManager(_configurationJson);
 	            LauncherSettings = LoadLauncherSettings();
@@ -27,13 +32,23 @@ namespace HyddwnLauncher.Core
 	        }
 	        catch (Exception e)
 	        {
+	            
+
 	            try
 	            {
 	                Log.Debug(e.Message);
 	                Log.Debug(e.StackTrace);
 
 	                File.Delete(_configurationJson);
-	                SettingsManager = new SettingsManager(_configurationJson);
+
+	                if (File.Exists(_configurationJson + ".backup"))
+	                {
+	                    File.Move(_configurationJson + ".backup", _configurationJson);
+	                }
+	                else
+	                    ConfigurationDirty = true;
+
+                    SettingsManager = new SettingsManager(_configurationJson);
 	                LauncherSettings = LoadLauncherSettings();
 	                LauncherSettings.SaveOnChanged += SaveOnChanged;
 

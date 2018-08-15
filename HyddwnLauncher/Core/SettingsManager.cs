@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using HyddwnLauncher.Extensibility.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -65,10 +66,8 @@ namespace HyddwnLauncher.Core
 		public void Save(Type type, object value)
 		{
 			var jsonFile = JsonConvert.SerializeObject(value, type, Formatting.Indented, JsonSerializerSettings);
-			if (File.Exists(_configurationFilePath))
-				File.Delete(_configurationFilePath);
 
-			File.WriteAllText(_configurationFilePath, jsonFile);
+		    WriteAllTextWithBackup(_configurationFilePath, jsonFile);
 		}
 
 		public void SaveSection(Type type, object value)
@@ -84,14 +83,13 @@ namespace HyddwnLauncher.Core
 				settingsData = JsonConvert.DeserializeObject<dynamic>(jsonFile, JsonSerializerSettings);
 				settingsData[sectionName] = JsonConvert.SerializeObject(value, type, Formatting.Indented, JsonSerializerSettings);
 				jsonFile = JsonConvert.SerializeObject(settingsData, Formatting.Indented);
-				File.Delete(_configurationFilePath);
-				File.WriteAllText(_configurationFilePath, jsonFile);
-				return;
+			    WriteAllTextWithBackup(_configurationFilePath, jsonFile);
+                return;
 			}
 
 			settingsData[sectionName] = JsonConvert.SerializeObject(value, type, Formatting.Indented, JsonSerializerSettings);
 			jsonFile = JsonConvert.SerializeObject(settingsData, Formatting.Indented);
-			File.WriteAllText(_configurationFilePath, jsonFile);
+		    WriteAllTextWithBackup(_configurationFilePath, jsonFile);
 		}
 
 		private class SettingsManagerContractResolver : DefaultContractResolver
@@ -115,5 +113,46 @@ namespace HyddwnLauncher.Core
 			=> string.IsNullOrWhiteSpace(text)
 				? string.Empty
 				: $"{text[0].ToString().ToLowerInvariant()}{text.Substring(1)}";
-	}
+
+
+        /// <summary>
+        /// StackOverflow
+        /// https://stackoverflow.com/questions/25366534/file-writealltext-not-flushing-data-to-disk
+        ///
+        /// When saving the configuration, it ti first written to a temp file.
+        /// If something happens to cause the write to the temp file to fail, the save is lost
+        /// however the original data is untouched. This should reduce loss of configuration data
+        /// due to write failure significantly
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="contents"></param>
+	    private static void WriteAllTextWithBackup(string path, string contents)
+	    {
+	        if (!File.Exists(path))
+	        {
+                File.WriteAllText(path, contents);
+	            return;
+	        }
+
+	        // generate a temp filename
+	        var tempPath = Path.GetTempFileName();
+
+	        // create the backup name
+	        var backup = path + ".backup";
+
+	        // delete any existing backups
+	        if (File.Exists(backup))
+	            File.Delete(backup);
+
+	        // get the bytes
+	        var data = Encoding.UTF8.GetBytes(contents);
+
+	        // write the data to a temp file
+	        using (var tempFile = File.Create(tempPath, 4096, FileOptions.WriteThrough))
+	            tempFile.Write(data, 0, data.Length);
+
+	        // replace the contents
+	        File.Replace(tempPath, path, backup);
+	    }
+    }
 }

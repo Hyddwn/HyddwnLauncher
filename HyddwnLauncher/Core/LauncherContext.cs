@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher.Core
 {
@@ -20,7 +21,9 @@ namespace HyddwnLauncher.Core
 
         public LauncherContext()
         {
+            Log.Info("LauncherContext: Loading Settings...");
             LauncherSettingsManager = new LauncherSettingsManager();
+            Log.Info("LauncherContext: Load Complete!");
         }
 
         public LauncherSettingsManager LauncherSettingsManager { get; protected set; }
