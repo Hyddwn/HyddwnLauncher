@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -24,7 +24,9 @@ namespace HyddwnLauncher
         protected override async void OnStartup(StartupEventArgs e)
         {
             var packFileClean = false;
-            Log.LogFile = Assemblypath + "\\Hyddwn Launcher.log";
+            if (!Directory.Exists($@"{Assemblypath}\Logs\Hyddwn Launcher"))
+                Directory.CreateDirectory($@"{Assemblypath}\Logs\Hyddwn Launcher");
+            Log.LogFile = $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log";
 
             await Task.Delay(1000);
 
