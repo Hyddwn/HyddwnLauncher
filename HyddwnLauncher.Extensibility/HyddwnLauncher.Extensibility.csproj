@@ -55,6 +55,7 @@
     <Compile Include="Interfaces\IProgressIndicator.cs" />
     <Compile Include="Interfaces\IServerProfile.cs" />
     <Compile Include="Interfaces\ISettingsManager.cs" />
+    <Compile Include="Model\GetAccessTokenResponse.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginContext.cs" />
     <Compile Include="Primitives\IPlugin.cs" />
