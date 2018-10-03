@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
@@ -142,6 +143,8 @@ namespace HyddwnLauncher.Core
                 Log.Exception(ex);
                 MessageBox.Show(ex.Message, "Plugin Load Failure");
             }
+
+            if (Plugins == null) Plugins = new Collection<IPlugin>();
         }
     }
 }
