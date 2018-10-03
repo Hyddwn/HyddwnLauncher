@@ -134,6 +134,7 @@ namespace HyddwnLauncher.Network.Rest
 
                     httpRequestMessage.Content = new StringContent(json);
                     httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    httpRequestMessage.Headers.Add("Accept", "*/*");
                 }
 
                 return httpRequestMessage;
