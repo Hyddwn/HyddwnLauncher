@@ -154,7 +154,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             if (httpResponseMessage.StatusCode == HttpStatusCode.Unauthorized)
                 throw new UnauthorizedAccessException(
-                    "Call to Sqaure Connect API returned unauthorized. Most likely the API key is invalid.");
+                    "Call to Nexon API returned unauthorized. Most likely the API key is invalid.");
         }
 
         /// <exception cref="UnauthorizedAccessException">
