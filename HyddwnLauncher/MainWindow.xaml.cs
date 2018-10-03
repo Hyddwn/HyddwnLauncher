@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility;
+using HyddwnLauncher.Extensibility.Model;
 using HyddwnLauncher.Network;
 using HyddwnLauncher.Util;
 using Ionic.Zip;
@@ -101,11 +102,13 @@ namespace HyddwnLauncher
         public LauncherSettingsManager Settings { get; private set; }
         public List<AccentColorMenuData> AccentColors { get; set; }
         public List<AppThemeMenuData> AppThemes { get; set; }
+        public GetAccessTokenResponse LastResponseObject { get; set; }
+        public bool UsingCredentials { get; set; }
 
         public bool IsUpdateAvailable
         {
-            get { return (bool)GetValue(IsUpdateAvailableProperty); }
-            set { SetValue(IsUpdateAvailableProperty, value); }
+            get => (bool)GetValue(IsUpdateAvailableProperty);
+            set => SetValue(IsUpdateAvailableProperty, value); 
         }
 
         public bool IsPatching
@@ -134,9 +137,6 @@ namespace HyddwnLauncher
 
         #region Fields
 
-        private static readonly string ChatIpAddressPattern =
-            @"\bchatip\:(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b";
-
         private static readonly string AssemblyLocation = Assembly.GetExecutingAssembly().Location;
         private static readonly string Assemblypath = Path.GetDirectoryName(AssemblyLocation);
         private readonly BackgroundWorker _backgroundWorker = new BackgroundWorker();
@@ -150,6 +150,8 @@ namespace HyddwnLauncher
 
         public event Action LoginSuccess;
         public event Action LoginCancel;
+        public event Action DeviceTrustSuccess;
+        public event Action DeviceTrustCancel;
 
         #endregion
 
@@ -252,15 +254,28 @@ namespace HyddwnLauncher
                         if (credentials != null)
                         {
                             var success = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password, ActiveClientProfile.Guid);
-                            if (success)
+
+                            LastResponseObject = success;
+
+                            if (success.Success)
                             {
                                 LaunchOfficial();
                                 return;
                             }
-                        }
 
-                        LoginSuccess += LaunchOfficial;
-                        NxAuthLogin.IsOpen = true;
+                            LoginSuccess += LaunchOfficial;
+
+                            if (success.Code == NexonApi.TrustedDeviceRequired)
+                            {
+                                NxDeviceTrust.IsOpen = true;
+                                UsingCredentials = true;
+                                return;
+                            }
+
+                            NxAuthLogin.IsOpen = true;
+
+                            NxAuthLoginNotice.Text = success.Message;
+                        }
 
                         return;
                     }
@@ -430,14 +445,27 @@ namespace HyddwnLauncher
 
             var success = await NexonApi.Instance.GetAccessToken(username, password, ActiveClientProfile.Guid);
 
-            if (!success)
+            if (!success.Success)
             {
-                ToggleLoginControls();
+                // TODO: Release+: Add proper support for detection of response codes
+                if (success.Code != NexonApi.TrustedDeviceRequired)
+                {
+                    ToggleLoginControls();
 
-                NxAuthLoginNotice.Text = "Username or Password is Incorrect";
-                NxAuthLoginNotice.Visibility = Visibility.Visible;
+                    NxAuthLoginNotice.Text = "Username or Password is Incorrect";
+                    NxAuthLoginNotice.Visibility = Visibility.Visible;
 
-                NxAuthLoginPassword.Focus();
+                    NxAuthLoginPassword.Focus();
+                    return;
+                }
+
+                NxAuthLogin.IsOpen = false;
+
+                NxAuthLoginPassword.Password = password;
+                NxAuthLoginPassword.IsEnabled = false;
+
+                NxDeviceTrust.IsOpen = true;
+
                 return;
             }
 
@@ -457,6 +485,93 @@ namespace HyddwnLauncher
         {
             NxAuthLogin.IsOpen = false;
             OnLoginCancel();
+        }
+
+        private async void NxDeviceTrustOnContinue(object sender, RoutedEventArgs e)
+        {
+            if (NxDeviceTrustNotice.Visibility == Visibility.Visible)
+            {
+                NxDeviceTrustNotice.Visibility = Visibility.Collapsed;
+                NxDeviceTrustNotice.Text = "";
+            }
+
+            ToggleDeviceControls(); 
+
+            if (string.IsNullOrWhiteSpace(NxDeviceTrustVerificationCode.Text))
+            {
+                ToggleDeviceControls();
+
+                NxDeviceTrustNotice.Text = "Verification code is empty!";
+                NxDeviceTrustNotice.Visibility = Visibility.Visible;
+
+                NxDeviceTrustVerificationCode.Focus();
+                return;
+            }
+
+            var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+
+            var username = UsingCredentials ? credentials.Username : NxAuthLoginUsername.Text;
+            var verification = NxDeviceTrustVerificationCode.Text;
+            var saveDevice = NxDeviceTrustRememberMe.IsChecked != null && (bool) NxDeviceTrustRememberMe.IsChecked;
+
+            var success =
+                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(), saveDevice);
+
+            if (!success)
+            {
+                ToggleDeviceControls();
+
+                NxDeviceTrustNotice.Text = "Verification code error!";
+                NxDeviceTrustNotice.Visibility = Visibility.Visible;
+
+                NxDeviceTrustVerificationCode.Focus();
+                return;
+            }
+
+            var loginSuccess = new GetAccessTokenResponse();
+
+            if (UsingCredentials)
+            {
+                if (credentials != null)
+                    loginSuccess = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password, ActiveClientProfile.Guid);
+            }
+            else
+                loginSuccess = await NexonApi.Instance.GetAccessToken(username, NxAuthLoginPassword.Password, ActiveClientProfile.Guid);
+
+            if (!loginSuccess.Success)
+            {
+                NxDeviceTrust.IsOpen = false;
+
+                NxAuthLoginNotice.Text = "Username or Password is Incorrect";
+                NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginPassword.Focus();
+
+                NxAuthLogin.IsOpen = true;
+                return;
+            }
+
+            NxAuthLoginNotice.Visibility = Visibility.Collapsed;
+            NxAuthLoginNotice.Text = "";
+
+            NxAuthLoginPassword.Password = "";
+            NxAuthLoginPassword.IsEnabled = true;
+
+            NxDeviceTrust.IsOpen = false;
+
+            OnDeviceTrustSuccess();
+            OnLoginSuccess();
+        }
+
+        private void NxDeviceTrustOnCancel(object sender, RoutedEventArgs e)
+        {
+            NxDeviceTrust.IsOpen = false;
+
+            OnDeviceTrustCancel();
+            OnLoginCancel();
+
+            NxAuthLoginPassword.Password = "";
+            NxAuthLoginPassword.IsEnabled = true;
         }
 
         private async void ProfileEditorIsOpenChanged(object sender, RoutedEventArgs e)
@@ -780,15 +895,23 @@ namespace HyddwnLauncher
 
                             if (credentials != null)
                             {
-                                var success = false;
-
-                                success = await NexonApi.Instance.GetAccessToken(credentials.Username,
+                                var success = await NexonApi.Instance.GetAccessToken(credentials.Username,
                                     credentials.Password,
                                     ActiveClientProfile.Guid);
 
-                                if (success)
+                                if (success.Success)
                                 {
                                     successAction.Raise();
+                                    return;
+                                }
+
+                                LoginSuccess += successAction;
+                                LoginCancel += cancelAction;
+
+                                if (success.Code == NexonApi.TrustedDeviceRequired)
+                                {
+                                    NxDeviceTrust.IsOpen = true;
+                                    UsingCredentials = true;
                                     return;
                                 }
                             }
@@ -925,8 +1048,14 @@ namespace HyddwnLauncher
         public void OnLoginCancel()
         {
             LoginCancel?.Raise();
-            if (LoginCancel == null) return;
-            foreach (var d in LoginCancel.GetInvocationList())
+            if (LoginCancel != null)
+                foreach (var d in LoginCancel.GetInvocationList())
+                {
+                    LoginCancel -= d as Action;
+                }
+
+            if (LoginSuccess == null) return;
+            foreach (var d in LoginSuccess.GetInvocationList())
             {
                 LoginCancel -= d as Action;
             }
@@ -939,6 +1068,26 @@ namespace HyddwnLauncher
             foreach (var d in LoginSuccess.GetInvocationList())
             {
                 LoginSuccess -= d as Action;
+            }
+        }
+
+        public void OnDeviceTrustSuccess()
+        {
+            DeviceTrustSuccess?.Raise();
+            if (DeviceTrustSuccess == null) return;
+            foreach (var d in DeviceTrustSuccess.GetInvocationList())
+            {
+                DeviceTrustSuccess -= d as Action;
+            }
+        }
+
+        public void OnDeviceTrustCancel()
+        {
+            DeviceTrustCancel?.Raise();
+            if (DeviceTrustCancel == null) return;
+            foreach (var d in DeviceTrustCancel.GetInvocationList())
+            {
+                DeviceTrustCancel -= d as Action;
             }
         }
 
@@ -994,6 +1143,16 @@ namespace HyddwnLauncher
             RememberMeCheckBox.IsEnabled = !RememberMeCheckBox.IsEnabled;
 
             NxAuthLoginLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
+        }
+
+        private void ToggleDeviceControls()
+        {
+            NxDeviceTrustVerificationCode.IsEnabled = !NxDeviceTrustVerificationCode.IsEnabled;
+            NxDeviceTrustRememberMe.IsEnabled = !NxDeviceTrustRememberMe.IsEnabled;
+            NxDeviceTrustContinue.IsEnabled = !NxDeviceTrustContinue.IsEnabled;
+            NxDeviceTrustCancel.IsEnabled = !NxDeviceTrustCancel.IsEnabled;
+
+            NxDeviceTrustLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
         }
 
         private async void UpdateAvailableLinkClick(object sender, RoutedEventArgs e)

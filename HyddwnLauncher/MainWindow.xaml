@@ -161,6 +161,37 @@
                 </StackPanel>
             </Grid>
         </simpleChildWindow:ChildWindow>
+        <simpleChildWindow:ChildWindow x:Name="NxDeviceTrust"
+            IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
+            ChildWindowWidth="350" ChildWindowHeight="275" CloseByEscape="False">
+            <Grid>
+                <StackPanel Margin="0 10 0 0">
+                    <TextBlock Text="Trusted Device Required" HorizontalAlignment="Center" FontSize="30" />
+                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
+                        <Run
+                            Text="Please check your email, you should have received an email with a verification code. You will need to enter it below to continue." /><Run />
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
+                    <TextBox x:Name="NxDeviceTrustVerificationCode" controls:TextBoxHelper.UseFloatingWatermark="True"
+                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Verification Code" />
+                    <CheckBox x:Name="NxDeviceTrustRememberMe" Content="Remember This Device" Margin="75 5 75 2"/>
+                    <TextBlock x:Name="NxDeviceTrustNotice" VerticalAlignment="Center" Visibility="Collapsed"
+                               TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
+                </StackPanel>
+                <StackPanel VerticalAlignment="Bottom" Margin="15 0 15 10">
+                    <wpf:LoadingIndicator HorizontalAlignment="Center" Margin="0,0,0,5" IsTabStop="False"
+                                          x:Name="NxDeviceTrustLoadingIndicator"
+                                          Style="{StaticResource LoadingIndicatorArcsStyle}" IsActive="False" />
+                    <DockPanel VerticalAlignment="Bottom">
+                        <Button x:Name="NxDeviceTrustContinue" DockPanel.Dock="Left" IsDefault="True"  Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Continue"
+                                Click="NxDeviceTrustOnContinue" />
+                        <Button x:Name="NxDeviceTrustCancel" DockPanel.Dock="Right" IsCancel="True"  Width="100" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Cancel"
+                                Click="NxDeviceTrustOnCancel" />
+                    </DockPanel>
+                </StackPanel>
+            </Grid>
+        </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow x:Name="NoticeWindow"
             HorizontalContentAlignment="Center"
             VerticalContentAlignment="Center" Title=""

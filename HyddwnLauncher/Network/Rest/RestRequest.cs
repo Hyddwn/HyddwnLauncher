@@ -119,7 +119,7 @@ namespace HyddwnLauncher.Network.Rest
                 var httpRequestMessage = new HttpRequestMessage(httpMethod, uriBuilder.Uri);
 
                 //httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                httpRequestMessage.Headers.UserAgent.ParseAdd("NexonLauncher.nxl-17.05.05-479-4a3d51e");
+                httpRequestMessage.Headers.UserAgent.ParseAdd("NexonLauncher.nxl-18.12.02-407-773e6dd");
                 if (!string.IsNullOrWhiteSpace(_restClient.AccessToken))
                 {
                     httpRequestMessage.Headers.Add("Cookie",
@@ -128,13 +128,13 @@ namespace HyddwnLauncher.Network.Rest
                         $"Bearer {Convert.ToBase64String(Encoding.UTF8.GetBytes(_restClient.AccessToken))}");
                 }
 
-
                 if ((httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put) && _bodyObj != null)
                 {
                     var json = JsonConvert.SerializeObject(_bodyObj);
 
                     httpRequestMessage.Content = new StringContent(json);
                     httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    httpRequestMessage.Headers.Add("Accept", "*/*");
                 }
 
                 return httpRequestMessage;
@@ -154,7 +154,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             if (httpResponseMessage.StatusCode == HttpStatusCode.Unauthorized)
                 throw new UnauthorizedAccessException(
-                    "Call to Sqaure Connect API returned unauthorized. Most likely the API key is invalid.");
+                    "Call to Nexon API returned unauthorized. Most likely the API key is invalid.");
         }
 
         /// <exception cref="UnauthorizedAccessException">
