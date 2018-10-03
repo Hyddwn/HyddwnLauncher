@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using HyddwnLauncher.Extensibility.Model;
 
 namespace HyddwnLauncher.Extensibility.Interfaces
 {
@@ -14,7 +15,7 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// <param name="password">The SHA512 hashed password to log in with</param>
         /// <param name="guid">THe currently active profile GUID</param>
         /// <returns></returns>
-        Task<bool> GetAccessToken(string username, string password, string guid);
+        Task<GetAccessTokenResponse> GetAccessToken(string username, string password, string guid);
 
         /// <summary>
         ///     Attempts to identify the newets version of the mabinogi client

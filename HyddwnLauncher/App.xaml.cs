@@ -72,6 +72,7 @@ namespace HyddwnLauncher
             launcherContext.LauncherSettingsManager.LauncherSettings.FirstRun = true;
 #endif
             CheckForAdmin(launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin);
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.DefaultConnectionLimit = launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit;
             Log.Info($"Applied max download limit of {launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit} based off of user settings.");
             Log.Info("Application initialized, loading main window.");
