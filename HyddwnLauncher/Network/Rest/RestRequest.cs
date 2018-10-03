@@ -119,7 +119,7 @@ namespace HyddwnLauncher.Network.Rest
                 var httpRequestMessage = new HttpRequestMessage(httpMethod, uriBuilder.Uri);
 
                 //httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                httpRequestMessage.Headers.UserAgent.ParseAdd("NexonLauncher.nxl-17.05.05-479-4a3d51e");
+                httpRequestMessage.Headers.UserAgent.ParseAdd("NexonLauncher.nxl-18.12.02-407-773e6dd");
                 if (!string.IsNullOrWhiteSpace(_restClient.AccessToken))
                 {
                     httpRequestMessage.Headers.Add("Cookie",
@@ -127,7 +127,6 @@ namespace HyddwnLauncher.Network.Rest
                     httpRequestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse(
                         $"Bearer {Convert.ToBase64String(Encoding.UTF8.GetBytes(_restClient.AccessToken))}");
                 }
-
 
                 if ((httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put) && _bodyObj != null)
                 {
