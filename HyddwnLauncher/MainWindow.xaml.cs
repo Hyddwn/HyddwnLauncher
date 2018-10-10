@@ -212,7 +212,7 @@ namespace HyddwnLauncher
             await Task.Run(() => ProfileManager.UpdateProfiles());
 
             ImporterTextBlock.Text = "Initializing Plugins...";
-            InitializePlugins();
+            await InitializePlugins();
 
             ImportWindow.IsOpen = false;
             IsPatching = false;
