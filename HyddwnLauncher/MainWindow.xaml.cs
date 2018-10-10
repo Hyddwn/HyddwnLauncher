@@ -257,6 +257,7 @@ namespace HyddwnLauncher
 
                             if (success.Success)
                             {
+                                LoginSuccess += LaunchOfficial;
                                 LaunchOfficial();
                                 return;
                             }
