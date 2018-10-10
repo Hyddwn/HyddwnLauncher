@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using HyddwnLauncher.Util;
 using Newtonsoft.Json;
@@ -37,6 +38,10 @@ namespace HyddwnLauncher.Core
         {
             ClientProfiles = LoadClientProfiles();
             ServerProfiles = LoadServerProfiles();
+
+            // Attempt to correct existing profile with no localization set
+            foreach (var clientProfile in ClientProfiles.Where(x => string.IsNullOrWhiteSpace(x.Localization)))
+                clientProfile.Localization = "North America";
         }
 
         public ObservableCollection<ClientProfile> LoadClientProfiles()
