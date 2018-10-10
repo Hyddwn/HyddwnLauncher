@@ -39,7 +39,7 @@ namespace HyddwnLauncher.Core
             ClientProfiles = LoadClientProfiles();
             ServerProfiles = LoadServerProfiles();
 
-            // Attempt to correct existing profile with no localization set
+            // Attempt to correct existing profiles with no localization set
             foreach (var clientProfile in ClientProfiles.Where(x => string.IsNullOrWhiteSpace(x.Localization)))
                 clientProfile.Localization = "North America";
         }
