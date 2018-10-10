@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Windows;
 using HyddwnLauncher.Util;
-using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Core
 {
@@ -32,8 +30,6 @@ namespace HyddwnLauncher.Core
 	        }
 	        catch (Exception e)
 	        {
-	            
-
 	            try
 	            {
 	                Log.Debug(e.Message);
