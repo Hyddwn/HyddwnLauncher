@@ -12,6 +12,11 @@ namespace HyddwnLauncher.Core
         private string _location;
         private string _name;
 
+        public ClientProfile()
+        {
+            Localization = "North America";
+        }
+
         public string Name
         {
             get => _name;
