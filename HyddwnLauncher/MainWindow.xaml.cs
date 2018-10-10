@@ -76,8 +76,6 @@ namespace HyddwnLauncher
             };
 
             _updateClose = false;
-
-
         }
 
         #endregion
@@ -160,7 +158,7 @@ namespace HyddwnLauncher
         {
             if (_updateClose)
             {
-                var processinfo = new ProcessStartInfo
+                var processInfo = new ProcessStartInfo
                 {
                     Arguments =
                         $"{"\"" + _updateInfo["File"] + "\""} {_updateInfo["SHA256"]} {"\"" + _updateInfo["Execute"] + "\""}",
@@ -169,7 +167,7 @@ namespace HyddwnLauncher
 
                 // Process.Start is different that var process = new Process(processinfo).Start();
                 // It launches the process as it's own process instead of a child process.
-                Process.Start(processinfo);
+                Process.Start(processInfo);
             }
 
             PluginHost.ShutdownPlugins();
