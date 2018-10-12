@@ -276,6 +276,9 @@ namespace HyddwnLauncher
                             NxAuthLoginNotice.Text = success.Message;
                         }
 
+                        LoginSuccess += LaunchOfficial;
+                        NxAuthLogin.IsOpen = true;
+
                         return;
                     }
 
