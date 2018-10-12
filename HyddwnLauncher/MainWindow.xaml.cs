@@ -697,7 +697,7 @@ namespace HyddwnLauncher
 
         public void AddToLog(string text)
         {
-            LogView.AppendText(text);
+            LogView?.AppendText(text);
         }
 
         public void AddToLog(string format, params object[] args)
