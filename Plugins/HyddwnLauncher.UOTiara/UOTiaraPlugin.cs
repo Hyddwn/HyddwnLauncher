@@ -15,29 +15,23 @@ namespace HyddwnLauncher.UOTiara
     [Export(typeof(IPlugin))]
     public class UOTiaraPlugin : PluginBase
     {
-        private Guid _guid;
-        private PluginContext _pluginContext;
-        private IClientProfile _clientProfile;
         private UOTiaraPluginUI _pluginUi;
 
-        public override void Initialize(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
+        public override void Initialize(PluginContext pluginContext, IClientProfile activeClientProfile,
+            IServerProfile activeServerProfile)
         {
+            base.Initialize(pluginContext, activeClientProfile, activeServerProfile);
+
             Name = "UOTiara";
-            _guid = Guid.NewGuid();
-            _pluginContext = pluginContext;
-            _clientProfile = clientProfile;
-            _pluginUi = new UOTiaraPluginUI(_pluginContext, _clientProfile);
+
+            _pluginUi = new UOTiaraPluginUI(PluginContext, ClientProfile, ServerProfile);
         }
 
-        public override Guid GetGuid()
-        {
-            return _guid;
-        }
 
         public override void ClientProfileChanged(IClientProfile clientProfile)
         {
-            _clientProfile = clientProfile;
-            _pluginUi.ClientProfileChanged(_clientProfile);
+            base.ClientProfileChanged(clientProfile);
+            _pluginUi.ClientProfileChanged(ClientProfile);
         }
 
         public override UserControl GetPluginUi()

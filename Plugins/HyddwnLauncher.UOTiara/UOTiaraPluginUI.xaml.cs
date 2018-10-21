@@ -28,13 +28,15 @@ namespace HyddwnLauncher.UOTiara
         public ObservableCollection<ModInfo> ModInfoList { get; set; } = new ObservableCollection<ModInfo>();
         private readonly PluginContext _pluginContext;
         private IClientProfile _clientProfile;
+        private IServerProfile _serverProfile;
 
         private string MabiRoot => Path.Combine(Path.GetDirectoryName(_clientProfile.Location), "..");
 
-        public UOTiaraPluginUI(PluginContext pluginContext, IClientProfile clientProfile)
+        public UOTiaraPluginUI(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
         {
             _pluginContext = pluginContext;
             _clientProfile = clientProfile;
+            _serverProfile = serverProfile;
 
             InitializeComponent();
         }
