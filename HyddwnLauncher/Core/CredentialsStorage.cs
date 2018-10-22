@@ -35,7 +35,7 @@ namespace HyddwnLauncher.Core
 				sr.Dispose();
 				fs.Dispose();
 
-				return result;
+			    return result ?? new ObservableDictionary<string, CredentialsObject>();
 			}
 			catch (Exception)
 			{

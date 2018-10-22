@@ -56,7 +56,7 @@ namespace HyddwnLauncher.Core
                 sr.Dispose();
                 fs.Dispose();
 
-                return result;
+                return result ?? new ObservableCollection<ClientProfile>();
             }
             catch (Exception)
             {
@@ -76,7 +76,7 @@ namespace HyddwnLauncher.Core
                 sr.Dispose();
                 fs.Dispose();
 
-                return result;
+                return result ?? new ObservableCollection<ServerProfile>();
             }
             catch (Exception)
             {
