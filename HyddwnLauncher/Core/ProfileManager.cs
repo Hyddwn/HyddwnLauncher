@@ -88,11 +88,8 @@ namespace HyddwnLauncher.Core
         {
             try
             {
-                var json = JsonConvert.SerializeObject(ClientProfiles, Formatting.Indented);
-                if (File.Exists(_clientProfileJson))
-                    File.Delete(_clientProfileJson);
-
-                File.WriteAllText(_clientProfileJson, json);
+                var jsonFile = JsonConvert.SerializeObject(ClientProfiles, Formatting.Indented);
+                jsonFile.WriteAllTextWithBackup(_clientProfileJson);
             }
             catch (Exception ex)
             {
@@ -105,11 +102,8 @@ namespace HyddwnLauncher.Core
         {
             try
             {
-                var json = JsonConvert.SerializeObject(ServerProfiles, Formatting.Indented);
-                if (File.Exists(_serverProfileJson))
-                    File.Delete(_serverProfileJson);
-
-                File.WriteAllText(_serverProfileJson, json);
+                var jsonFile = JsonConvert.SerializeObject(ServerProfiles, Formatting.Indented);
+                jsonFile.WriteAllTextWithBackup(_serverProfileJson);
             }
             catch (Exception ex)
             {

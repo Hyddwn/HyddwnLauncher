@@ -47,11 +47,8 @@ namespace HyddwnLauncher.Core
 		{
 			try
 			{
-				var json = JsonConvert.SerializeObject(CredntialsObjects, Formatting.Indented);
-				if (File.Exists(_credentialsJson))
-					File.Delete(_credentialsJson);
-
-				File.WriteAllText(_credentialsJson, json);
+			    var jsonFile = JsonConvert.SerializeObject(CredntialsObjects, Formatting.Indented);
+			    jsonFile.WriteAllTextWithBackup(_credentialsJson);
 			}
 			catch (Exception ex)
 			{
