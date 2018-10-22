@@ -37,7 +37,7 @@ namespace HyddwnLauncher
            launcherContext.LauncherSettingsManager.Reset();
 #endif
             LauncherContext = launcherContext;
-            Settings = new LauncherSettingsManager();
+            Settings = launcherContext.LauncherSettingsManager;
             ProfileManager = new ProfileManager();
             ProfileManager.Load();
             //Populate for the first time
