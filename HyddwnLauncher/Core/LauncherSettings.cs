@@ -19,6 +19,7 @@ namespace HyddwnLauncher.Core
         private bool _warnIfRootIsNotMabiRoot;
         private string _theme;
         private string _accent;
+        private bool _disableMultiClientCheck;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event Action<string> SaveOnChanged;
@@ -36,6 +37,7 @@ namespace HyddwnLauncher.Core
             WarnIfRootIsNotMabiRoot = true;
             Theme = "BaseDark";
             Accent = "Cobalt";
+            DisableMultiClientCheck = false;
         }
 
         public bool UsePackFiles
@@ -158,6 +160,16 @@ namespace HyddwnLauncher.Core
             }
         }
 
+        public bool DisableMultiClientCheck
+        {
+            get => _disableMultiClientCheck;
+            set
+            {
+                if (value == _disableMultiClientCheck) return;
+                _disableMultiClientCheck = value;
+                OnPropertyChanged();
+            }
+        }
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
