@@ -10,16 +10,27 @@ namespace HyddwnLauncher
         [STAThread]
         public static void Main(string[] args)
         {
-            var assemblypath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);   
-
-            if (!Directory.Exists(assemblypath + "\\Archived"))
-                Directory.CreateDirectory(assemblypath + "\\Archived");
-            Log.Archive = assemblypath + "\\Archived";
+            var assemblypath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {
                 try
                 {
+                    try
+                    {
+                        if (!Directory.Exists($@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions"))
+                            Directory.CreateDirectory($@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions");
+
+                        File.WriteAllText(
+                            $@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions\Unhandled_Exception-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log",
+                            $"Hyddwn Launcher Version: {Assembly.GetExecutingAssembly().GetName().Version}\r\n" +
+                            $"Exception {eventArgs.ExceptionObject}");
+                    }
+                    catch
+                    {
+                        Log.Info("Failed to log exception to file.");
+                    }
+
                     Log.Exception((Exception) eventArgs.ExceptionObject, "Fatal error occured in application!");
                     new ExceptionReporter((Exception) eventArgs.ExceptionObject).ShowDialog();
                 }

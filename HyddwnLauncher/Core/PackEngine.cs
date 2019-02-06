@@ -15,6 +15,26 @@ namespace HyddwnLauncher.Core
         private static readonly string Assembly = System.Reflection.Assembly.GetExecutingAssembly().Location;
         private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
 
+        public void Pack(string inputDir, string outputFile, uint version, int level = 9)
+        {
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+
+            var files = Directory.GetFiles(inputDir, "*", SearchOption.AllDirectories);
+            Array.Sort(files);
+
+            using (var pack = new PackResourceSetCreater(version, level))
+            {
+                foreach (var filePath in files)
+                {
+                    var fileName = filePath.Replace(inputDir + "\\", "");
+                    pack.AddFile(fileName, filePath);
+                }
+
+                pack.CreatePack(outputFile);
+            }
+        }
+
         /// <exception cref="ArgumentNullException"><paramref name="serverProfile" /> is <see langword="null" />.</exception>
         public bool BuildServerPack(ServerProfile serverProfile, int mabiVersion)
         {
@@ -93,33 +113,13 @@ namespace HyddwnLauncher.Core
                 return false;
             }
 
-            var version = (uint)mabiVersion;
+            var version = (uint) mabiVersion;
 
             Pack(serverPackDataPath, packFileName, ++version);
 
             TryDeleteDirectory(extractDirectory);
 
             return true;
-        }
-
-        public void Pack(string inputDir, string outputFile, uint version, int level = 9)
-        {
-            if (File.Exists(outputFile))
-                File.Delete(outputFile);
-
-            var files = Directory.GetFiles(inputDir, "*", SearchOption.AllDirectories);
-            Array.Sort(files);
-
-            using (var pack = new PackResourceSetCreater(version, level))
-            {
-                foreach (var filePath in files)
-                {
-                    var fileName = filePath.Replace(inputDir + "\\", "");
-                    pack.AddFile(fileName, filePath);
-                }
-
-                pack.CreatePack(outputFile);
-            }
         }
 
         public static void TryDeleteDirectory(string p)

@@ -10,8 +10,11 @@ namespace HyddwnLauncher.Core
 {
     public class ProfileManager
     {
-        private readonly string _clientProfileJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\clientprofiles.json";
-        private readonly string _serverProfileJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\serverprofiles.json";
+        private readonly string _clientProfileJson =
+            $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\clientprofiles.json";
+
+        private readonly string _serverProfileJson =
+            $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\serverprofiles.json";
 
         public ProfileManager()
         {

@@ -14,9 +14,10 @@
     <FrameworkElement.Style>
         <Style TargetType="{x:Type controls:MetroWindow}">
             <Setter Property="controls:MetroWindow.WindowTitleBrush" Value="{DynamicResource WindowBackgroundBrush}" />
-            <Setter Property="controls:MetroWindow.NonActiveWindowTitleBrush" Value="{DynamicResource WindowBackgroundBrush}" />
-            <Setter Property="TitleForeground" Value="{DynamicResource BlackColorBrush}"/>
-            <Setter Property="OverrideDefaultWindowCommandsBrush" Value="{DynamicResource BlackColorBrush}"/>
+            <Setter Property="controls:MetroWindow.NonActiveWindowTitleBrush"
+                    Value="{DynamicResource WindowBackgroundBrush}" />
+            <Setter Property="TitleForeground" Value="{DynamicResource BlackColorBrush}" />
+            <Setter Property="OverrideDefaultWindowCommandsBrush" Value="{DynamicResource BlackColorBrush}" />
         </Style>
     </FrameworkElement.Style>
     <Grid Loaded="OnLoaded">

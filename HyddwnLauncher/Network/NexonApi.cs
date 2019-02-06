@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Management;
 using System.Net;
 using System.Security.Cryptography;
@@ -47,11 +46,7 @@ namespace HyddwnLauncher.Network
                 throw new Exception("Invalid or expired access token!");
             _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
             var restResponse = await _restClient.Create("/products/10200").ExecuteGet<string>();
-            if (restResponse.StatusCode == HttpStatusCode.BadRequest)
-            {
-                return default(dynamic);
-
-            }
+            if (restResponse.StatusCode == HttpStatusCode.BadRequest) return default(dynamic);
             var body = await restResponse.GetContent();
 
             return JsonConvert.DeserializeObject<dynamic>(body);
@@ -115,31 +110,10 @@ namespace HyddwnLauncher.Network
             return version;
         }
 
-        public async Task<bool> PutVerifyDevice(string email, string code, string deviceId, bool rememberDevice)
-        {
-            _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
-
-            var request = _restClient.Create("/account-webapi/trusted_devices");
-
-            var requestBody = new TrustDeviceRequest
-            {
-                Email = email,
-                VerificationCode = code,
-                DeviceId = deviceId,
-                RememberMe = rememberDevice
-            };
-
-            request.SetBody(requestBody);
-
-            var response = await request.ExecutePut<string>();
-
-            return response.StatusCode != HttpStatusCode.BadRequest;
-        }
-
         public async Task<GetAccessTokenResponse> GetAccessToken(string username, string password, string profileGuid)
         {
             if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == profileGuid)
-                return new GetAccessTokenResponse { Success = true };
+                return new GetAccessTokenResponse {Success = true};
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -148,7 +122,7 @@ namespace HyddwnLauncher.Network
             var deviceId = GetDeviceUuid();
 
             var initialRequestBody = new AccountLoginRequest
-            {              
+            {
                 AutoLogin = false,
                 ClientId = BodyClientId,
                 DeviceId = deviceId,
@@ -189,7 +163,7 @@ namespace HyddwnLauncher.Network
             _accessTokenIsExpired = false;
             StartAccessTokenExpiryTimer(_accessTokenExpiration);
 
-            return new GetAccessTokenResponse { Success = true };
+            return new GetAccessTokenResponse {Success = true};
         }
 
         public void HashPassword(ref string password)
@@ -199,11 +173,32 @@ namespace HyddwnLauncher.Network
                 .ToLower();
         }
 
+        public async Task<bool> PutVerifyDevice(string email, string code, string deviceId, bool rememberDevice)
+        {
+            _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
+
+            var request = _restClient.Create("/account-webapi/trusted_devices");
+
+            var requestBody = new TrustDeviceRequest
+            {
+                Email = email,
+                VerificationCode = code,
+                DeviceId = deviceId,
+                RememberMe = rememberDevice
+            };
+
+            request.SetBody(requestBody);
+
+            var response = await request.ExecutePut<string>();
+
+            return response.StatusCode != HttpStatusCode.BadRequest;
+        }
+
         private void StartAccessTokenExpiryTimer(int timeout = 7200)
         {
             _accessTokenExpiryTimer?.Stop();
 
-            _accessTokenExpiryTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(timeout) };
+            _accessTokenExpiryTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(timeout)};
             _accessTokenExpiryTimer.Tick += (sender, args) => _accessTokenIsExpired = true;
         }
 

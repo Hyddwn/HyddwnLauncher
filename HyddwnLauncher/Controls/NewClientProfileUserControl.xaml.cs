@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows;
@@ -25,7 +24,7 @@ namespace HyddwnLauncher.Controls
             new PropertyMetadata(default(string)));
 
         public static readonly DependencyProperty MabiLocalizationsProperty = DependencyProperty.Register(
-            "MabiLocalizations", typeof(ObservableCollection<string>), typeof(NewClientProfileUserControl), 
+            "MabiLocalizations", typeof(ObservableCollection<string>), typeof(NewClientProfileUserControl),
             new PropertyMetadata(default(ObservableCollection<string>)));
 
         public NewClientProfileUserControl()
@@ -37,7 +36,7 @@ namespace HyddwnLauncher.Controls
                 MabiLocalizations = new ObservableCollection<string>();
 
                 foreach (var field in typeof(ClientLocalization).GetFields(BindingFlags.Public | BindingFlags.Static))
-                    MabiLocalizations.Add((string)field.GetValue(null));
+                    MabiLocalizations.Add((string) field.GetValue(null));
             }
             catch (Exception ex)
             {
@@ -47,19 +46,19 @@ namespace HyddwnLauncher.Controls
 
         public ClientProfile ClientProfile
         {
-            get => (ClientProfile)GetValue(ClientProfileProperty);
+            get => (ClientProfile) GetValue(ClientProfileProperty);
             set => SetValue(ClientProfileProperty, value);
         }
 
         public string CredentialUsername
         {
-            get => (string)GetValue(CredentialUsernameProperty);
+            get => (string) GetValue(CredentialUsernameProperty);
             set => SetValue(CredentialUsernameProperty, value);
         }
 
         public ObservableCollection<string> MabiLocalizations
         {
-            get => (ObservableCollection<string>)GetValue(MabiLocalizationsProperty);
+            get => (ObservableCollection<string>) GetValue(MabiLocalizationsProperty);
             set => SetValue(MabiLocalizationsProperty, value);
         }
 
