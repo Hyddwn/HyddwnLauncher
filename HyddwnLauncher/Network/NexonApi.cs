@@ -153,6 +153,16 @@ namespace HyddwnLauncher.Network
                 return responseObject;
             }
 
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                var responseObject = new GetAccessTokenResponse();
+                responseObject.Success = false;
+                responseObject.Description = "Username or Password is Incorrect";
+                responseObject.Code = "LOGINFAILED";
+                responseObject.Message = responseObject.Description;
+                return responseObject;
+            }
+
             data = await response.GetContent();
             var body = JsonConvert.DeserializeObject<dynamic>(data);
             _accessToken = body["access_token"];
