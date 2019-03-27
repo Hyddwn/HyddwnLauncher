@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
 using HyddwnLauncher.Core;
@@ -15,22 +16,29 @@ namespace HyddwnLauncher
     /// </summary>
     public partial class App : Application
     {
-        private static readonly string Assembly = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
+        private static readonly string AssemblyFilePath = Assembly.GetExecutingAssembly().Location;
+        private static readonly string AssemblyDirectory = Path.GetDirectoryName(AssemblyFilePath);
         public static string[] CmdArgs;
 
         protected override async void OnStartup(StartupEventArgs e)
         {
             var packFileClean = false;
-            if (!Directory.Exists($@"{Assemblypath}\Logs\Hyddwn Launcher"))
-                Directory.CreateDirectory($@"{Assemblypath}\Logs\Hyddwn Launcher");
-            Log.LogFile =
-                $@"{Assemblypath}\Logs\Hyddwn Launcher\Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log";
+
+            var baseDirectory = $@"{AssemblyDirectory}\Logs\Hyddwn Launcher\";
+
+            if (!Directory.Exists(baseDirectory))
+                Directory.CreateDirectory(baseDirectory);
+
+            var logFile = Path.Combine(baseDirectory, $"Hyddwn Launcher-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log");
+
+            Log.LogFile = logFile;
+            var launcherVersionString = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             Log.Info("=== Application Startup ===");
+            Log.Info($"Hyddwn Launcher version: {launcherVersionString}");
 
             Log.Info("Initializing Launcher Context");
-            var launcherContext = new LauncherContext();
+            var launcherContext = new LauncherContext(logFile, launcherVersionString);
 
 #if DEBUG
             launcherContext.LauncherSettingsManager.Reset();
@@ -122,8 +130,8 @@ namespace HyddwnLauncher
                 UseShellExecute = true,
                 WorkingDirectory = Environment.CurrentDirectory
             };
-            if (Assembly != null)
-                startInfo.FileName = Assembly;
+            if (AssemblyFilePath != null)
+                startInfo.FileName = AssemblyFilePath;
             startInfo.Arguments = string.Join(" ", Environment.GetCommandLineArgs());
             startInfo.Verb = "runas";
             try

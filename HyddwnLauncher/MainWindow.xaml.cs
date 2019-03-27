@@ -689,6 +689,20 @@ namespace HyddwnLauncher
                 ResetServerProfilesCheckBox.IsChecked = ResetLauncherConfigurationCheckBox.IsChecked = false;
         }
 
+        private async void OpenLogFileOnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(LauncherContext.LogFileLocation);
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+                await this.ShowMessageAsync("Error opening file.",
+                    $"The following error occured when trying to open the log file:\r\n\r\n{ex.Message}");
+            }
+        }
+
         #endregion
 
         #region Methods
