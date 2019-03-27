@@ -40,6 +40,7 @@ namespace HyddwnLauncher
 
         public MainWindow(LauncherContext launcherContext)
         {
+            Loaded += OnLoaded;
             Instance = this;
 #if DEBUG
            launcherContext.LauncherSettingsManager.Reset();
@@ -72,9 +73,7 @@ namespace HyddwnLauncher
                         BorderColorBrush = a.Resources["BlackColorBrush"] as Brush,
                         ColorBrush = a.Resources["WhiteColorBrush"] as Brush
                     }).ToList();
-
             InitializeComponent();
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
             _disableWhilePatching = new Control[]
             {
                 LaunchButton,
@@ -82,8 +81,55 @@ namespace HyddwnLauncher
                 ClientProfileComboBox,
                 ServerProfileComboBox
             };
-
+            IsPatching = true;
+            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
             _updateClose = false;
+        }
+
+        private async void OnLoaded(object sender, EventArgs e)
+        {
+            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Starting...");
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Update Check...");
+            IsUpdateAvailable = await CheckForUpdates();
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Check Client Profiles...");
+            _settingUpProfile = true;
+            CheckClientProfiles();
+
+            while (_settingUpProfile)
+                await Task.Delay(100);
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Applying settings...");
+            ConfigureLauncher();
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting launcher version...");
+            Log.Info("Hyddwn Launcher Version {0}", LauncherContext.Version);
+            LauncherVersion.SetTextBlockSafe(LauncherContext.Version);
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting mabinogi version...");
+            var mabiVers = ReadVersion();
+            Log.Info("Mabinogi Version {0}", mabiVers);
+            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Updating server profiles...");
+            await ProfileManager.UpdateProfiles();
+
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Initializing Plugins...");
+            await InitializePlugins();
+
+            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+
+            IsPatching = false;
+
+            if (Settings.ConfigurationDirty)
+                await this.ShowMessageAsync("Configuration Error",
+                    "An error occured when loading the configuration file that required it to be reset.");
         }
 
         #endregion
@@ -180,55 +226,6 @@ namespace HyddwnLauncher
             PluginHost.ShutdownPlugins();
 
             Application.Current.Shutdown();
-        }
-
-        private async void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            IsPatching = true;
-
-            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Starting...");
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Update Check...");
-            IsUpdateAvailable = await CheckForUpdates();
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Check Client Profiles...");
-            _settingUpProfile = true;
-            CheckClientProfiles();
-
-            while (_settingUpProfile)
-                await Task.Delay(250);
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Applying settings...");
-            ConfigureLauncher();
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting launcher version...");
-            var mblVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Log.Info("Hyddwn Launcher Version {0}", mblVersion);
-            LauncherVersion.SetTextBlockSafe(mblVersion);
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting mabinogi version...");
-            var mabiVers = ReadVersion();
-            Log.Info("Mabinogi Version {0}", mabiVers);
-            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Updating server profiles...");
-            await ProfileManager.UpdateProfiles();
-
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Initializing Plugins...");
-            await InitializePlugins();
-
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
-            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
-            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
-
-            IsPatching = false;
-
-            if (Settings.ConfigurationDirty)
-                await this.ShowMessageAsync("Configuration Error",
-                    "An error occured when loading the configuration file that required it to be reset.");
         }
 
         private void Updater_Closing(object sender, CancelEventArgs e)

@@ -15,7 +15,7 @@
                       WindowTransitionsEnabled="true"
                       NonActiveGlowBrush="Red"
                       Icon="Icon_Internal_a.ico"
-                      Closed="OnClose" Loaded="OnLoaded"
+                      Closed="OnClose"
                       x:Name="This" Title="Hyddwn Launcher" Height="480" Width="830">
     <!--DISABLED EVENTS  KeyDown="This_KeyDown" KeyUp="This_KeyUp" DISABLED EVENTS-->
     <FrameworkElement.Style>
