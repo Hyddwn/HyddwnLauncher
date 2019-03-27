@@ -22,13 +22,7 @@
     </FrameworkElement.Style>
     <Grid Loaded="OnLoaded">
         <TextBlock HorizontalAlignment="Left" Height="76" Margin="10,10,0,0" TextWrapping="Wrap"
-                   VerticalAlignment="Top" Width="464">
-            <Run FontWeight="Bold" FontSize="18" Text="The Application has crashed! No pie for you!" />
-            <LineBreak />
-            <LineBreak />
-            <Run
-                Text="An error occurred which has caused this application to operate incorrectly. Details are provided below. " />
-        </TextBlock>
+                   VerticalAlignment="Top" Width="464"><Run FontWeight="Bold" FontSize="18" Text="The Application has crashed! No pie for you!"/><LineBreak/><LineBreak/><Run Text="An error occurred which has caused this application to operate incorrectly. Copy and paste the below text when reporting issues for support."/></TextBlock>
         <TextBox Name="ExceptionBox" HorizontalAlignment="Left" Height="195" Margin="10,91,0,0" TextWrapping="Wrap"
                  VerticalAlignment="Top" Width="464" IsReadOnly="true" />
     </Grid>
