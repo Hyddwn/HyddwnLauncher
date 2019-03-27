@@ -214,7 +214,7 @@ namespace HyddwnLauncher
             ClientVersion.SetTextBlockSafe(mabiVers.ToString());
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe("Updating server profiles...");
-            await Task.Run(() => ProfileManager.UpdateProfiles());
+            await ProfileManager.UpdateProfiles();
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe("Initializing Plugins...");
             await InitializePlugins();

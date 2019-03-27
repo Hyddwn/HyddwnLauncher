@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using HyddwnLauncher.Util;
 using Newtonsoft.Json;
@@ -30,10 +31,10 @@ namespace HyddwnLauncher.Core
         public ObservableCollection<ClientProfile> ClientProfiles { get; private set; }
         public ObservableCollection<ServerProfile> ServerProfiles { get; private set; }
 
-        public void UpdateProfiles()
+        public async Task UpdateProfiles()
         {
             foreach (var serverProfile in ServerProfiles)
-                serverProfile.GetUpdates();
+                await serverProfile.GetUpdates();
             SaveServerProfiles();
         }
 
