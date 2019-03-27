@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.ServiceModel.Channels;
+using System.Windows;
 using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher
@@ -28,7 +30,10 @@ namespace HyddwnLauncher
                     }
                     catch
                     {
-                        Log.Info("Failed to log exception to file.");
+                        Clipboard.SetText(eventArgs.ExceptionObject.ToString());
+                        MessageBox.Show(
+                            $"A fatal error has occured that possibly affects logging. A copy of the following message was saved to your clipboard:\r\n{eventArgs.ExceptionObject}");
+                        Environment.Exit(1);
                     }
 
                     Log.Exception((Exception) eventArgs.ExceptionObject, "Fatal error occured in application!");
