@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Management;
 using System.Net;
 using System.Security.Cryptography;
@@ -52,11 +52,32 @@ namespace HyddwnLauncher.Network
             return JsonConvert.DeserializeObject<dynamic>(body);
         }
 
+        public async Task<GetManifestResponse> GetManifestUrl()
+        {
+            if (_accessToken == null || _accessTokenIsExpired)
+                throw new Exception("Invalid or expired access token!");
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+            var restResponse = await _restClient.Create("/game-info/v1/games/10200/branch/public").ExecuteGet<string>();
+            if (restResponse.StatusCode == HttpStatusCode.BadRequest) return null;
+            var body = await restResponse.GetContent();
+
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<GetManifestResponse>(body);
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Failed to acquire launch config data.");
+                return null;
+            }
+        }
+
         public async Task<string> GetManifestHashString()
-        {   
-            var metadata = await GetMabinogiMetadata();
-            var manifestUrl = metadata["product_details"]["manifestUrl"];
-            manifestUrl = ((string)manifestUrl).Replace("https://download2.nexon.net", "");
+        {
+            var details = await GetManifestUrl();
+            var manifestUrl = details.ManifestUrl.Replace("https://download2.nexon.net", "");
             _restClient = new RestClient(new Uri("https://download2.nexon.net"), null);
             var request = _restClient.Create($"{manifestUrl}");
             var response = await request.ExecuteGet<string>();
