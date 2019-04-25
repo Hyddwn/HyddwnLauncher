@@ -52,6 +52,28 @@ namespace HyddwnLauncher.Network
             return JsonConvert.DeserializeObject<dynamic>(body);
         }
 
+        public async Task<LauncherConfigResponse> GetLaunchConfig()
+        {
+            if (_accessToken == null || _accessTokenIsExpired)
+                throw new Exception("Invalid or expired access token!");
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+            var restResponse = await _restClient.Create("/game-info/v1/games/10200").ExecuteGet<string>();
+            if (restResponse.StatusCode == HttpStatusCode.BadRequest) return null;
+            var body = await restResponse.GetContent();
+
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<LauncherConfigResponse>(body);
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Failed to acquire launch config data.");
+                return null;
+            }
+        }
+
         public async Task<GetManifestResponse> GetManifestUrl()
         {
             if (_accessToken == null || _accessTokenIsExpired)

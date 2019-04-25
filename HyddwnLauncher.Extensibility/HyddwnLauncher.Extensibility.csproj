@@ -58,7 +58,11 @@
     <Compile Include="Model\AccountLoginRequest.cs" />
     <Compile Include="Model\GetAccessTokenResponse.cs" />
     <Compile Include="Model\GetManifestResponse.cs" />
+    <Compile Include="Model\LaunchConfig.cs" />
+    <Compile Include="Model\LauncherConfigResponse.cs" />
     <Compile Include="Model\NexonPassport.cs" />
+    <Compile Include="Model\SupportedArch.cs" />
+    <Compile Include="Model\SupportedOs.cs" />
     <Compile Include="Model\TrustDeviceRequest.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginContext.cs" />
