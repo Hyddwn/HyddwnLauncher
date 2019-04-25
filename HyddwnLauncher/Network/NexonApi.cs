@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Management;
 using System.Net;
 using System.Security.Cryptography;
@@ -144,6 +144,34 @@ namespace HyddwnLauncher.Network
             var body = JsonConvert.DeserializeObject<dynamic>(data);
 
             return body["passport"];
+        }
+
+        public async Task<UserProfileResponse> GetUserProfile()
+        {
+            if (_accessToken == null || _accessTokenIsExpired)
+                throw new Exception("Invalid or expired access token!");
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+
+            var request = _restClient.Create("/users/me/profile");
+
+            var response = await request.ExecuteGet<string>();
+
+            if (response.StatusCode != HttpStatusCode.OK)
+                return null;
+
+            var data = await response.GetContent();
+
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<UserProfileResponse>(data);
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Failed to acquire user profile data.");
+                return null;
+            }
         }
 
         public async Task<int> GetLatestVersion()
