@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using HyddwnLauncher.Util;
 using Newtonsoft.Json;
@@ -10,8 +11,11 @@ namespace HyddwnLauncher.Core
 {
     public class ProfileManager
     {
-        private readonly string _clientProfileJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\clientprofiles.json";
-        private readonly string _serverProfileJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\serverprofiles.json";
+        private readonly string _clientProfileJson =
+            $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\clientprofiles.json";
+
+        private readonly string _serverProfileJson =
+            $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\serverprofiles.json";
 
         public ProfileManager()
         {
@@ -27,10 +31,10 @@ namespace HyddwnLauncher.Core
         public ObservableCollection<ClientProfile> ClientProfiles { get; private set; }
         public ObservableCollection<ServerProfile> ServerProfiles { get; private set; }
 
-        public void UpdateProfiles()
+        public async Task UpdateProfiles()
         {
             foreach (var serverProfile in ServerProfiles)
-                serverProfile.GetUpdates();
+                await serverProfile.GetUpdates();
             SaveServerProfiles();
         }
 
@@ -56,7 +60,7 @@ namespace HyddwnLauncher.Core
                 sr.Dispose();
                 fs.Dispose();
 
-                return result;
+                return result ?? new ObservableCollection<ClientProfile>();
             }
             catch (Exception)
             {
@@ -76,7 +80,7 @@ namespace HyddwnLauncher.Core
                 sr.Dispose();
                 fs.Dispose();
 
-                return result;
+                return result ?? new ObservableCollection<ServerProfile>();
             }
             catch (Exception)
             {
@@ -88,11 +92,8 @@ namespace HyddwnLauncher.Core
         {
             try
             {
-                var json = JsonConvert.SerializeObject(ClientProfiles, Formatting.Indented);
-                if (File.Exists(_clientProfileJson))
-                    File.Delete(_clientProfileJson);
-
-                File.WriteAllText(_clientProfileJson, json);
+                var jsonFile = JsonConvert.SerializeObject(ClientProfiles, Formatting.Indented);
+                jsonFile.WriteAllTextWithBackup(_clientProfileJson);
             }
             catch (Exception ex)
             {
@@ -105,11 +106,8 @@ namespace HyddwnLauncher.Core
         {
             try
             {
-                var json = JsonConvert.SerializeObject(ServerProfiles, Formatting.Indented);
-                if (File.Exists(_serverProfileJson))
-                    File.Delete(_serverProfileJson);
-
-                File.WriteAllText(_serverProfileJson, json);
+                var jsonFile = JsonConvert.SerializeObject(ServerProfiles, Formatting.Indented);
+                jsonFile.WriteAllTextWithBackup(_serverProfileJson);
             }
             catch (Exception ex)
             {

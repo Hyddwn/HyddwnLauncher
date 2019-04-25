@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using HyddwnLauncher.Core;
 using HyddwnLauncher.Util.Commands;
 using MahApps.Metro;
 
@@ -14,22 +8,21 @@ namespace HyddwnLauncher.Util
 {
     public class AccentColorMenuData
     {
+        private ICommand _changeAccentCommand;
         public string Name { get; set; }
         public Brush BorderColorBrush { get; set; }
         public Brush ColorBrush { get; set; }
-
-        private ICommand _changeAccentCommand;
 
         public ICommand ChangeAccentCommand
         {
             get
             {
-                return this._changeAccentCommand ??
+                return _changeAccentCommand ??
                        (_changeAccentCommand =
                            new SimpleCommand
                            {
                                CanExecuteDelegate = x => true,
-                               ExecuteDelegate = x => this.DoChangeTheme(x)
+                               ExecuteDelegate = x => DoChangeTheme(x)
                            });
             }
         }
@@ -37,9 +30,10 @@ namespace HyddwnLauncher.Util
         protected virtual void DoChangeTheme(object sender)
         {
             ThemeManager.DetectAppStyle(Application.Current);
-            var accent = ThemeManager.GetAccent(this.Name);
+            var accent = ThemeManager.GetAccent(Name);
             MainWindow.Instance.Settings.LauncherSettings.Accent = accent.Name;
-            ThemeManager.ChangeAppStyle(Application.Current, accent, ThemeManager.GetAppTheme(MainWindow.Instance.Settings.LauncherSettings.Theme));
+            ThemeManager.ChangeAppStyle(Application.Current, accent,
+                ThemeManager.GetAppTheme(MainWindow.Instance.Settings.LauncherSettings.Theme));
         }
     }
 
@@ -48,9 +42,10 @@ namespace HyddwnLauncher.Util
         protected override void DoChangeTheme(object sender)
         {
             ThemeManager.DetectAppStyle(Application.Current);
-            var appTheme = ThemeManager.GetAppTheme(this.Name);
+            var appTheme = ThemeManager.GetAppTheme(Name);
             MainWindow.Instance.Settings.LauncherSettings.Theme = appTheme.Name;
-            ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent(MainWindow.Instance.Settings.LauncherSettings.Accent), appTheme);
+            ThemeManager.ChangeAppStyle(Application.Current,
+                ThemeManager.GetAccent(MainWindow.Instance.Settings.LauncherSettings.Accent), appTheme);
         }
     }
 }

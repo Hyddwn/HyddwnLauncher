@@ -19,12 +19,18 @@ namespace HyddwnLauncher.Core
             "vans.png"
         };
 
-        public LauncherContext()
+        public LauncherContext(string logFileLocation, string version)
         {
+            LogFileLocation = logFileLocation;
+            Version = version;
             Log.Info("LauncherContext: Loading Settings...");
             LauncherSettingsManager = new LauncherSettingsManager();
             Log.Info("LauncherContext: Load Complete!");
         }
+
+        public string LogFileLocation { get; protected set; }
+        public string LogFileLocationTruncated => Unmanaged.TruncatePath(LogFileLocation, 100);
+        public string Version { get; protected set; }
 
         public LauncherSettingsManager LauncherSettingsManager { get; protected set; }
 

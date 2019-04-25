@@ -43,6 +43,8 @@ namespace HyddwnLauncher.Core
             IsOfficial = true
         };
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public bool IsOfficial
         {
             get => _isOfficial;
@@ -221,48 +223,43 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public async void GetUpdates()
+        public async Task GetUpdates()
         {
             if (string.IsNullOrWhiteSpace(ProfileUpdateUrl)) return;
 
-            await Task.Run(() =>
+            var client = new WebClient();
+
+            try
             {
-                var client = new WebClient();
+                var profileJson = await client.DownloadStringTaskAsync(ProfileUpdateUrl);
 
-                try
-                {
-                    var profileJson = client.DownloadString(ProfileUpdateUrl);
+                var serverProfile = JsonConvert.DeserializeObject<ServerProfile>(profileJson);
 
-                    var serverProfile = JsonConvert.DeserializeObject<ServerProfile>(profileJson);
+                Arguments = serverProfile.Arguments;
 
-                    Arguments = serverProfile.Arguments;
+                PackVersion = serverProfile.PackVersion;
+                PackDataUrl = serverProfile.PackDataUrl;
+                RootDataUrl = serverProfile.RootDataUrl;
+                ProfileUpdateUrl = serverProfile.ProfileUpdateUrl;
 
-                    PackVersion = serverProfile.PackVersion;
-                    PackDataUrl = serverProfile.PackDataUrl;
-                    RootDataUrl = serverProfile.RootDataUrl;
-                    ProfileUpdateUrl = serverProfile.ProfileUpdateUrl;
+                ChatIp = serverProfile.ChatIp;
+                ChatPort = serverProfile.ChatPort;
+                LoginIp = serverProfile.LoginIp;
+                LoginPort = serverProfile.LoginPort;
+                WebHost = serverProfile.WebHost;
+                WebPort = serverProfile.WebPort;
 
-                    ChatIp = serverProfile.ChatIp;
-                    ChatPort = serverProfile.ChatPort;
-                    LoginIp = serverProfile.LoginIp;
-                    LoginPort = serverProfile.LoginPort;
-                    WebHost = serverProfile.WebHost;
-                    WebPort = serverProfile.WebPort;
+                Name = serverProfile.Name;
+                IsOfficial = serverProfile.IsOfficial;
 
-                    Name = serverProfile.Name;
-                    IsOfficial = serverProfile.IsOfficial;
+                UrlsXmlOptions = serverProfile.UrlsXmlOptions;
 
-                    UrlsXmlOptions = serverProfile.UrlsXmlOptions;
-
-                    Guid = serverProfile.Guid;
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception(ex, "Failed to update a profile!");
-                }
-            });
+                Guid = serverProfile.Guid;
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Failed to update a profile!");
+            }
         }
 
         public static ServerProfile Create(string name = "Local", string loginIp = "127.0.0.1",

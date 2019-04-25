@@ -12,9 +12,6 @@ namespace HyddwnLauncher.Network
         public static async Task DownloadFileWithCallbackAsync(string url, string file,
             Action<double, string> callback)
         {
-            // Clears async warning, hack, need something better.
-            await Task.Delay(1);
-
             var client = new WebClient();
             var sw = new Stopwatch();
 
@@ -26,7 +23,7 @@ namespace HyddwnLauncher.Network
                     $"{ByteSizeHelper.ToString(args.BytesReceived)}/{ByteSizeHelper.ToString(args.TotalBytesToReceive)} @ {ByteSizeHelper.ToString(bytesPerSecond, mode: ByteSizeMode.Network)}/s");
             };
             sw.Start();
-            client.DownloadFileTaskAsync(url, file).Wait();
+            await client.DownloadFileTaskAsync(url, file);
         }
     }
 }

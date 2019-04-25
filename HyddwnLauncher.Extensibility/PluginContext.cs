@@ -5,7 +5,7 @@ using HyddwnLauncher.Extensibility.Interfaces;
 namespace HyddwnLauncher.Extensibility
 {
     /// <summary>
-    ///     Used to make calls to Hyddwn Launcher to do specific tasks or retrive information.
+    ///     Used to make calls to Hyddwn Launcher to do specific tasks or retrieve information.
     /// </summary>
     public class PluginContext
     {

@@ -57,6 +57,7 @@
     <Compile Include="Interfaces\ISettingsManager.cs" />
     <Compile Include="Model\AccountLoginRequest.cs" />
     <Compile Include="Model\GetAccessTokenResponse.cs" />
+    <Compile Include="Model\NexonPassport.cs" />
     <Compile Include="Model\TrustDeviceRequest.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginContext.cs" />
@@ -68,4 +69,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties BuildVersion_StartDate="2000/1/1" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

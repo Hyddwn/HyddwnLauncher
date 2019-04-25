@@ -8,20 +8,19 @@ namespace HyddwnLauncher.Core
 {
     public class LauncherSettings : INotifyPropertyChanged
     {
+        private string _accent;
         private int _clientProfileSelectedIndex;
         private int _connectionLimit;
+        private bool _disableMultiClientCheck;
         private bool _firstRun;
         private bool _hyddwnProfileUpgrade;
+        private bool _rememberLogin;
         private bool _requiresAdmin;
         private int _serverProfileSelectedIndex;
-        private bool _rememberLogin;
+        private string _theme;
         private bool _usePackFiles;
         private bool _warnIfRootIsNotMabiRoot;
-        private string _theme;
-        private string _accent;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event Action<string> SaveOnChanged;
+        private bool _closeAfterLaunching;
 
         public LauncherSettings()
         {
@@ -36,6 +35,8 @@ namespace HyddwnLauncher.Core
             WarnIfRootIsNotMabiRoot = true;
             Theme = "BaseDark";
             Accent = "Cobalt";
+            DisableMultiClientCheck = false;
+            CloseAfterLaunching = true;
         }
 
         public bool UsePackFiles
@@ -147,6 +148,7 @@ namespace HyddwnLauncher.Core
                 OnPropertyChanged();
             }
         }
+
         public string Accent
         {
             get => _accent;
@@ -158,6 +160,30 @@ namespace HyddwnLauncher.Core
             }
         }
 
+        public bool DisableMultiClientCheck
+        {
+            get => _disableMultiClientCheck;
+            set
+            {
+                if (value == _disableMultiClientCheck) return;
+                _disableMultiClientCheck = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool CloseAfterLaunching
+        {
+            get => _closeAfterLaunching;
+            set
+            {
+                if (value == _closeAfterLaunching) return;
+                _closeAfterLaunching = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event Action<string> SaveOnChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

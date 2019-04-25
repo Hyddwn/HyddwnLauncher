@@ -115,8 +115,7 @@ namespace HyddwnLauncher.Properties
             Name = name;
         }
 
-        [NotNull]
-        public string Name { get; }
+        [NotNull] public string Name { get; }
     }
 
     /// <summary>
@@ -357,8 +356,7 @@ namespace HyddwnLauncher.Properties
             BaseType = baseType;
         }
 
-        [NotNull]
-        public Type BaseType { get; }
+        [NotNull] public Type BaseType { get; }
     }
 
     /// <summary>
@@ -421,11 +419,9 @@ namespace HyddwnLauncher.Properties
             TargetFlags = targetFlags;
         }
 
-        [UsedImplicitly]
-        public ImplicitUseKindFlags UseKindFlags { get; }
+        [UsedImplicitly] public ImplicitUseKindFlags UseKindFlags { get; }
 
-        [UsedImplicitly]
-        public ImplicitUseTargetFlags TargetFlags { get; }
+        [UsedImplicitly] public ImplicitUseTargetFlags TargetFlags { get; }
     }
 
     [Flags]
@@ -922,8 +918,7 @@ namespace HyddwnLauncher.Properties
             Name = name;
         }
 
-        [NotNull]
-        public string Name { get; }
+        [NotNull] public string Name { get; }
     }
 
     /// <summary>

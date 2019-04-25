@@ -99,17 +99,14 @@ namespace HyddwnLauncher.PackOps
 				foreach (var packFilePath in Directory.EnumerateFiles($"{Path.GetDirectoryName(_clientProfile.Location)}\\package",
 					"*.pack", SearchOption.TopDirectoryOnly).ToList().OrderBy(a => a))
 					Dispatcher.Invoke(() => PackOperationsViewModels.Add(new PackOperationsViewModel(packFilePath)));
-
-				var packViewModelWorkingSet = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable)
-					.OrderBy(pvm => pvm.PackVersion).ToList();
-
-				Dispatcher.Invoke(() =>
-				{
-					MaximumPackVersion = packViewModelWorkingSet.LastOrDefault().PackVersion;
-					MinimumPackVersion = FromValue = ToValue = packViewModelWorkingSet.FirstOrDefault().PackVersion;
-				});
 			});
-		}
+
+		    var packViewModelWorkingSet = PackOperationsViewModels.Where(pvm => pvm.IsSequenceTargetable)
+		        .OrderBy(pvm => pvm.PackVersion).ToList();
+
+            MaximumPackVersion = packViewModelWorkingSet.LastOrDefault()?.PackVersion ?? 0;
+		    MinimumPackVersion = FromValue = ToValue = packViewModelWorkingSet.FirstOrDefault()?.PackVersion ?? 0;
+        }
 
 		public void ServerProfileChanged(IServerProfile serverProfile)
 		{

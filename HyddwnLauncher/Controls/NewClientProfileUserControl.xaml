@@ -8,7 +8,7 @@
              xmlns:validation="clr-namespace:HyddwnLauncher.Util.Validation"
              xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="260">
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="285">
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ErrorWindow"
                                        Grid.RowSpan="2" TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
@@ -47,7 +47,14 @@
             <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
                         ToolTip="The locale for this instance of Mabinogi.">
                 <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Localization" />
-                <ComboBox Margin="57 0 0 0" Width="180" SelectedValue="{Binding ElementName=This, Path=ClientProfile.Localization, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding ElementName=This, Path=MabiLocalizations}" ToolTip="The version of the client you are using."/>
+                <ComboBox Margin="57 0 0 0" Width="180"
+                          SelectedValue="{Binding ElementName=This, Path=ClientProfile.Localization, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding ElementName=This, Path=MabiLocalizations}"
+                          ToolTip="The version of the client you are using." />
+            </StackPanel>
+            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
+                        ToolTip="Whether this profile is the default profile.">
+                <CheckBox Margin="0 5 0 5" Content="Default Profile" />
             </StackPanel>
             <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="Saved Crednetials">
                 <GroupBox Header="Saved Credentials" Margin="5">
