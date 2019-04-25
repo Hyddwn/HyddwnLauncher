@@ -52,6 +52,17 @@ namespace HyddwnLauncher.Network
             return JsonConvert.DeserializeObject<dynamic>(body);
         }
 
+        public async Task<bool> GetMaintenanceStatus()
+        {
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), null);
+            var restResponse = await _restClient.Create("/maintenance")
+                .AddQueryString("product_id", "10200")
+                .AddQueryString("lang", "en")
+                .ExecuteGet<string>();
+
+            return restResponse.StatusCode != HttpStatusCode.OK;
+        }
+
         public async Task<LauncherConfigResponse> GetLaunchConfig()
         {
             if (_accessToken == null || _accessTokenIsExpired)
