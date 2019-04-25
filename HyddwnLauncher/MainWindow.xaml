@@ -306,6 +306,12 @@
                                 <StackPanel Margin="5 2.5">
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="Close Launcher After Launching (DO NOT DISABLE)" IsEnabled="False"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.CloseAfterLaunching}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                        <StackPanel Orientation="Horizontal" Margin="5">
                                             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
                                                        Text="Delete Custom Server Pack Files" />
                                             <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />

@@ -20,6 +20,7 @@ namespace HyddwnLauncher.Core
         private string _theme;
         private bool _usePackFiles;
         private bool _warnIfRootIsNotMabiRoot;
+        private bool _closeAfterLaunching;
 
         public LauncherSettings()
         {
@@ -35,6 +36,7 @@ namespace HyddwnLauncher.Core
             Theme = "BaseDark";
             Accent = "Cobalt";
             DisableMultiClientCheck = false;
+            CloseAfterLaunching = true;
         }
 
         public bool UsePackFiles
@@ -165,6 +167,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _disableMultiClientCheck) return;
                 _disableMultiClientCheck = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool CloseAfterLaunching
+        {
+            get => _closeAfterLaunching;
+            set
+            {
+                if (value == _closeAfterLaunching) return;
+                _closeAfterLaunching = value;
                 OnPropertyChanged();
             }
         }

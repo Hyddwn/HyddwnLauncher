@@ -886,8 +886,7 @@ namespace HyddwnLauncher
                 return LogicalTreeHelper.GetChildren(node).OfType<DependencyObject>().All(DependencyObjectIsValid);
             if (!Validation.GetHasError(node))
                 return LogicalTreeHelper.GetChildren(node).OfType<DependencyObject>().All(DependencyObjectIsValid);
-            var element = node as IInputElement;
-            if (element != null)
+            if (node is IInputElement element)
                 Keyboard.Focus(element);
             return false;
         }
@@ -1072,6 +1071,9 @@ namespace HyddwnLauncher
 
                 Log.Info("Client start success");
                 Settings.SaveLauncherSettings();
+
+                if (!Settings.LauncherSettings.CloseAfterLaunching) return;
+
                 PluginHost.ShutdownPlugins();
                 Application.Current.Shutdown();
             }

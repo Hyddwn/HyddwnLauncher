@@ -52,6 +52,18 @@ namespace HyddwnLauncher.Network
             return JsonConvert.DeserializeObject<dynamic>(body);
         }
 
+        public async Task<string> GetManifestHashString()
+        {   
+            var metadata = await GetMabinogiMetadata();
+            var manifestUrl = metadata["product_details"]["manifestUrl"];
+            manifestUrl = ((string)manifestUrl).Replace("https://download2.nexon.net", "");
+            _restClient = new RestClient(new Uri("https://download2.nexon.net"), null);
+            var request = _restClient.Create($"{manifestUrl}");
+            var response = await request.ExecuteGet<string>();
+            var manifestHashString = await response.GetContent();
+            return manifestHashString;
+        }
+
         public bool IsAccessTokenValid(string guid)
         {
             return _accessToken != null && !_accessTokenIsExpired &&
@@ -94,14 +106,20 @@ namespace HyddwnLauncher.Network
             if (response.StatusCode == HttpStatusCode.BadRequest)
                 return -1;
 
-            //TODO: Error checking yo
+            //TODO: Detect responses for real.
             var data = await response.GetContent();
+
+            if (string.IsNullOrWhiteSpace(data))
+                return -1;
 
             var body = JsonConvert.DeserializeObject<dynamic>(data);
 
             var manifestUrl = body["product_details"]["manifestUrl"].Value;
 
             var versionSearch = "([\\d]*R)";
+
+            if (manifestUrl == null)
+                return -1;
 
             string match = Regex.Match(manifestUrl, versionSearch).Value;
 

@@ -20,7 +20,7 @@
         <controls:MetroProgressBar Name="ReporterProgressBar" Foreground="{DynamicResource AccentColorBrush}"
                                    VerticalAlignment="Center"
                                    HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="2"
-                                   Margin="10,8,10,7" Height="6" Value="{Binding ProgressBarPercent, ElementName=This}" />
+                                   Margin="10,8,10,7" Height="6" Value="{Binding ElementName=This, Path=ProgressBarPercent}" />
         <TextBlock Name="LeftTextBlock" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="2"
                    TextWrapping="Wrap" VerticalAlignment="Center" Margin="10,3,0,-2" FontSize="10" Height="14" />
         <TextBlock Name="RighTextBlock" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="2"
