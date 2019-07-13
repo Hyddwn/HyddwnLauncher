@@ -35,6 +35,8 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
         public override async Task<bool> CheckForUpdates()
         {
+            if (ValidateAction(true)) return false;
+
             PatcherContext.UpdateMainProgress(Properties.Resources.Initialize, "", 0, true, true);
 
             var completed = "true";
@@ -70,6 +72,8 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
         private async Task<bool> CheckForUpdatesInternal()
         {
+            if (ValidateAction()) return false;
+
             var version = -1;
 
             Patches = new List<Patch>();
@@ -129,20 +133,21 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             return await NexonApi.Instance.GetMaintenanceStatus();
         }
 
-        private bool ValidateAction()
+        private bool ValidateAction(bool silent = false)
         {
             if (ClientProfile == null)
             {
-                {
+                if (!silent)
                     PatcherContext.ShowDialog(Properties.Resources.NoProfileSelected,
                         Properties.Resources.NoProfileSelectedMessage2);
-                }
+                
                 return true;
             }
 
             if (string.IsNullOrWhiteSpace(ClientProfile.Location))
             {
-                PatcherContext.ShowDialog(Properties.Resources.ProfileError,
+                if (!silent)
+                    PatcherContext.ShowDialog(Properties.Resources.ProfileError,
                     string.Format(
                         Properties.Resources.ProfileErrorMessage,
                         ClientProfile.Name));
@@ -151,14 +156,22 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             if (!ServerProfile.IsOfficial)
             {
-                PatcherContext.ShowDialog(Properties.Resources.ActionCancelled,
+                if (!silent)
+                    PatcherContext.ShowDialog(Properties.Resources.ActionCancelled,
                     Properties.Resources.ActionCancelledMessage);
+                return true;
+            }
+
+            if (File.Exists("steam_connector_config.json"))
+            {
+                Log.Info("Patching for steam is not supported at this time.");
                 return true;
             }
 
             if (ClientLocalization.GetLocalization(ClientProfile.Localization) != "NorthAmerica")
             {
-                PatcherContext.ShowDialog(Properties.Resources.UnsupportedLocalization,
+                if (!silent)
+                    PatcherContext.ShowDialog(Properties.Resources.UnsupportedLocalization,
                     Properties.Resources.UnsupportedLocalizationMessage);
                 return true;
             }
