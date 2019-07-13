@@ -142,7 +142,7 @@ namespace HyddwnUpdater
                 Log.Warning("Process not running or access denied, update may fail.");
             }
 
-            Log.Info("Chech if Administrator...");
+            Log.Info("Check if Administrator...");
             CheckForAdmin();
 
 
@@ -222,7 +222,7 @@ namespace HyddwnUpdater
                         if (File.Exists(path))
                             File.Delete(path);
 
-                        File.Copy(str, directoryName + "\\" + fileName);
+                        File.Copy(str, path);
                     }
                     Log.Info("/////// End File Copy ///////");
                     changingOutput.PrintResult(true);
