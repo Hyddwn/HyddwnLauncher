@@ -262,12 +262,11 @@ namespace HyddwnLauncher
 
         public async void CheckForClientUpdates(object sender = null, RoutedEventArgs e = null)
         {
-            if (Patcher != null)
-            {
-                var updateRequired = await Patcher.CheckForUpdates();
-                if (updateRequired)
-                    await Patcher.ApplyUpdates();
-            }
+            if (!Settings.LauncherSettings.AllowPatching) return;
+            if (Patcher == null) return;
+            var updateRequired = await Patcher.CheckForUpdates();
+            if (updateRequired)
+                await Patcher.ApplyUpdates();
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

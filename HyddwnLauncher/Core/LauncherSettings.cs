@@ -22,6 +22,7 @@ namespace HyddwnLauncher.Core
         private bool _usePackFiles;
         private bool _warnIfRootIsNotMabiRoot;
         private bool _closeAfterLaunching;
+        private bool _allowPatching;
 
         public LauncherSettings()
         {
@@ -38,6 +39,7 @@ namespace HyddwnLauncher.Core
             Accent = "Cobalt";
             DisableMultiClientCheck = false;
             CloseAfterLaunching = true;
+            AllowPatching = true;
         }
 
         public bool UsePackFiles
@@ -179,6 +181,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _closeAfterLaunching) return;
                 _closeAfterLaunching = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool AllowPatching
+        {
+            get => _allowPatching;
+            set
+            {
+                if (value == _allowPatching) return;
+                _allowPatching = value;
                 OnPropertyChanged();
             }
         }

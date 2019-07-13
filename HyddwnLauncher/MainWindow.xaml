@@ -307,6 +307,10 @@
                                 <StackPanel Margin="5 2.5">
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="Enable patching system"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.AllowPatching}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
                                             <CheckBox Content="{x:Static p:Resources.CloseLauncherAfterLaunching}"
                                                       IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.CloseAfterLaunching}"/>
                                         </StackPanel>
@@ -325,7 +329,7 @@
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Header="{x:Static p:Resources.AboutTab}">
-                <Grid Background="Black">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="180" />
                         <RowDefinition Height="*" />
@@ -428,7 +432,7 @@
                                                 <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                     <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
                                                    Text="Check For Updates" />
-                                                    <Button Margin="4 0 0 0" Content="Update" Click="CheckForClientUpdates" />
+                                                    <Button IsEnabled="{Binding ElementName=This, Path=Settings.LauncherSettings.AllowPatching}" Margin="4 0 0 0" Content="Update" Click="CheckForClientUpdates" />
                                                 </StackPanel>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="5 2.5">
