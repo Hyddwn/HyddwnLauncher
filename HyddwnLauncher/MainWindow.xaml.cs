@@ -43,7 +43,8 @@ namespace HyddwnLauncher
         public static readonly DependencyProperty IsInMaintenanceProperty = DependencyProperty.Register(
             "IsInMaintenance", typeof(bool), typeof(MainWindow), new PropertyMetadata(default(bool)));
 
-
+        public static readonly DependencyProperty IsBetaProperty = DependencyProperty.Register(
+            "IsBeta", typeof(bool), typeof(MainWindow), new PropertyMetadata(default(bool)));
         #endregion
 
         #region ctor
@@ -122,6 +123,11 @@ namespace HyddwnLauncher
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingLauncherVersion);
             Log.Info(Properties.Resources.HyddwnLauncherVersion, LauncherContext.Version);
             LauncherVersion.SetRunSafe(LauncherContext.Version);
+            if (LauncherContext.BetaVersion != "0")
+            {
+                IsBeta = true;
+                BetaVersion.SetRunSafe(LauncherContext.BetaVersion);
+            }
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingMabinogiVersion);
             var mabiVers = Patcher?.ReadVersion() ?? ReadVersion();
@@ -185,6 +191,11 @@ namespace HyddwnLauncher
             set => SetValue(IsInMaintenanceProperty, value);
         }
 
+        public bool IsBeta
+        {
+            get => (bool)GetValue(IsBetaProperty);
+            set => SetValue(IsBetaProperty, value);
+        }
 
         public bool IsPatching
         {

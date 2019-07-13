@@ -34,12 +34,13 @@ namespace HyddwnLauncher
             Log.LogFile = logFile;
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             var launcherVersionString = $"{version.Major}.{version.Minor}.{version.Build}";
+            var betaVersion = $"{version.Revision}";
 
             Log.Info(HyddwnLauncher.Properties.Resources.AppStartup);
             Log.Info(HyddwnLauncher.Properties.Resources.HyddwnLauncherVersion, launcherVersionString);
 
             Log.Info(HyddwnLauncher.Properties.Resources.InitializingLauncherContext);
-            var launcherContext = new LauncherContext(logFile, launcherVersionString);
+            var launcherContext = new LauncherContext(logFile, launcherVersionString, betaVersion);
 
 #if DEBUG
             launcherContext.LauncherSettingsManager.Reset();
