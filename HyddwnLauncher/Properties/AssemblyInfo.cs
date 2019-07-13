@@ -11,7 +11,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Hyddwn Launcher")]
-[assembly: AssemblyCopyright("Copyright © 2016-2017 Sven (formally ImaBrokeDude)")]
+[assembly: AssemblyCopyright("Copyright © 2016-2019 Sven (formally ImaBrokeDude)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -52,5 +52,5 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("0.11.7.0")]
-[assembly: AssemblyFileVersion("0.11.7.0")]
+[assembly: AssemblyVersion("0.11.18.0")]
+[assembly: AssemblyFileVersion("0.11.18.0")]

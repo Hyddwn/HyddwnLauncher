@@ -1,0 +1,905 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutTab" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AdvancedOptions" xml:space="preserve">
+    <value>拡張オプション</value>
+  </data>
+  <data name="AnErrorOccurredWhenLoadingConfiguration" xml:space="preserve">
+    <value>構成ファイルのロード中にエラーが発生しました。リセットをしてください。</value>
+  </data>
+  <data name="AppCrashMessage" xml:space="preserve">
+    <value>クラッシュしました。エラーが発生した為、正しく動作しませんでした。サポートに連絡する際は以下のテキストを貼りつけてください。</value>
+  </data>
+  <data name="ApplicationInitialized" xml:space="preserve">
+    <value>アプリケーションを初期化し、ロードしました。</value>
+  </data>
+  <data name="AppliedMaximumDownloadLimit" xml:space="preserve">
+    <value>ユーザー設定に従い、最大ダウンロード制限{0}を適用しています。</value>
+  </data>
+  <data name="ApplyingSettings" xml:space="preserve">
+    <value>設定を適用します。</value>
+  </data>
+  <data name="AppShutdown" xml:space="preserve">
+    <value>終了</value>
+  </data>
+  <data name="AppStartup" xml:space="preserve">
+    <value>起動</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>作成者</value>
+  </data>
+  <data name="BeginningClientLaunch" xml:space="preserve">
+    <value>ランチャーの起動</value>
+  </data>
+  <data name="BuildingServerPackFile" xml:space="preserve">
+    <value>パックファイルを構築しています。</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="CannotStartMabinogi" xml:space="preserve">
+    <value>マビノギを開始できませんでした:{0}</value>
+  </data>
+  <data name="ChatIp" xml:space="preserve">
+    <value>チャットIPアドレス</value>
+  </data>
+  <data name="ChatPort" xml:space="preserve">
+    <value>チャットポート番号</value>
+  </data>
+  <data name="CheckForAdmin_CannotStartElevatedInstance" xml:space="preserve">
+    <value>インスタンスを開始する権限がありません。:
+{0}</value>
+  </data>
+  <data name="CheckForMaintenance" xml:space="preserve">
+    <value>メンテナンスを確認しています。</value>
+  </data>
+  <data name="CheckingClientProfiles" xml:space="preserve">
+    <value>クライアントプロファイルを確認しています。</value>
+  </data>
+  <data name="CheckingForLaunchArguments" xml:space="preserve">
+    <value>引数を確認しています。</value>
+  </data>
+  <data name="CleaningGeneratedPackFiles" xml:space="preserve">
+    <value>構築済みのパックファイルをクリーニングしています。</value>
+  </data>
+  <data name="CleaningUp" xml:space="preserve">
+    <value>クリーニング中です。</value>
+  </data>
+  <data name="CleanWasDeclared" xml:space="preserve">
+    <value>クリーニングが完了しました。すべてのクライアントを閉じるとパックファイルは削除されます。</value>
+  </data>
+  <data name="ClientProfile" xml:space="preserve">
+    <value>クライアントプロファイル</value>
+  </data>
+  <data name="ClientProfileEditor" xml:space="preserve">
+    <value>クライアントプロファイルエディター</value>
+  </data>
+  <data name="ClientStartSuccess" xml:space="preserve">
+    <value>クライアントの起動に成功しました。</value>
+  </data>
+  <data name="ClientStartWithErrors" xml:space="preserve">
+    <value>クライアントの起動に失敗しました。</value>
+  </data>
+  <data name="CloseLauncherAfterLaunching" xml:space="preserve">
+    <value>ランチャーの起動後にランチャーを閉じます。</value>
+  </data>
+  <data name="ConfigurationError" xml:space="preserve">
+    <value>設定に問題があります。</value>
+  </data>
+  <data name="ConfigurationErrorMessage2" xml:space="preserve">
+    <value>クライアントプロファイルの設定が誤っている為、ランチャーの設定ができませんでした。プロファイルを確認し、編集してください</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>再開</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>コピーライト</value>
+  </data>
+  <data name="CreditsThanks" xml:space="preserve">
+    <value>Credits &amp;amp; Thanks</value>
+  </data>
+  <data name="Debug" xml:space="preserve">
+    <value>デバック</value>
+  </data>
+  <data name="DefaultProfile" xml:space="preserve">
+    <value>デフォルトプロファイル</value>
+  </data>
+  <data name="DeleteCustomServerPackFiles" xml:space="preserve">
+    <value>カスタムサーバパックファイルを削除します。</value>
+  </data>
+  <data name="DownloadingAppUpdater" xml:space="preserve">
+    <value>HyddwnLauncherのアップデートをダウンロードします。</value>
+  </data>
+  <data name="DownloadingUpdate" xml:space="preserve">
+    <value>アップデートをダウンロードしています。</value>
+  </data>
+  <data name="DownloadSuccessfulLaunchingUpdater" xml:space="preserve">
+    <value>ダウンロードに成功しました。アップデートを実行します。</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>エラーが発生しました。</value>
+  </data>
+  <data name="ErrorCallingMethodInPlugin" xml:space="preserve">
+    <value>{0} in {1}の呼び出しに失敗しました。</value>
+  </data>
+  <data name="ErrorConfiguringLauncher" xml:space="preserve">
+    <value>ランチャーの設定でエラーを確認しました。</value>
+  </data>
+  <data name="ErrorInPathToClient" xml:space="preserve">
+    <value>クライアントへのパス指定に問題があります。</value>
+  </data>
+  <data name="ErrorLoadingConfigurationPathNull" xml:space="preserve">
+    <value>構成データの呼び出しでエラーが発生しました。：パスがありません。</value>
+  </data>
+  <data name="ErrorOccurredDuringUpdate" xml:space="preserve">
+    <value>更新中にエラーが発生しました。</value>
+  </data>
+  <data name="ErrorOccurredLoadingPlugin" xml:space="preserve">
+    <value>プラグインのロード中にエラーが発生しました。:{0}</value>
+  </data>
+  <data name="ErrorOccurredLoadingPluginMessage" xml:space="preserve">
+    <value>プラグインのメッセージ読み込み中にエラーが発生しました。{0}, {1}: {2}</value>
+  </data>
+  <data name="ErrorOccurredWhenLoadingLocalizations" xml:space="preserve">
+    <value>ローカライゼーションの読み込みに失敗しました。</value>
+  </data>
+  <data name="ErrorOpeningFile" xml:space="preserve">
+    <value>ファイルのオープンに失敗しました。</value>
+  </data>
+  <data name="ErrorSendingClientProfile" xml:space="preserve">
+    <value>クライアントプロファイルの更新を{0}への送信に失敗しました</value>
+  </data>
+  <data name="ErrorSendingServerProfile" xml:space="preserve">
+    <value>サーバプロファイルの更新を{0}への送信に失敗しました。</value>
+  </data>
+  <data name="ErrorShuttingDownPlugin" xml:space="preserve">
+    <value>{0}のエラーでシャットダウンしました。</value>
+  </data>
+  <data name="Exception" xml:space="preserve">
+    <value>例外</value>
+  </data>
+  <data name="ExceptionCreatingPluginDirectory" xml:space="preserve">
+    <value>プラグインディレクトリの作成時に、タイプ{0}の例外が発生しました:{1}</value>
+  </data>
+  <data name="ExceptionReporterString" xml:space="preserve">
+    <value>ランチャーバージョン:{0}
+日付:{1}
+OS:{2}
+アプリケーションディレクトリ:{3}
+カレントディレクトリ:{4}
+システムフォルダ:{5}
+.NET Runtime:{6}
+例外の詳細:{7}</value>
+  </data>
+  <data name="ExceptionWhileAttemptingToRecover" xml:space="preserve">
+    <value>破損または不正な構成からの回復{0}</value>
+  </data>
+  <data name="ExtractingUpdater" xml:space="preserve">
+    <value>アップデータを抽出しています。</value>
+  </data>
+  <data name="FailedToAcquireLaunchConfig" xml:space="preserve">
+    <value>起動設定データの取得に失敗しました。</value>
+  </data>
+  <data name="FailedToAcquireMachineGUID" xml:space="preserve">
+    <value>マシンのGUIDデータの取得に失敗しました。</value>
+  </data>
+  <data name="FailedToAcquireUserProfile" xml:space="preserve">
+    <value>ユーザープロファイルデータの取得に失敗しました。</value>
+  </data>
+  <data name="FailedToAcquireWMIC" xml:space="preserve">
+    <value>WMICデータの取得に失敗しました。</value>
+  </data>
+  <data name="FailedToDeleteFileName" xml:space="preserve">
+    <value>{0}'!の削除に失敗しました。</value>
+  </data>
+  <data name="FailedToDownloadUpdateCont" xml:space="preserve">
+    <value>更新のダウンロードに失敗しました。続きます...</value>
+  </data>
+  <data name="FailedToUpdateAFile" xml:space="preserve">
+    <value>プロファイルのアップデートに失敗しました。</value>
+  </data>
+  <data name="GettingLauncherVersion" xml:space="preserve">
+    <value>ランチャーバージョンを取得しています。</value>
+  </data>
+  <data name="GettingMabinogiVersion" xml:space="preserve">
+    <value>マビノギバージョンを取得しています。</value>
+  </data>
+  <data name="GettingPassport" xml:space="preserve">
+    <value>パスポートを取得しています。</value>
+  </data>
+  <data name="HyddwnLauncherVersion" xml:space="preserve">
+    <value>Hyddwn Launcher バージョン：{0}</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="InitializingLauncherContext" xml:space="preserve">
+    <value>ランチャーコンテキストを初期化しています。</value>
+  </data>
+  <data name="InitializingPlugins" xml:space="preserve">
+    <value>プラグインを初期化しています。</value>
+  </data>
+  <data name="InvalidAccessToken" xml:space="preserve">
+    <value>アクセストークンが無効か期限切れです！</value>
+  </data>
+  <data name="InvalidFileOrpath" xml:space="preserve">
+    <value>ファイルかファイルパスが無効です。</value>
+  </data>
+  <data name="InValidFileOrPathMessage" xml:space="preserve">
+    <value>入力したパスは無効です。</value>
+  </data>
+  <data name="Japan" xml:space="preserve">
+    <value>日本</value>
+  </data>
+  <data name="JapanHangame" xml:space="preserve">
+    <value>日本＿ハンゲーム</value>
+  </data>
+  <data name="Korea" xml:space="preserve">
+    <value>韓国</value>
+  </data>
+  <data name="KoreaTest" xml:space="preserve">
+    <value>韓国＿テスト</value>
+  </data>
+  <data name="Launch" xml:space="preserve">
+    <value>起動</value>
+  </data>
+  <data name="LauncherContextLoadingComplete" xml:space="preserve">
+    <value>ランチャーコンテキストの読み込みが完了しました。</value>
+  </data>
+  <data name="LauncherContextLoadingSettings" xml:space="preserve">
+    <value>ランチャーコンテキスト：設定の読み込み中</value>
+  </data>
+  <data name="LaunchFailed" xml:space="preserve">
+    <value>起動に失敗しました。</value>
+  </data>
+  <data name="Launching" xml:space="preserve">
+    <value>起動中</value>
+  </data>
+  <data name="Local" xml:space="preserve">
+    <value>ローカル</value>
+  </data>
+  <data name="Localization" xml:space="preserve">
+    <value>ローカライゼーション</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>ログイン</value>
+  </data>
+  <data name="LoginIp" xml:space="preserve">
+    <value>ログインIP</value>
+  </data>
+  <data name="LoginPort" xml:space="preserve">
+    <value>ログインポート</value>
+  </data>
+  <data name="LogTab" xml:space="preserve">
+    <value>ログ</value>
+  </data>
+  <data name="MabiModsProfile" xml:space="preserve">
+    <value>MabiMods プロフィール</value>
+  </data>
+  <data name="MabinogiVersion" xml:space="preserve">
+    <value>マビノギバージョン{0}</value>
+  </data>
+  <data name="Maintenance" xml:space="preserve">
+    <value>メンテナンス</value>
+  </data>
+  <data name="MaintenanceMessage" xml:space="preserve">
+    <value>マビノギは現在メンテナンス中です。続けますか？</value>
+  </data>
+  <data name="NewsTab" xml:space="preserve">
+    <value>ニュース</value>
+  </data>
+  <data name="NexonAPIUnauthorized" xml:space="preserve">
+    <value>ネクソンAPIの呼び出しが許可されていませんでした。APIキーは無効です。</value>
+  </data>
+  <data name="NexonOfficial" xml:space="preserve">
+    <value>ネクソン公式</value>
+  </data>
+  <data name="NexonPassport" xml:space="preserve">
+    <value>ネクソンパスポート</value>
+  </data>
+  <data name="NexonPassportMessage1" xml:space="preserve">
+    <value>ネクソンのユーザ名とパスワードを使ってログインしてください。使用された情報はすぐに破棄されます。</value>
+  </data>
+  <data name="NexonPassportMessage2" xml:space="preserve">
+    <value>安全性の確認をせずにクローズドソースのランチャーにユーザ名やパスワードを入力しないでください。</value>
+  </data>
+  <data name="NickName" xml:space="preserve">
+    <value>ニックネーム</value>
+  </data>
+  <data name="NoadminWasDeclared" xml:space="preserve">
+    <value>非管理者が宣言されました。管理者昇格の要件を無効化しました。</value>
+  </data>
+  <data name="NoClientProfile" xml:space="preserve">
+    <value>クライアントプロファイルがありません</value>
+  </data>
+  <data name="NoClientProfileMessage" xml:space="preserve">
+    <value>マビノギ用に設定されたプロファイルがありません。Client.exeのあるフォルダを指定したプロファイルを設定してください。</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>無し</value>
+  </data>
+  <data name="NoProfileSelected" xml:space="preserve">
+    <value>プロファイルが選択されていません</value>
+  </data>
+  <data name="NoProfileSelectedMessage" xml:space="preserve">
+    <value>プロパティを選択する前に、クライアントプロファイルを設定するか作成する必要があります。</value>
+  </data>
+  <data name="NorthAmerica" xml:space="preserve">
+    <value>北米</value>
+  </data>
+  <data name="NotMabinogiRootFolder" xml:space="preserve">
+    <value>このプロファイルに設定されているパスはマビノギのルートフォルダではありません。</value>
+  </data>
+  <data name="NotMabinogiRootFolderMessage" xml:space="preserve">
+    <value>このプロファイルに設定されているパスはマビノギのルートフォルダではありません。
+
+このままでは適切な動作を実行できません。</value>
+  </data>
+  <data name="OnStartupUsage1" xml:space="preserve">
+    <value>使用方法：HyddwnLauncher.exe [/?] [/noadmin] [/clean]</value>
+  </data>
+  <data name="OnStartupUsage2" xml:space="preserve">
+    <value>noadmin – 現在のユーザが管理者であるかどうかの確認を無効にします。</value>
+  </data>
+  <data name="OnStartupUsage3" xml:space="preserve">
+    <value>clean- [Expiremental] 全てのマビノギインスタンスが閉じられた後にランチャーによって生成されたパックファイルをクリーンアップします。</value>
+  </data>
+  <data name="OpenLogFile" xml:space="preserve">
+    <value>ログファイルを開く</value>
+  </data>
+  <data name="OptionsTab" xml:space="preserve">
+    <value>オプション</value>
+  </data>
+  <data name="PackDataUrl" xml:space="preserve">
+    <value>パックデータURL</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>パスワード</value>
+  </data>
+  <data name="PathToClientExe" xml:space="preserve">
+    <value>Client.exeのパス</value>
+  </data>
+  <data name="PleaseEnterAPassword" xml:space="preserve">
+    <value>パスワードを入力してください</value>
+  </data>
+  <data name="PleaseEnterAUsername" xml:space="preserve">
+    <value>ユーザー名を入力してください</value>
+  </data>
+  <data name="PluginDirectoryNotFound" xml:space="preserve">
+    <value>プラグインディレクトリがありません。作成します。</value>
+  </data>
+  <data name="PluginLoadFailure" xml:space="preserve">
+    <value>プラグインのロードに失敗しました。</value>
+  </data>
+  <data name="ProfileEditor" xml:space="preserve">
+    <value>プロファイルエディター</value>
+  </data>
+  <data name="ProfileOpenFileDialogFilter" xml:space="preserve">
+    <value>Mabinogi (client.exe)|client.exe|Executables (*.exe)|*.exe</value>
+  </data>
+  <data name="ProfileOptions" xml:space="preserve">
+    <value>プロファイルオプション</value>
+  </data>
+  <data name="Profiles" xml:space="preserve">
+    <value>プロファイル</value>
+  </data>
+  <data name="ProfileUpdateUrl" xml:space="preserve">
+    <value>プロファイルアップデートURL</value>
+  </data>
+  <data name="RememberLoginDetails" xml:space="preserve">
+    <value>ログイン状態を記憶する</value>
+  </data>
+  <data name="RememberThisDevice" xml:space="preserve">
+    <value>デバイスを記憶する</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="RequestLimitExceeded" xml:space="preserve">
+    <value>許可しているリクエスト数を超えました</value>
+  </data>
+  <data name="ResetClientProfiles" xml:space="preserve">
+    <value>クライアントプロファイルのリセット</value>
+  </data>
+  <data name="ResetCredentialStorage" xml:space="preserve">
+    <value>認証情報のリセット</value>
+  </data>
+  <data name="ResetLauncherConfiguration" xml:space="preserve">
+    <value>ランチャー設定のリセット</value>
+  </data>
+  <data name="ResetOptions" xml:space="preserve">
+    <value>オプションのリセット</value>
+  </data>
+  <data name="RootDataUrl" xml:space="preserve">
+    <value>ルートデータURL</value>
+  </data>
+  <data name="SavedCredentials" xml:space="preserve">
+    <value>資格情報の保存</value>
+  </data>
+  <data name="SelfUpdateCheck" xml:space="preserve">
+    <value>手動更新確認</value>
+  </data>
+  <data name="ServerProfile" xml:space="preserve">
+    <value>サーバプロファイル</value>
+  </data>
+  <data name="ServerProfileEditor" xml:space="preserve">
+    <value>サーバプロファイルエディター</value>
+  </data>
+  <data name="ServerProfileUrl" xml:space="preserve">
+    <value>サーバプロファイルURL</value>
+  </data>
+  <data name="ServerProfileUrlMessage" xml:space="preserve">
+    <value>サーバプロファイルを保存するURLを入力してください</value>
+  </data>
+  <data name="SettingCurrentWorkingDirectory" xml:space="preserve">
+    <value>ワーキングディレクトリは{0}です</value>
+  </data>
+  <data name="SpecialThanksToCursey" xml:space="preserve">
+    <value>Special Thanks to cursey</value>
+  </data>
+  <data name="Starting" xml:space="preserve">
+    <value>起動中</value>
+  </data>
+  <data name="StartingClient" xml:space="preserve">
+    <value>クライアントの起動中</value>
+  </data>
+  <data name="StartingClientWithTheFollwingArguments" xml:space="preserve">
+    <value>次の引数を使用してクライアントを起動します：{0}</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>ステータス</value>
+  </data>
+  <data name="Taiwan" xml:space="preserve">
+    <value>台湾</value>
+  </data>
+  <data name="ThemeBaseColor" xml:space="preserve">
+    <value>ベースカラー</value>
+  </data>
+  <data name="ThemeAccentColor" xml:space="preserve">
+    <value>アクセントカラー</value>
+  </data>
+  <data name="ThemeOptions" xml:space="preserve">
+    <value>テーマオプション</value>
+  </data>
+  <data name="TrustedDeviceRequired" xml:space="preserve">
+    <value>信頼できるデバイスが必要</value>
+  </data>
+  <data name="TrustedDeviceRequiredMessage1" xml:space="preserve">
+    <value>メールを確認して、確認コードを下に入力してください。</value>
+  </data>
+  <data name="UnableToCheckForUpdates" xml:space="preserve">
+    <value>更新を確認できません。</value>
+  </data>
+  <data name="UnableToLoadClientProfileData" xml:space="preserve">
+    <value>クライアントプロファイルが無いとデータを読み込めません</value>
+  </data>
+  <data name="UnableToLoadClientProfileDataMessage" xml:space="preserve">
+    <value>クライアントプロファイルが無い状態で起動したためプロファイルデータを読み込めません。
+
+{0}</value>
+  </data>
+  <data name="UnableToLoadPlugins" xml:space="preserve">
+    <value>プラグインを読み込めません。</value>
+  </data>
+  <data name="UnableToLoadServerProfileData" xml:space="preserve">
+    <value>サーバプロファイルが無い状態で起動した為、サーバプロファイルを読み込めません。</value>
+  </data>
+  <data name="UnableToLoadServerProfileDataMessage" xml:space="preserve">
+    <value>サーバプロファイルが無い状態で起動した為、サーバプロファイルを読み込めません。
+
+{0}</value>
+  </data>
+  <data name="UnableToSaveClientProfileData" xml:space="preserve">
+    <value>クライアントプロファイルデータを保存できません。保存できないデータは破棄されます。</value>
+  </data>
+  <data name="UnableToSaveClientProfileDataMessage" xml:space="preserve">
+    <value>クライアントプロファイルデータを保存できません。保存できないデータは破棄されます。
+
+(0)</value>
+  </data>
+  <data name="UnableToSaveCredentialData" xml:space="preserve">
+    <value>資格情報データを保存できません。</value>
+  </data>
+  <data name="UnableToSaveCredentialDataMessage" xml:space="preserve">
+    <value>資格情報データを保存できません。
+
+(0)</value>
+  </data>
+  <data name="UnableToSaveServerProfileData" xml:space="preserve">
+    <value>サーバプロファイルデータを保存できません。保存できないデータは破棄されます。</value>
+  </data>
+  <data name="UnableToSaveServerProfileDataMessage" xml:space="preserve">
+    <value>サーバプロファイルデータを保存できません。保存できないデータは破棄されます。
+
+(0)</value>
+  </data>
+  <data name="UnableToStartClientMissingProfile" xml:space="preserve">
+    <value>クライアントを起動できません。クライアントまたはサーバのプロファイルがありません！</value>
+  </data>
+  <data name="UnhandledExceptionFatalError" xml:space="preserve">
+    <value>致命的なエラーが発生しました。</value>
+  </data>
+  <data name="UnhandledExceptionFileError" xml:space="preserve">
+    <value>致命的なエラーが発生しました。次のメッセージがクリップボードに保存されました。
+
+{0}</value>
+  </data>
+  <data name="UnhandledExceptionFileSegmentException" xml:space="preserve">
+    <value>例外{0}
+</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>アップデート可能</value>
+  </data>
+  <data name="UpdateAvailableLink" xml:space="preserve">
+    <value>アップデート可能</value>
+  </data>
+  <data name="UpdateAvailableMessage" xml:space="preserve">
+    <value>Hyddwn Launcherの新しいバージョンが利用可能です。
+
+現在のバージョン：{0}
+新しいバージョン：{1}</value>
+  </data>
+  <data name="UpdateCheck" xml:space="preserve">
+    <value>アップデートの確認</value>
+  </data>
+  <data name="UpdatingServerProfiles" xml:space="preserve">
+    <value>サーバプロファイルの更新中</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>ユーザ名</value>
+  </data>
+  <data name="UsernameOrPasswordIncorrect" xml:space="preserve">
+    <value>ユーザ名またはパスワードが違います</value>
+  </data>
+  <data name="ValidationFileDoesNotExist" xml:space="preserve">
+    <value>ファイルがありません！</value>
+  </data>
+  <data name="ValidationInvalidLocalizationString" xml:space="preserve">
+    <value>{0}はサポートされていないローカライズ文字列です！</value>
+  </data>
+  <data name="ValidationLocationIsRequired" xml:space="preserve">
+    <value>パスの入力が必要です</value>
+  </data>
+  <data name="ValidationValueMustBeString" xml:space="preserve">
+    <value>値は’String’形式で入力してください</value>
+  </data>
+  <data name="ValidationValueMustNotBeNull" xml:space="preserve">
+    <value>値を入力してください</value>
+  </data>
+  <data name="VerificationCodeEmpty" xml:space="preserve">
+    <value>確認コードが空欄です！</value>
+  </data>
+  <data name="VerificationCodeError" xml:space="preserve">
+    <value>確認コードエラー！</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>バージョン：</value>
+  </data>
+  <data name="WarnIfDirectory" xml:space="preserve">
+    <value>現在選択されているクライアントプロファイルのディレクトリはマビノギのルートディレクトリではありません。</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="Amber" xml:space="preserve">
+    <value>アンバー</value>
+  </data>
+  <data name="BaseDark" xml:space="preserve">
+    <value>ダーク</value>
+  </data>
+  <data name="BaseLight" xml:space="preserve">
+    <value>ライト</value>
+  </data>
+  <data name="Blue" xml:space="preserve">
+    <value>ブルー</value>
+  </data>
+  <data name="Brown" xml:space="preserve">
+    <value>ブラウン</value>
+  </data>
+  <data name="CenterScreen" xml:space="preserve">
+    <value>センタースクリーン</value>
+  </data>
+  <data name="ChatIpTip" xml:space="preserve">
+    <value>チャットで使用されるIPアドレス(フレンドリスト、プライベートメッセージ等）</value>
+  </data>
+  <data name="ChatPortTip" xml:space="preserve">
+    <value>チャットで使用されるポート番号（フレンドリスト、プライベートメッセージ等）</value>
+  </data>
+  <data name="Clients" xml:space="preserve">
+    <value>クライアント</value>
+  </data>
+  <data name="ClientVersion" xml:space="preserve">
+    <value>クライアントバージョン</value>
+  </data>
+  <data name="Cobalt" xml:space="preserve">
+    <value>コバルト</value>
+  </data>
+  <data name="Crimson" xml:space="preserve">
+    <value>クリムゾン</value>
+  </data>
+  <data name="Cyan" xml:space="preserve">
+    <value>シアン</value>
+  </data>
+  <data name="DefaultProfileTip" xml:space="preserve">
+    <value>現在のプロファイルをデフォルトプロファイルとして使用</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Emerald" xml:space="preserve">
+    <value>エメラルド</value>
+  </data>
+  <data name="Green" xml:space="preserve">
+    <value>グリーン</value>
+  </data>
+  <data name="Indigo" xml:space="preserve">
+    <value>インディゴ</value>
+  </data>
+  <data name="LauncherVersion" xml:space="preserve">
+    <value>ランチャーバージョン</value>
+  </data>
+  <data name="Lime" xml:space="preserve">
+    <value>ライム</value>
+  </data>
+  <data name="LocalizationInputTip" xml:space="preserve">
+    <value>クライアントのバージョンを選択</value>
+  </data>
+  <data name="LocalizationTip" xml:space="preserve">
+    <value>使用するマビノギのロケール</value>
+  </data>
+  <data name="LoginIpTip" xml:space="preserve">
+    <value>サーバログインに使用するIPアドレス</value>
+  </data>
+  <data name="LoginPortTip" xml:space="preserve">
+    <value>サーバログインポート</value>
+  </data>
+  <data name="Magenta" xml:space="preserve">
+    <value>マゼンタ</value>
+  </data>
+  <data name="Mauve" xml:space="preserve">
+    <value>モーブ</value>
+  </data>
+  <data name="NicknameInputTip" xml:space="preserve">
+    <value>クライアントプロファイル名を入力</value>
+  </data>
+  <data name="NickNameTip" xml:space="preserve">
+    <value>クライアントプロファイル名</value>
+  </data>
+  <data name="Olive" xml:space="preserve">
+    <value>オリーブ</value>
+  </data>
+  <data name="OpenLogFileTip" xml:space="preserve">
+    <value>ログファイルを開きます</value>
+  </data>
+  <data name="Orange" xml:space="preserve">
+    <value>オレンジ</value>
+  </data>
+  <data name="PackDataUrlTip" xml:space="preserve">
+    <value>パックされるファイルを含むzipファイルへのリンク</value>
+  </data>
+  <data name="PathToClientExeInputTip" xml:space="preserve">
+    <value>Client.exeのパスを入力</value>
+  </data>
+  <data name="PathToClientExeTip" xml:space="preserve">
+    <value>マビノギClient.exeのパス</value>
+  </data>
+  <data name="Pink" xml:space="preserve">
+    <value>ピンク</value>
+  </data>
+  <data name="ProfileUpdateUrlTip" xml:space="preserve">
+    <value>現在の設定を含むJSONファイルへのリンク</value>
+  </data>
+  <data name="Purple" xml:space="preserve">
+    <value>パープル</value>
+  </data>
+  <data name="Red" xml:space="preserve">
+    <value>レッド</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>リセット</value>
+  </data>
+  <data name="ResetServerProfiles" xml:space="preserve">
+    <value>サーバプロファイルのリセット</value>
+  </data>
+  <data name="ResetWindowPlacement" xml:space="preserve">
+    <value>ウィンドウ配置のリセット</value>
+  </data>
+  <data name="RootDataUrlTip" xml:space="preserve">
+    <value>パックファイルに含まれていないファイルを含むzipファイルへのリンク</value>
+  </data>
+  <data name="SavePosition" xml:space="preserve">
+    <value>ポジションの保存</value>
+  </data>
+  <data name="ServerName" xml:space="preserve">
+    <value>サーバ名</value>
+  </data>
+  <data name="ServerNameTip" xml:space="preserve">
+    <value>サーバプロファイル名</value>
+  </data>
+  <data name="Servers" xml:space="preserve">
+    <value>サーバ</value>
+  </data>
+  <data name="Sienna" xml:space="preserve">
+    <value>シエナ</value>
+  </data>
+  <data name="Steel" xml:space="preserve">
+    <value>スチール</value>
+  </data>
+  <data name="Taupe" xml:space="preserve">
+    <value>トープ</value>
+  </data>
+  <data name="Teal" xml:space="preserve">
+    <value>ティール</value>
+  </data>
+  <data name="UsePackFile" xml:space="preserve">
+    <value>パックファイルを使用</value>
+  </data>
+  <data name="VerificationCode" xml:space="preserve">
+    <value>確認コード</value>
+  </data>
+  <data name="Violet" xml:space="preserve">
+    <value>ヴァイオレット</value>
+  </data>
+  <data name="WindowPlacementSettings" xml:space="preserve">
+    <value>ウィンドウの配置設定</value>
+  </data>
+  <data name="Yellow" xml:space="preserve">
+    <value>イエロー</value>
+  </data>
+  <data name="LogFileLocation" xml:space="preserve">
+    <value>ログファイル</value>
+  </data>
+  <data name="ChatIpInputTip" xml:space="preserve">
+    <value>チャットで使用されるIPアドレス(フレンドリスト、プライベートメッセージ等）を入力</value>
+  </data>
+  <data name="ChatPortInputTip" xml:space="preserve">
+    <value>チャットで使用されるポート番号（フレンドリスト、プライベートメッセージ等）を入力</value>
+  </data>
+  <data name="LoginIpInputTip" xml:space="preserve">
+    <value>サーバログインに使用するIPアドレスを入力</value>
+  </data>
+  <data name="LoginPortInputTip" xml:space="preserve">
+    <value>サーバログインに使用するポート番号を入力</value>
+  </data>
+  <data name="PackDataUrlInputTip" xml:space="preserve">
+    <value>パックされるファイルを含むzipファイルへのリンクを入力</value>
+  </data>
+  <data name="ProfileSettings" xml:space="preserve">
+    <value>プロファイル設定</value>
+  </data>
+  <data name="ProfileUpdateUrlInputTip" xml:space="preserve">
+    <value>現在の設定を含むJSONファイルへのリンクを入力</value>
+  </data>
+  <data name="RootDataUrlInputTip" xml:space="preserve">
+    <value>パックファイルに含まれていないファイルを含むzipファイルへのリンクを入力</value>
+  </data>
+  <data name="ServerNameInputTip" xml:space="preserve">
+    <value>サーバプロファイル名を入力</value>
+  </data>
+  <data name="PatcherTab" xml:space="preserve">
+    <value>Patcher</value>
+  </data>
+</root>

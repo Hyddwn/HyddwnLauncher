@@ -54,8 +54,8 @@ namespace HyddwnLauncher.Core
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Unable to save server credential data");
-                MessageBox.Show("Unable to save credential data.\r\n\r\n" + ex.Message, "Error");
+                Log.Exception(ex, Properties.Resources.UnableToSaveCredentialData);
+                MessageBox.Show(string.Format(Properties.Resources.UnableToSaveCredentialDataMessage, ex.Message), "Error");
             }
         }
 

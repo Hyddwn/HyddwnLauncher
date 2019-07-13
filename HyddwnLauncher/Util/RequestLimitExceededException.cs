@@ -7,7 +7,7 @@ namespace HyddwnLauncher.Util
     public class RequestLimitExceededException : Exception
     {
         public RequestLimitExceededException()
-            : base("You have exceeded the maximum number of request allowed.")
+            : base(Properties.Resources.RequestLimitExceeded)
         {
         }
 

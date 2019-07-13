@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using HyddwnLauncher.Properties;
 
 namespace HyddwnLauncher.Util
 {
@@ -96,7 +97,7 @@ namespace HyddwnLauncher.Util
                     _file = new StreamWriter(_logFile, true);
                 _file.Write(DateTime.Now + " ");
                 if (level != LogLevel.None)
-                    _file.Write("[{0}] - ", level);
+                    _file.Write("[{0}] - ", level.LocalizedLogLevel());
                 _file.Write(format, args);
                 if (MainWindow.Instance != null)
                     MainWindow.Instance.Dispatcher.Invoke(() => MainWindow.Instance.AddToLog(format, args));

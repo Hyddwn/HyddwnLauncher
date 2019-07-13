@@ -154,7 +154,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             if (httpResponseMessage.StatusCode == HttpStatusCode.Unauthorized)
                 throw new UnauthorizedAccessException(
-                    "Call to Nexon API returned unauthorized. Most likely the API key is invalid.");
+                    Properties.Resources.NexonAPIUnauthorized);
         }
 
         /// <exception cref="UnauthorizedAccessException">

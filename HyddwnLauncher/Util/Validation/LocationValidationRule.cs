@@ -11,10 +11,10 @@ namespace HyddwnLauncher.Util.Validation
             var str = value as string;
 
             if (string.IsNullOrWhiteSpace(str))
-                return new ValidationResult(false, "Location is required!");
+                return new ValidationResult(false, Properties.Resources.ValidationLocationIsRequired);
 
             if (!File.Exists(str))
-                return new ValidationResult(false, "File does not exist!");
+                return new ValidationResult(false, Properties.Resources.ValidationFileDoesNotExist);
 
             return new ValidationResult(true, null);
         }

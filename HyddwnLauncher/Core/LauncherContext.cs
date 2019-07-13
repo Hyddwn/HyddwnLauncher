@@ -23,9 +23,9 @@ namespace HyddwnLauncher.Core
         {
             LogFileLocation = logFileLocation;
             Version = version;
-            Log.Info("LauncherContext: Loading Settings...");
+            Log.Info(Properties.Resources.LauncherContextLoadingSettings);
             LauncherSettingsManager = new LauncherSettingsManager();
-            Log.Info("LauncherContext: Load Complete!");
+            Log.Info(Properties.Resources.LauncherContextLoadingComplete);
         }
 
         public string LogFileLocation { get; protected set; }
