@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -258,7 +258,8 @@ namespace HyddwnLauncher
                 {
                     Arguments =
                         $"{"\"" + _updateInfo["File"] + "\""} {_updateInfo["SHA256"]} {"\"" + _updateInfo["Execute"] + "\""}",
-                    FileName = Path.Combine(Assemblypath, "Updater.exe")
+                    FileName = Path.Combine(Assemblypath, "Updater.exe"),
+                    WorkingDirectory = Assemblypath
                 };
 
                 // Process.Start is different that var process = new Process(processinfo).Start();
@@ -521,7 +522,7 @@ namespace HyddwnLauncher
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
                 await AsyncDownloader.DownloadFileWithCallbackAsync(
                     _updateInfo["Link"],
-                    _updateInfo["File"],
+                    Path.Combine(Assemblypath, _updateInfo["File"]),
                     (d, s) =>
                     {
                         MainProgressReporter.SetProgressBar(d);
