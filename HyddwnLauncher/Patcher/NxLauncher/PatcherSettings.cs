@@ -1,25 +1,27 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Properties;
+using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher.Patcher.NxLauncher
 {
     public class PatcherSettings : INotifyPropertyChanged
     {
 
-        private bool _ignorePackagehFolder;
+        private bool _ignorePackageFolder;
         private bool _forceUpdateCheck;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public bool IgnorePackagehFolder
+        public bool IgnorePackageFolder
         {
-            get => _ignorePackagehFolder;
+            get => _ignorePackageFolder;
             set
             {
-                if (value == _ignorePackagehFolder) return;
-                _ignorePackagehFolder = value;
+                if (value == _ignorePackageFolder) return;
+                _ignorePackageFolder = value;
                 OnPropertyChanged();
             }
         }
@@ -35,10 +37,13 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             }
         }
 
+        public event Action<string> SaveOnChanged;
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            SaveOnChanged?.Raise(propertyName);
         }
     }
 }

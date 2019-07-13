@@ -411,7 +411,7 @@
                                                 <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                     <CheckBox Content="Ignore Package Folder" VerticalAlignment="Center"
                                                   ToolTip="Forces the patcher to skip updating files in the package folder."
-                                                  IsChecked="{Binding ElementName=This, Path=PatcherSettings.IgnorePackagehFolder}"/>
+                                                  IsChecked="{Binding ElementName=This, Path=PatcherSettings.IgnorePackageFolder}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="5 2.5">

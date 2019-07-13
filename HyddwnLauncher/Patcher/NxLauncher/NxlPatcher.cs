@@ -287,7 +287,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             if (!overrideSettings)
                 if (filePath.StartsWith("package\\")
-                    && PatchSettingsManager.Instance.PatcherSettings.IgnorePackagehFolder
+                    && PatchSettingsManager.Instance.PatcherSettings.IgnorePackageFolder
                     && (_possibleNewPack && !filePath.Contains(_version.ToString()) || !_possibleNewPack)) continue;
 
 
