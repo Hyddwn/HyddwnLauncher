@@ -491,7 +491,7 @@
                 <Run Text=": "/>
                 <Run x:Name="LauncherVersion" Text="0"/>
             </TextBlock>
-            <TextBlock Margin="5 0 0 0" Text="BETA 20" FontWeight="ExtraBold"/>
+            <TextBlock Margin="5 0 0 0" Text="BETA 21" FontWeight="ExtraBold"/>
         </StackPanel>
         <!-- 
             OLD CODE NOT TRANSLATION COMPLIANT
