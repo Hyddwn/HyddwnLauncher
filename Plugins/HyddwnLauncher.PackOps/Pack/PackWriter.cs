@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using HyddwnLauncher.PackOps.Pack.Util;
 
@@ -14,6 +15,7 @@ namespace HyddwnLauncher.PackOps.Pack
 		private readonly List<PackListEntry> _packList;
 		private readonly TempFileScope _tempOutput;
 		private int _version;
+	    private List<Tuple<byte[], PackageItemInfo>> _outputPackageItemInfos;
 
 		public PackWriter(string outFile, int version)
 		{
@@ -109,43 +111,8 @@ namespace HyddwnLauncher.PackOps.Pack
 		{
 			var outputStream = File.Open(_outFile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-			_packHeader.Signature = new byte[] {0x50, 0x41, 0x43, 0x4B, 0x02, 0x01, 0x00, 0x00};
-			_packHeader.D1 = 1;
-			_packHeader.Sum = (uint) _packList.Count;
-			_packHeader.DataPath = "data\\";
-			_packHeader.FileTime1 = DateTime.UtcNow.ToFileTimeUtc();
-			_packHeader.FileTime2 = DateTime.UtcNow.ToFileTimeUtc();
-
-			_packHeader.FileCount = (uint) _packList.Count;
-			_packHeader.HeaderLength = 0;
-			_packHeader.DataLength = (uint) _bodyStream.Position;
-			_packHeader.BlankLength = 0;
-			_packHeader.Zero = new byte[16];
-
-			var infos = new List<Tuple<byte[], PackageItemInfo>>();
-
-			foreach (var entry in _packList)
-			{
-				var info = new PackageItemInfo
-				{
-					CompressedSize = (int) entry.CompressedSize,
-					DecompressedSize = (int) entry.DecompressedSize,
-					IsCompressed = entry.IsCompressed,
-					DataOffset = entry.DataOffset,
-					Seed = (int) entry.Seed,
-					FileTime1 = entry.FileTime1,
-					FileTime3 = entry.FileTime3,
-					FileTime5 = entry.FileTime5
-				};
-
-				var bytes = EncodeName(entry.FullName);
-
-				infos.Add(Tuple.Create(bytes, info));
-				_packHeader.HeaderLength += (uint) (bytes.Length + StructHelper.SizeOf<PackageItemInfo>());
-			}
-
-			_packHeader.WriteToStream(outputStream);
-			foreach (var packInfo in infos)
+            _packHeader.WriteToStream(outputStream);
+			foreach (var packInfo in _outputPackageItemInfos)
 			{
 				outputStream.Write(packInfo.Item1, 0, packInfo.Item1.Length);
 				packInfo.Item2.WriteToStream(outputStream);
@@ -158,6 +125,59 @@ namespace HyddwnLauncher.PackOps.Pack
 			outputStream.Close();
 			outputStream.Dispose();
 		}
+
+	    public void BuildPackHeader()
+	    {
+	        _packHeader.Signature = new byte[] { 0x50, 0x41, 0x43, 0x4B, 0x02, 0x01, 0x00, 0x00 };
+	        _packHeader.D1 = 1;
+	        _packHeader.Sum = (uint)_packList.Count;
+	        _packHeader.DataPath = "data\\";
+	        _packHeader.FileTime1 = DateTime.UtcNow.ToFileTimeUtc();
+	        _packHeader.FileTime2 = DateTime.UtcNow.ToFileTimeUtc();
+
+	        _packHeader.FileCount = (uint)_packList.Count;
+	        _packHeader.HeaderLength = 0;
+	        _packHeader.DataLength = (uint)_bodyStream.Position;
+	        _packHeader.BlankLength = 0;
+	        _packHeader.Zero = new byte[16];
+
+            _outputPackageItemInfos = new List<Tuple<byte[], PackageItemInfo>>();
+
+	        foreach (var entry in _packList)
+	        {
+	            var info = new PackageItemInfo
+	            {
+	                CompressedSize = (int)entry.CompressedSize,
+	                DecompressedSize = (int)entry.DecompressedSize,
+	                IsCompressed = entry.IsCompressed,
+	                DataOffset = entry.DataOffset,
+	                Seed = (int)entry.Seed,
+	                FileTime1 = entry.FileTime1,
+	                FileTime3 = entry.FileTime3,
+	                FileTime5 = entry.FileTime5
+	            };
+
+	            var bytes = EncodeName(entry.FullName);
+
+	            _outputPackageItemInfos.Add(Tuple.Create(bytes, info));
+	            _packHeader.HeaderLength += (uint)(bytes.Length + StructHelper.SizeOf<PackageItemInfo>());
+	        }
+        }
+
+	    public long GetPackFileSize()
+	    {
+	        return GetHeaderSize() + GetBodySize();
+	    }
+
+	    private uint GetHeaderSize()
+	    {
+	        return _packHeader.HeaderLength;
+	    }
+
+	    private uint GetBodySize()
+	    {
+	        return (uint)_packList.Sum(p => p.CompressedSize);
+        }
 
 		/// <summary>
 		///     Releases unmanaged and - optionally - managed resources.

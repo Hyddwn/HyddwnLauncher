@@ -13,12 +13,14 @@ namespace HyddwnLauncher.PackOps.Core
 		private readonly string _packOpsJson =
 			$"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\packops.json";
 
-		private PluginContext _pluginContext;
+		private readonly PluginContext _pluginContext;
 
-		private PackOpsSettingsManager(PluginContext pluginCOntext)
+		private PackOpsSettingsManager(PluginContext pluginContext)
 		{
 			if (!Directory.Exists(Path.GetDirectoryName(_packOpsJson)))
 				Directory.CreateDirectory(Path.GetDirectoryName(_packOpsJson));
+
+		    _pluginContext = pluginContext;
 
 			PackOpsSettings = LoadPackOpsSettings();
 			PackOpsSettings.PropertyChanged += SaveOnChanged;
@@ -67,9 +69,10 @@ namespace HyddwnLauncher.PackOps.Core
 
 				return result;
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				return new PackOpsSettings();
+			    _pluginContext.LogString($"Unable to load PackOps settings. {ex.Message}", true);
+                return new PackOpsSettings();
 			}
 		}
 

@@ -36,7 +36,9 @@ namespace HyddwnLauncher.PackOps
 		private readonly PluginContext _pluginContext;
 		private IServerProfile _serverProfile;
 
-		public PackOpsPluginUI(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
+	    private static long _maxPackFileSize = 4294967294;
+
+        public PackOpsPluginUI(PluginContext pluginContext, IClientProfile clientProfile, IServerProfile serverProfile)
 		{
 			_pluginContext = pluginContext;
 			_clientProfile = clientProfile;
@@ -231,8 +233,10 @@ namespace HyddwnLauncher.PackOps
 				.OrderBy(pvm => pvm.PackVersion).ToList();
 			if (selectedPackViewModels.Count < 2) return;
 
-			// Reader must be kept open to pull the data streams
-			using (var packReader = new PackReader())
+		    bool proceed = true;
+
+            // Reader must be kept open to pull the data streams
+            using (var packReader = new PackReader())
 			{
 				_pluginContext.SetPatcherState(true);
 				PackOperationsLoader.IsOpen = true;
@@ -260,7 +264,7 @@ namespace HyddwnLauncher.PackOps
 
 				const string packagePath = "package";
 
-				await Task.Run(() =>
+                await Task.Run(() =>
 				{
 					double entries = packEntryCollection.Count;
 					var progress = 0;
@@ -282,13 +286,13 @@ namespace HyddwnLauncher.PackOps
 						? $"{selectedPackViewModels.LastOrDefault().PackVersion}_full.pack"
 						: $"{selectedPackViewModels.FirstOrDefault().PackVersion}_to_{selectedPackViewModels.LastOrDefault().PackVersion}.pack";
 
-					using (var pw = new PackWriter($"{packagePath}\\{packName}", selectedPackViewModels.LastOrDefault().PackVersion))
+					using (var packWriter = new PackWriter($"{packagePath}\\{packName}", selectedPackViewModels.LastOrDefault().PackVersion))
 					{
 						foreach (var entry in packEntryCollection)
 						{
 							var fileStream = entry.GetCompressedDataAsStream();
 
-							pw.WriteDirect(fileStream, entry.FullName, (int) entry.Seed, (int) entry.CompressedSize,
+							packWriter.WriteDirect(fileStream, entry.FullName, (int) entry.Seed, (int) entry.CompressedSize,
 								(int) entry.DecompressedSize, entry.IsCompressed, entry.CreationTime, entry.LastWriteTime,
 								entry.LastAccessTime);
 							fileStream.Dispose();
@@ -305,17 +309,31 @@ namespace HyddwnLauncher.PackOps
 							});
 						}
 
-						Dispatcher.Invoke(() =>
-						{
-							ProgressBar.Value = 0;
-							ProgressBar.IsIndeterminate = true;
-							ProgressText.Text = "Creating Pack File...";
-						});
+					    packWriter.BuildPackHeader();
 
-						pw.Pack();
+					    var size = packWriter.GetPackFileSize();
+					    if (size > _maxPackFileSize)
+					    {
+					        proceed = _pluginContext.ShowDialog("File Size Limit Exceeded",
+					            "The size of this pack file is larger than what Mabinogi can open.\r\n\r\nContinue?");
+					    }
+
+					    if (!proceed) return;
+					    Dispatcher.Invoke(() =>
+					    {
+					        ProgressBar.Value = 0;
+					        ProgressBar.IsIndeterminate = true;
+					        ProgressText.Text = "Creating Pack File...";
+					    });
+
+
+					    packWriter.Pack();
 					}
 				});
 			}
+
+            if (!proceed)
+                goto Finish;
 
 			await Task.Run(() =>
 			{
@@ -339,6 +357,7 @@ namespace HyddwnLauncher.PackOps
 					}
 			});
 
+		    Finish:
 			ProgressBar.Value = 0;
 			ProgressBar.IsIndeterminate = true;
 			ProgressText.Text = "Getting Packs...";
