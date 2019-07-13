@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -55,6 +55,7 @@ namespace HyddwnLauncher
                     Console.WriteLine(HyddwnLauncher.Properties.Resources.OnStartupUsage1);
                     Console.WriteLine(HyddwnLauncher.Properties.Resources.OnStartupUsage2);
                     Console.WriteLine(HyddwnLauncher.Properties.Resources.OnStartupUsage3);
+                    Console.WriteLine("/nopatch - Disable the launcher's patching system in the settings.");
                     Environment.Exit(0);
                 }
 
@@ -68,6 +69,12 @@ namespace HyddwnLauncher
                 {
                     packFileClean = true;
                     Log.Info(HyddwnLauncher.Properties.Resources.CleanWasDeclared);
+                }
+
+                if (e.Args[index].Contains("/nopatch"))
+                {
+                    launcherContext.LauncherSettingsManager.LauncherSettings.AllowPatching = false;
+                    Log.Info("nopatch was declared, disabling the launcher's patching system in settings.");
                 }
             }
 
