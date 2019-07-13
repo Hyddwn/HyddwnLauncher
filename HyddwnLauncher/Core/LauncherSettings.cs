@@ -23,6 +23,7 @@ namespace HyddwnLauncher.Core
         private bool _warnIfRootIsNotMabiRoot;
         private bool _closeAfterLaunching;
         private bool _allowPatching;
+        private bool _disableLauncherUpdateCheck;
 
         public LauncherSettings()
         {
@@ -40,6 +41,7 @@ namespace HyddwnLauncher.Core
             DisableMultiClientCheck = false;
             CloseAfterLaunching = true;
             AllowPatching = true;
+            DisableLauncherUpdateCheck = false;
         }
 
         public bool UsePackFiles
@@ -192,6 +194,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _allowPatching) return;
                 _allowPatching = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool DisableLauncherUpdateCheck
+        {
+            get => _disableLauncherUpdateCheck;
+            set
+            {
+                if (value == _disableLauncherUpdateCheck) return;
+                _disableLauncherUpdateCheck = value;
                 OnPropertyChanged();
             }
         }

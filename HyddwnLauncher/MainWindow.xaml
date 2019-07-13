@@ -307,6 +307,10 @@
                                 <StackPanel Margin="5 2.5">
                                     <StackPanel Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="Disable Launcher Update Check"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.DisableLauncherUpdateCheck}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
                                             <CheckBox Content="Enable patching system"
                                                       IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.AllowPatching}"/>
                                         </StackPanel>

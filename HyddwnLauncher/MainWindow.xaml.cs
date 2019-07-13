@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -106,8 +106,13 @@ namespace HyddwnLauncher
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Starting);
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.UpdateCheck);
-            IsUpdateAvailable = await CheckForUpdates();
+            if (Settings.LauncherSettings.DisableLauncherUpdateCheck)
+                Log.Info("Update check skipped!");
+            else
+            {
+                MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.UpdateCheck);
+                IsUpdateAvailable = await CheckForUpdates();
+            }
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CheckingClientProfiles);
             _settingUpProfile = true;
