@@ -26,6 +26,11 @@
         string Localization { get; }
 
         /// <summary>
+        ///     Additional argument appended to the end of the arguments list.
+        /// </summary>
+        string Arguments { get; set; }
+
+        /// <summary>
         ///     The username set by the user on their profile
         /// </summary>
         string ProfileUsername { get; }

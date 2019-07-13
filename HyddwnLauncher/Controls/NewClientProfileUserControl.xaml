@@ -10,7 +10,7 @@
              xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:core="clr-namespace:HyddwnLauncher.Core"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="285">
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="310">
     <UserControl.Resources>
         <DataTemplate x:Key="MabiLocalizationComboBoxItem" DataType="{x:Type core:MabiLocalizationData}">
             <StackPanel Orientation="Horizontal">
@@ -30,7 +30,7 @@
                            Text="{x:Static p:Resources.NoProfileSelectedMessage}" />
             </Grid>
         </simpleChildWindow:ChildWindow>
-        <StackPanel Margin="5">
+        <StackPanel Margin="5" IsEnabled="{Binding ElementName=This, Path=ClientProfile, TargetNullValue=false}">
             <StackPanel Margin="5" Orientation="Horizontal">
                 <TextBlock Text="{x:Static p:Resources.ClientProfileEditor}" FontWeight="Bold" FontSize="16" />
             </StackPanel>
@@ -42,7 +42,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Center" Text="{x:Static p:Resources.ClientProfile}" />
                 <TextBox Grid.Column="1" ToolTip="{x:Static p:Resources.NicknameInputTip}"
-                         Text="{Binding ElementName=This, Path=ClientProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding ElementName=This, Path=ClientProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged" />
             </Grid>
             <Grid Margin="10 0 10 5" ToolTip="{x:Static p:Resources.PathToClientExeTip}">
                 <Grid.ColumnDefinitions>
@@ -51,7 +51,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Center" Text="{x:Static p:Resources.PathToClientExe}" />
-                <TextBox x:Name="LocationTextBox" ToolTip="{x:Static p:Resources.PathToClientExeInputTip}" Grid.Column="1">
+                <TextBox x:Name="LocationTextBox" ToolTip="{x:Static p:Resources.PathToClientExeInputTip}" Grid.Column="1" TextChanged="LocationTextBox_TextChanged">
                     <Binding Path="ClientProfile.Location" ElementName="This" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
                             <validation:LocationValidationRule />
@@ -60,7 +60,17 @@
                 </TextBox>
                 <Button Margin="5 0 5 0" Content=". . ."
                         IsEnabled="{Binding Path=ClientProfile, TargetNullValue=False}" Height="26"
-                        Click="BrowseButtonOnClick" Grid.Column="2" />
+                        Click="BrowseButtonOnClick" Grid.Column="2" VerticalAlignment="Top" />
+            </Grid>
+            <Grid Margin="10 0 10 5" ToolTip="Additional arguments appended at the end.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Center" Text="Additional Arguments" />
+                <TextBox Grid.Column="1" ToolTip="Set arguments that are to be appended to the end of the arguments."
+                         Text="{Binding ElementName=This, Path=ClientProfile.Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged_1" />
             </Grid>
             <Grid Margin="10 0 10 5" ToolTip="{x:Static p:Resources.LocalizationTip}">
                 <Grid.ColumnDefinitions>
@@ -74,7 +84,7 @@
                           ItemTemplate="{DynamicResource MabiLocalizationComboBoxItem}"
                           SelectedValue="{Binding ElementName=This, Path=ClientProfile.Localization, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           ItemsSource="{Binding ElementName=This, Path=MabiLocalizations}"
-                          ToolTip="{x:Static p:Resources.LocalizationInputTip}" />
+                          ToolTip="{x:Static p:Resources.LocalizationInputTip}" SelectionChanged="ComboBox_SelectionChanged" />
             </Grid>
             <Grid Margin="10 0 19 5" ToolTip="{x:Static p:Resources.DefaultProfileTip}">
                 <Grid.ColumnDefinitions>
@@ -82,7 +92,7 @@
                     <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Content="{x:Static p:Resources.DefaultProfile}" />
+                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Top" Content="{x:Static p:Resources.DefaultProfile}" Margin="23,0" Checked="CheckBox_Checked" />
             </Grid>
             <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="{x:Static p:Resources.SavedCredentials}">
                 <GroupBox Header="{x:Static p:Resources.SavedCredentials}" Margin="5">

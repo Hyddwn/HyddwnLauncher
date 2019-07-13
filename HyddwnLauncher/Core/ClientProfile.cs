@@ -14,6 +14,7 @@ namespace HyddwnLauncher.Core
         private string _name;
         private string _profileUsername;
         private string _profileImageUri;
+        private string _arguments;
 
         public ClientProfile()
         {
@@ -82,6 +83,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _profileImageUri) return;
                 _profileImageUri = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Arguments
+        {
+            get => _arguments;
+            set
+            {
+                if (value == _arguments) return;
+                _arguments = value;
                 OnPropertyChanged();
             }
         }

@@ -116,5 +116,50 @@ namespace HyddwnLauncher.Controls
             ProfileUsername = "";
             UserAvatarSource = "";
         }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ClientProfile == null)
+            {
+                ErrorWindow.IsOpen = true;
+                return;
+            }
+        }
+
+        private void LocationTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ClientProfile == null)
+            {
+                ErrorWindow.IsOpen = true;
+                return;
+            }
+        }
+
+        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
+        {
+            if (ClientProfile == null)
+            {
+                ErrorWindow.IsOpen = true;
+                return;
+            }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ClientProfile == null)
+            {
+                ErrorWindow.IsOpen = true;
+                return;
+            }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (ClientProfile == null)
+            {
+                ErrorWindow.IsOpen = true;
+                return;
+            }
+        }
     }
 }

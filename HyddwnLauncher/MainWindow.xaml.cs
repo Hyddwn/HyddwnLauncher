@@ -1231,7 +1231,7 @@ namespace HyddwnLauncher
         private void LaunchCustom()
         {
             var arguments =
-                $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ActiveServerProfile.LoginIp} logport:{ActiveServerProfile.LoginPort} chatip:{ActiveServerProfile.ChatIp} chatport:{ActiveServerProfile.ChatPort} locale:USA env:Regular setting:file://data/features.xml";
+                $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ActiveServerProfile.LoginIp} logport:{ActiveServerProfile.LoginPort} chatip:{ActiveServerProfile.ChatIp} chatport:{ActiveServerProfile.ChatPort} locale:USA env:Regular setting:file://data/features.xml {ActiveClientProfile.Arguments}";
 
             Log.Info(Properties.Resources.BeginningClientLaunch);
 
@@ -1297,6 +1297,7 @@ namespace HyddwnLauncher
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
             var launchArgs = await Patcher.GetLauncherArguments();
             launchArgs = launchArgs.Replace("${passport}", passport);
+            launchArgs += $" {ActiveClientProfile.Arguments}";
 
             try
             {
