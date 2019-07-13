@@ -52,7 +52,7 @@ namespace HyddwnLauncher.Patcher
 
         public virtual async Task<string> GetLauncherArguments()
         {
-            return $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ServerProfile.LoginIp} logport:{ServerProfile.LoginPort} chatip:{ServerProfile.ChatIp} chatport:{ServerProfile.ChatPort} {ClientProfile.Localization.ToExtendedLaunchArguments()}";
+            return $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ServerProfile.LoginIp} logport:{ServerProfile.LoginPort} chatip:{ServerProfile.ChatIp} chatport:{ServerProfile.ChatPort} {ClientProfile.Localization.ToExtendedLaunchArguments()} {ClientProfile.Arguments}";
         }
 
         public virtual async Task<bool> GetMaintenanceStatus()
