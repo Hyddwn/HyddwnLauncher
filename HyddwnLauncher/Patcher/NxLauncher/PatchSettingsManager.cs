@@ -9,10 +9,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 {
     public class PatchSettingsManager
     {
-        private static readonly string Assembly = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        private static readonly string Assemblypath = Path.GetDirectoryName(Assembly);
-
-        private readonly string _patcherSettingsJson = Assemblypath + "\\PatcherSettings.json";
+        private readonly string _patcherSettingsJson = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\PatcherSettings.json";
 
         public static PatchSettingsManager Instance;
 
