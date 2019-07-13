@@ -23,9 +23,17 @@ namespace HyddwnLauncher.Controls
             "CredentialUsername", typeof(string), typeof(NewClientProfileUserControl),
             new PropertyMetadata(default(string)));
 
+        public static readonly DependencyProperty UserAvatarSourceProperty = DependencyProperty.Register(
+            "UserAvatarSource", typeof(string), typeof(NewClientProfileUserControl), 
+            new PropertyMetadata(default(string)));
+
+        public static readonly DependencyProperty ProfileUsernameProperty = DependencyProperty.Register(
+            "ProfileUsername", typeof(string), typeof(NewClientProfileUserControl), 
+            new PropertyMetadata(default(string)));
+
         public static readonly DependencyProperty MabiLocalizationsProperty = DependencyProperty.Register(
-            "MabiLocalizations", typeof(ObservableCollection<string>), typeof(NewClientProfileUserControl),
-            new PropertyMetadata(default(ObservableCollection<string>)));
+            "MabiLocalizations", typeof(ObservableCollection<MabiLocalizationData>), typeof(NewClientProfileUserControl),
+            new PropertyMetadata(default(ObservableCollection<MabiLocalizationData>)));
 
         public NewClientProfileUserControl()
         {
@@ -33,14 +41,14 @@ namespace HyddwnLauncher.Controls
 
             try
             {
-                MabiLocalizations = new ObservableCollection<string>();
+                MabiLocalizations = new ObservableCollection<MabiLocalizationData>();
 
                 foreach (var field in typeof(ClientLocalization).GetFields(BindingFlags.Public | BindingFlags.Static))
-                    MabiLocalizations.Add((string) field.GetValue(null));
+                    MabiLocalizations.Add(new MabiLocalizationData { Name = (string)field.GetValue(null) });
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Error occured when loading localizations.");
+                Log.Exception(ex, Properties.Resources.ErrorOccurredWhenLoadingLocalizations);
             }
         }
 
@@ -56,9 +64,21 @@ namespace HyddwnLauncher.Controls
             set => SetValue(CredentialUsernameProperty, value);
         }
 
-        public ObservableCollection<string> MabiLocalizations
+        public string ProfileUsername
         {
-            get => (ObservableCollection<string>) GetValue(MabiLocalizationsProperty);
+            get => (string)GetValue(ProfileUsernameProperty);
+            set => SetValue(ProfileUsernameProperty, value);
+        }
+
+        public string UserAvatarSource
+        {
+            get => (string)GetValue(UserAvatarSourceProperty);
+            set => SetValue(UserAvatarSourceProperty, value);
+        }
+
+        public ObservableCollection<MabiLocalizationData> MabiLocalizations
+        {
+            get => (ObservableCollection<MabiLocalizationData>) GetValue(MabiLocalizationsProperty);
             set => SetValue(MabiLocalizationsProperty, value);
         }
 
@@ -68,21 +88,33 @@ namespace HyddwnLauncher.Controls
             {
                 ErrorWindow.IsOpen = true;
                 return;
+
             }
 
             var openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Executables (*.exe)|*.exe";
+            openFileDialog.Filter = Properties.Resources.ProfileOpenFileDialogFilter;
             openFileDialog.InitialDirectory = "C:\\Nexon\\Library\\mabinogi\\appdata\\";
             if (openFileDialog.ShowDialog() == true)
+            {
                 ClientProfile.Location = openFileDialog.FileName;
+                // I shouldn't have to do this...
+                LocationTextBox.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            }
+
         }
 
         private void ClientProfileSavedCredentialsRemoveButtonOnClick(object sender, RoutedEventArgs e)
         {
-            if (ClientProfile == null) return;
+            if (ClientProfile == null)
+            {
+                ErrorWindow.IsOpen = true;
+                return;
+            }
 
             CredentialsStorage.Instance.Remove(ClientProfile.Guid);
             CredentialUsername = "";
+            ProfileUsername = "";
+            UserAvatarSource = "";
         }
     }
 }

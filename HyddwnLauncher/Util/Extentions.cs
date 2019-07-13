@@ -163,6 +163,42 @@ namespace HyddwnLauncher.Util
             }
         }
 
+        public static string LocalizedPatchReason(this PatchReason reason)
+        {
+            switch (reason)
+            {
+                case PatchReason.None:
+                    return Properties.Resources.None;
+                case PatchReason.Modified:
+                    return Properties.Resources.Modified;
+                case PatchReason.Older:
+                    return Properties.Resources.Older;
+                case PatchReason.DoesNotExist:
+                    return Properties.Resources.DoesNotExist;
+                case PatchReason.SizeNotMatch:
+                    return Properties.Resources.SizeNotMatch;
+                case PatchReason.Repair:
+                    return Properties.Resources.Repair;
+                case PatchReason.Force:
+                    return Properties.Resources.Force;
+                default:
+                    return reason.ToString();
+            }
+        }
+
+        public static string ToExtendedLaunchArguments(this string localization)
+        {
+            switch (localization)
+            {
+                case ClientLocalization.Japan:
+                    return "setting:\"file://data/features.xml=Regular, Japan\"";
+                case ClientLocalization.JapanHangame:
+                    return "setting:\"file://data/features.xml=Regular, Japan\" sublocale:nhnjapan";
+                default:
+                    return "setting:file://data/features.xml locale:USA env:Regular";
+            }
+        }
+
         public static string LocalizedLogLevel(this LogLevel level)
         {
             switch (level)

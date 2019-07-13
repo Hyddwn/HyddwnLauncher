@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -12,10 +13,15 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using HyddwnLauncher.Controls;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility;
+using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Extensibility.Model;
 using HyddwnLauncher.Network;
+using HyddwnLauncher.Patcher;
+using HyddwnLauncher.Patcher.Legacy;
+using HyddwnLauncher.Patcher.NxLauncher;
 using HyddwnLauncher.Util;
 using Ionic.Zip;
 using MahApps.Metro;
@@ -34,6 +40,10 @@ namespace HyddwnLauncher
         public static readonly DependencyProperty IsUpdateAvailableProperty = DependencyProperty.Register(
             "IsUpdateAvailable", typeof(bool), typeof(MainWindow), new PropertyMetadata(default(bool)));
 
+        public static readonly DependencyProperty IsInMaintenanceProperty = DependencyProperty.Register(
+            "IsInMaintenance", typeof(bool), typeof(MainWindow), new PropertyMetadata(default(bool)));
+
+
         #endregion
 
         #region ctor
@@ -45,8 +55,11 @@ namespace HyddwnLauncher
 #if DEBUG
            launcherContext.LauncherSettingsManager.Reset();
 #endif
+            Reporters = new ObservableCollection<ProgressIndicator>();
             LauncherContext = launcherContext;
             Settings = launcherContext.LauncherSettingsManager;
+            PatchSettingsManager.Initialize();
+            PatcherSettings = PatchSettingsManager.Instance.PatcherSettings;
             ProfileManager = new ProfileManager();
             ProfileManager.Load();
             //Populate for the first time
@@ -90,34 +103,35 @@ namespace HyddwnLauncher
         {
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Starting...");
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Starting);
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Update Check...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.UpdateCheck);
             IsUpdateAvailable = await CheckForUpdates();
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Check Client Profiles...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CheckingClientProfiles);
             _settingUpProfile = true;
             CheckClientProfiles();
 
             while (_settingUpProfile)
                 await Task.Delay(100);
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Applying settings...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.ApplyingSettings);
             ConfigureLauncher();
+            ConfigurePatcher();
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting launcher version...");
-            Log.Info("Hyddwn Launcher Version {0}", LauncherContext.Version);
-            LauncherVersion.SetTextBlockSafe(LauncherContext.Version);
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingLauncherVersion);
+            Log.Info(Properties.Resources.HyddwnLauncherVersion, LauncherContext.Version);
+            LauncherVersion.SetRunSafe(LauncherContext.Version);
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting mabinogi version...");
-            var mabiVers = ReadVersion();
-            Log.Info("Mabinogi Version {0}", mabiVers);
-            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingMabinogiVersion);
+            var mabiVers = Patcher?.ReadVersion() ?? ReadVersion();
+            Log.Info(Properties.Resources.MabinogiVersion, mabiVers);
+            ClientVersion.SetRunSafe(mabiVers.ToString());
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Updating server profiles...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.UpdatingServerProfiles);
             await ProfileManager.UpdateProfiles();
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Initializing Plugins...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.InitializingPlugins);
             await InitializePlugins();
 
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
@@ -128,8 +142,10 @@ namespace HyddwnLauncher
             IsPatching = false;
 
             if (Settings.ConfigurationDirty)
-                await this.ShowMessageAsync("Configuration Error",
-                    "An error occured when loading the configuration file that required it to be reset.");
+                await this.ShowMessageAsync(Properties.Resources.ConfigurationError,
+                    Properties.Resources.AnErrorOccurredWhenLoadingConfiguration);
+
+            CheckForClientUpdates();
         }
 
         #endregion
@@ -142,8 +158,10 @@ namespace HyddwnLauncher
         public ProfileManager ProfileManager { get; private set; }
         public ServerProfile ActiveServerProfile { get; set; }
         public ClientProfile ActiveClientProfile { get; set; }
+        public ObservableCollection<ProgressIndicator> Reporters { get; protected set; }
 
         public LauncherContext LauncherContext { get; private set; }
+        public PatcherSettings PatcherSettings { get; protected set; }
 
         // Very bad, will need to adjust the method of access.
         public static MainWindow Instance { get; private set; }
@@ -152,12 +170,21 @@ namespace HyddwnLauncher
         public List<AppThemeMenuData> AppThemes { get; set; }
         public GetAccessTokenResponse LastResponseObject { get; set; }
         public bool UsingCredentials { get; set; }
+        public IPatcher Patcher { get; set; }
+
 
         public bool IsUpdateAvailable
         {
             get => (bool) GetValue(IsUpdateAvailableProperty);
             set => SetValue(IsUpdateAvailableProperty, value);
         }
+
+        public bool IsInMaintenance
+        {
+            get => (bool) GetValue(IsInMaintenanceProperty);
+            set => SetValue(IsInMaintenanceProperty, value);
+        }
+
 
         public bool IsPatching
         {
@@ -173,7 +200,7 @@ namespace HyddwnLauncher
                     if (!value)
                     {
                         PluginHost?.PatchEnd();
-                        ClientVersion.SetTextBlockSafe(ReadVersion().ToString());
+                        ClientVersion.SetRunSafe(Patcher?.ReadVersion().ToString() ?? ReadVersion().ToString());
                     }
                     else
                     {
@@ -233,6 +260,16 @@ namespace HyddwnLauncher
             e.Cancel = true;
         }
 
+        public async void CheckForClientUpdates(object sender = null, RoutedEventArgs e = null)
+        {
+            if (Patcher != null)
+            {
+                var updateRequired = await Patcher.CheckForUpdates();
+                if (updateRequired)
+                    await Patcher.ApplyUpdates();
+            }
+        }
+
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ChangeAppTheme();
@@ -249,57 +286,138 @@ namespace HyddwnLauncher
                 if (ActiveClientProfile == null || ActiveServerProfile == null)
                 {
                     IsPatching = false;
-                    throw new ApplicationException("Unable to start client: no client or server profile available!");
+                    throw new ApplicationException(Properties.Resources.UnableToStartClientMissingProfile);
                 }
 
                 if (ActiveServerProfile.IsOfficial)
                 {
-                    await DeletePackFiles();
-
-                    if (!NexonApi.Instance.IsAccessTokenValid(ActiveClientProfile.Guid))
+                    if (ActiveClientProfile.Localization == ClientLocalization.NorthAmerica)
                     {
-                        var credentials =
-                            CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+                        await DeletePackFiles();
 
-                        if (credentials != null)
+                        if (!NexonApi.Instance.IsAccessTokenValid(ActiveClientProfile.Guid))
                         {
-                            var success = await NexonApi.Instance.GetAccessToken(credentials.Username,
-                                credentials.Password, ActiveClientProfile.Guid);
+                            var credentials =
+                                CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
 
-                            LastResponseObject = success;
-
-                            if (success.Success)
+                            if (credentials != null)
                             {
+                                var success = await NexonApi.Instance.GetAccessToken(credentials.Username,
+                                    credentials.Password, ActiveClientProfile.Guid);
+
+                                LastResponseObject = success;
+
+                                if (success.Success)
+                                {
+                                    LoginSuccess += LaunchOfficial;
+                                    LaunchOfficial();
+                                    return;
+                                }
+
+                                IsPatching = false;
+
                                 LoginSuccess += LaunchOfficial;
-                                LaunchOfficial();
-                                return;
+
+                                if (success.Code == NexonApi.TrustedDeviceRequired)
+                                {
+                                    NxDeviceTrust.IsOpen = true;
+                                    UsingCredentials = true;
+                                    return;
+                                }
+
+                                NxAuthLogin.IsOpen = true;
+
+                                NxAuthLoginNotice.Text = success.Message;
                             }
 
                             IsPatching = false;
-
                             LoginSuccess += LaunchOfficial;
-
-                            if (success.Code == NexonApi.TrustedDeviceRequired)
-                            {
-                                NxDeviceTrust.IsOpen = true;
-                                UsingCredentials = true;
-                                return;
-                            }
-
                             NxAuthLogin.IsOpen = true;
 
-                            NxAuthLoginNotice.Text = success.Message;
+                            return;
                         }
 
-                        IsPatching = false;
-                        LoginSuccess += LaunchOfficial;
-                        NxAuthLogin.IsOpen = true;
-
+                        LaunchOfficial();
                         return;
                     }
 
-                    LaunchOfficial();
-                    return;
+                    if (ActiveClientProfile.Localization == ClientLocalization.Japan ||
+                        ActiveClientProfile.Localization == ClientLocalization.JapanHangame)
+                    {
+                        var response = await Patcher.GetMaintenanceStatus();
+                        if (response)
+                        {
+                            var result = await this.ShowMessageAsync(Properties.Resources.Maintenance,
+                                Properties.Resources.MaintenanceMessage,
+                                MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings
+                                {
+                                    AffirmativeButtonText = Properties.Resources.Continue,
+                                    NegativeButtonText = Properties.Resources.Cancel,
+                                    DefaultButtonFocus = MessageDialogResult.Negative
+                                });
+
+                            if (result != MessageDialogResult.Affirmative)
+                            {
+                                IsPatching = false;
+                                MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                                return;
+                            }
+                        }
+
+                        MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Launching);
+                        MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+                        MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+
+                        MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingPassport);
+                        var passport = await NexonApi.Instance.GetNxAuthHash();
+
+                        MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
+                        var launchArgs = await Patcher.GetLauncherArguments();
+                        launchArgs = launchArgs.Replace("${passport}", passport);
+
+                        try
+                        {
+                            try
+                            {
+                                Log.Info(string.Format(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs));
+                                Process.Start(ActiveClientProfile.Location, launchArgs);
+                                PluginHost.PostLaunch();
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(Properties.Resources.CannotStartMabinogi, ex.ToString());
+
+                                throw new IOException();
+                            }
+
+                            Log.Info(Properties.Resources.ClientStartSuccess);
+                            Settings.SaveLauncherSettings();
+
+                            if (!Settings.LauncherSettings.CloseAfterLaunching)
+                            {
+                                MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                                MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                                MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                                MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                                IsPatching = false;
+
+                                return;
+                            }
+
+                            PluginHost.ShutdownPlugins();
+                            Application.Current.Shutdown();
+                        }
+                        catch (IOException ex)
+                        {
+                            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                            MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                            IsPatching = false;
+                            await this.ShowMessageAsync(Properties.Resources.LaunchFailed, string.Format(Properties.Resources.CannotStartMabinogi, ex.Message));
+                            Log.Exception(ex, Properties.Resources.ClientStartWithErrors);
+                        }
+                    }
                 }
 
                 LaunchCustom();
@@ -307,8 +425,8 @@ namespace HyddwnLauncher
             catch (ApplicationException ex)
             {
                 Loading.IsOpen = false;
-                await this.ShowMessageAsync("Launch Failed", "Cannot start Mabinogi: " + ex.Message);
-                Log.Exception(ex, "Client start finished with errors");
+                await this.ShowMessageAsync(Properties.Resources.LaunchFailed, string.Format(Properties.Resources.CannotStartMabinogi, ex.Message));
+                Log.Exception(ex, Properties.Resources.ClientStartWithErrors);
             }
         }
 
@@ -320,11 +438,13 @@ namespace HyddwnLauncher
             PluginHost.ServerProfileChanged(ActiveServerProfile);
         }
 
-        private void ClientProfileComboBoxOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ClientProfileComboBoxOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ActiveClientProfile = ((ComboBox) sender).SelectedItem as ClientProfile;
             if (!IsInitialized || !IsLoaded) return;
             ConfigureLauncher();
+            ConfigurePatcher();
+            CheckForClientUpdates();
             PluginHost.ClientProfileChanged(ActiveClientProfile);
         }
 
@@ -378,7 +498,7 @@ namespace HyddwnLauncher
             MainProgressReporter.SetProgressBar(0.0);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
             Application.Current.Dispatcher.Invoke(() => { IsPatching = true; });
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Downloading Update...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingUpdate);
             try
             {
                 UpdaterUpdate();
@@ -393,7 +513,7 @@ namespace HyddwnLauncher
                         MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
                     }
                 );
-                MainProgressReporter.RighTextBlock.SetTextBlockSafe("Download Successful. Launching Updater.");
+                MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadSuccessfulLaunchingUpdater);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                 Closing -= Updater_Closing;
                 _updateClose = true;
@@ -401,8 +521,8 @@ namespace HyddwnLauncher
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Error occured durring update");
-                MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Failed to download update. Continuing...");
+                Log.Exception(ex, Properties.Resources.ErrorOccurredDuringUpdate);
+                MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.FailedToDownloadUpdateCont);
                 MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                 IsPatching = false;
@@ -433,7 +553,7 @@ namespace HyddwnLauncher
             {
                 ToggleLoginControls();
 
-                NxAuthLoginNotice.Text = "Please enter a Username";
+                NxAuthLoginNotice.Text = Properties.Resources.PleaseEnterAUsername;
                 NxAuthLoginNotice.Visibility = Visibility.Visible;
 
                 NxAuthLoginUsername.Focus();
@@ -444,7 +564,7 @@ namespace HyddwnLauncher
             {
                 ToggleLoginControls();
 
-                NxAuthLoginNotice.Text = "Please enter a Password";
+                NxAuthLoginNotice.Text = Properties.Resources.PleaseEnterAPassword;
                 NxAuthLoginNotice.Visibility = Visibility.Visible;
 
                 NxAuthLoginPassword.Focus();
@@ -468,7 +588,7 @@ namespace HyddwnLauncher
                 {
                     ToggleLoginControls();
 
-                    NxAuthLoginNotice.Text = "Username or Password is Incorrect";
+                    NxAuthLoginNotice.Text = Properties.Resources.UsernameOrPasswordIncorrect;
                     NxAuthLoginNotice.Visibility = Visibility.Visible;
 
                     NxAuthLoginPassword.Focus();
@@ -517,7 +637,7 @@ namespace HyddwnLauncher
             {
                 ToggleDeviceControls();
 
-                NxDeviceTrustNotice.Text = "Verification code is empty!";
+                NxDeviceTrustNotice.Text = Properties.Resources.VerificationCodeEmpty;
                 NxDeviceTrustNotice.Visibility = Visibility.Visible;
 
                 NxDeviceTrustVerificationCode.Focus();
@@ -537,7 +657,7 @@ namespace HyddwnLauncher
             {
                 ToggleDeviceControls();
 
-                NxDeviceTrustNotice.Text = "Verification code error!";
+                NxDeviceTrustNotice.Text = Properties.Resources.VerificationCodeError;
                 NxDeviceTrustNotice.Visibility = Visibility.Visible;
 
                 NxDeviceTrustVerificationCode.Focus();
@@ -562,7 +682,7 @@ namespace HyddwnLauncher
             {
                 NxDeviceTrust.IsOpen = false;
 
-                NxAuthLoginNotice.Text = "Username or Password is Incorrect";
+                NxAuthLoginNotice.Text = Properties.Resources.UsernameOrPasswordIncorrect;
                 NxAuthLoginNotice.Visibility = Visibility.Visible;
 
                 NxAuthLoginPassword.Focus();
@@ -598,9 +718,7 @@ namespace HyddwnLauncher
         {
             if (ProfileEditor.IsOpen && ProfileManager.ClientProfiles.Count == 0 && _settingUpProfile)
             {
-                await this.ShowMessageAsync("No Client Profile",
-                    "You have been taken to this window because you do not have a profile configured for Mabinogi. " +
-                    "Please configure a profile representing where your Client.exe is to use this launcher.");
+                await this.ShowMessageAsync(Properties.Resources.NoClientProfile, Properties.Resources.NoClientProfileMessage);
 
                 AddClientProfile();
                 return;
@@ -610,8 +728,7 @@ namespace HyddwnLauncher
 
             var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem).Location;
             if (string.IsNullOrWhiteSpace(selectedProfileLocation) || !File.Exists(selectedProfileLocation))
-                await this.ShowMessageAsync("Valid File or Path",
-                    "The path you have entered is invalid.");
+                await this.ShowMessageAsync(Properties.Resources.InvalidFileOrpath, Properties.Resources.InValidFileOrPathMessage);
 
             _settingUpProfile = false;
         }
@@ -672,7 +789,7 @@ namespace HyddwnLauncher
             if (ResetCredentialsCheckBox.IsChecked != null && (bool) ResetCredentialsCheckBox.IsChecked)
                 CredentialsStorage.Instance.Reset();
 
-            if (ResetClietProfilesCheckBox.IsChecked != null && (bool) ResetClietProfilesCheckBox.IsChecked)
+            if (ResetClientProfilesCheckBox.IsChecked != null && (bool) ResetClientProfilesCheckBox.IsChecked)
                 ProfileManager.ResetClientProfiles();
 
             if (ResetServerProfilesCheckBox.IsChecked != null && (bool) ResetServerProfilesCheckBox.IsChecked)
@@ -682,7 +799,7 @@ namespace HyddwnLauncher
                 (bool) ResetLauncherConfigurationCheckBox.IsChecked)
                 Settings.Reset();
 
-            ResetCredentialsCheckBox.IsChecked = ResetClietProfilesCheckBox.IsChecked =
+            ResetCredentialsCheckBox.IsChecked = ResetClientProfilesCheckBox.IsChecked =
                 ResetServerProfilesCheckBox.IsChecked = ResetLauncherConfigurationCheckBox.IsChecked = false;
         }
 
@@ -695,8 +812,9 @@ namespace HyddwnLauncher
             catch (Exception ex)
             {
                 Log.Exception(ex);
-                await this.ShowMessageAsync("Error opening file.",
-                    $"The following error occured when trying to open the log file:\r\n\r\n{ex.Message}");
+                await this.ShowMessageAsync(Properties.Resources.ErrorOpeningFile,
+                    string.Format(Properties.Resources.ErrorOpeningFileMessage,
+                        ex.Message));
             }
         }
 
@@ -706,7 +824,7 @@ namespace HyddwnLauncher
 
         private void AddClientProfile()
         {
-            var clientProfile = new ClientProfile {Name = "New Profile", Guid = Guid.NewGuid().ToString()};
+            var clientProfile = new ClientProfile {Name = Properties.Resources.NewProfile, Guid = Guid.NewGuid().ToString()};
             ProfileManager.ClientProfiles.Add(clientProfile);
             ClientProfileListBox.SelectedItem = clientProfile;
         }
@@ -715,11 +833,11 @@ namespace HyddwnLauncher
         {
             var serverProfile = ServerProfile.Create();
 
-            var profileUpdateUrl = await this.ShowInputAsync("Server Profile Url",
-                                       "Please enter the url where your server profile can be located.") ?? "";
+            var profileUpdateUrl = await this.ShowInputAsync(Properties.Resources.ServerProfileUrl,
+                                       Properties.Resources.ServerProfileUrlMessage) ?? "";
 
             serverProfile.ProfileUpdateUrl = profileUpdateUrl;
-            serverProfile.GetUpdates();
+            await serverProfile.GetUpdates();
 
             ProfileManager.ServerProfiles.Add(serverProfile);
             ServerProfileListBox.SelectedItem = serverProfile;
@@ -741,7 +859,7 @@ namespace HyddwnLauncher
 
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Building server pack file...");
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.BuildingServerPackFile);
 
             var maxVersion = 0;
 
@@ -754,7 +872,7 @@ namespace HyddwnLauncher
 
                 if (ActiveServerProfile.PackVersion == maxVersion)
                 {
-                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Building server pack file...");
+                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.BuildingServerPackFile);
                     var packEngine = new PackEngine();
                     packEngine.BuildServerPack(ActiveServerProfile, ReadVersion());
                 }
@@ -815,7 +933,7 @@ namespace HyddwnLauncher
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Unable to check for updates.");
+                Log.Exception(ex, Properties.Resources.UnableToCheckForUpdates);
                 IsPatching = false;
                 return false;
             }
@@ -830,40 +948,129 @@ namespace HyddwnLauncher
             try
             {
                 Environment.CurrentDirectory =
-                    newWorkingDir ?? throw new Exception("Error in \"Path to Client\" specification.");
+                    newWorkingDir ?? throw new Exception(Properties.Resources.ErrorInPathToClient);
 
-                Log.Info("Setting Current Working Direcotry to {0}", newWorkingDir);
+                Log.Info(Properties.Resources.SettingCurrentWorkingDirectory, newWorkingDir);
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Error Configuring Launcher");
+                Log.Exception(ex, Properties.Resources.ErrorConfiguringLauncher);
                 await
-                    this.ShowMessageAsync("Configuration Error",
-                        "Failed to configure launcher possibly due to erroneous setting in your client profile. Please edit your profile.");
+                    this.ShowMessageAsync(Properties.Resources.ConfigurationError,
+                        Properties.Resources.ConfigurationErrorMessage2);
                 return;
             }
 
-            var testpath = Path.GetDirectoryName(ActiveClientProfile.Location) + "\\eTracer.exe";
+            var testpath = Path.GetDirectoryName(ActiveClientProfile.Location) + "\\NPS.dll";
 
             if (Settings.LauncherSettings.WarnIfRootIsNotMabiRoot &&
                 !File.Exists(testpath))
             {
-                Log.Warning("The path set for this profile does not appear to be the root folder for Mabinogi.");
-                MessageBox.Show(
-                    "The path set for this profile does not appear to be the root folder for Mabinogi.\r\n\r\nThis will most likely result in improper operations.",
-                    "Warning", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                Log.Warning(Properties.Resources.NotMabinogiRootFolder);
+                MessageBox.Show(Properties.Resources.NotMabinogiRootFolderMessage,
+                    Properties.Resources.Warning, MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
             if (!IsInitialized) return;
             var mabiVers = ReadVersion();
-            Log.Info("Mabinogi Version {0}", mabiVers);
-            ClientVersion.SetTextBlockSafe(mabiVers.ToString());
+            Log.Info(Properties.Resources.MabinogiVersion, mabiVers);
+            ClientVersion.SetRunSafe(mabiVers.ToString());
         }
 
+        public IProgressIndicator CreateProgressIndicator()
+        {
+            ProgressIndicator progressReporter = null;
+
+            Dispatcher.Invoke(() =>
+            {
+                progressReporter = new ProgressIndicator();
+                Reporters.Add(progressReporter);
+            });
+
+            return progressReporter;
+        }
+
+        public void DestroyProgressIndicator(IProgressIndicator progressReporter)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var concrete = progressReporter as ProgressIndicator;
+                Reporters.Remove(concrete);
+            });
+        }
+
+        private void ConfigurePatcher()
+        {
+            if (ActiveServerProfile == null) return;
+            if (ActiveClientProfile == null) return;
+
+            var patcherContext = new PatcherContext();
+            patcherContext.MainUpdaterInternal += PluginMainUpdator;
+            patcherContext.SetPatcherStateInternal +=
+                isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
+            patcherContext.RequestUserLoginInternal += async (successAction, cancelAction) =>
+            {
+                var credentials =
+                    CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+
+                if (credentials != null)
+                {
+                    var success = await NexonApi.Instance.GetAccessToken(credentials.Username,
+                        credentials.Password,
+                        ActiveClientProfile.Guid);
+
+                    if (success.Success)
+                    {
+                        successAction.Raise();
+                        return;
+                    }
+
+                    LoginSuccess += successAction;
+                    LoginCancel += cancelAction;
+
+                    if (success.Code == NexonApi.TrustedDeviceRequired)
+                    {
+                        NxDeviceTrust.IsOpen = true;
+                        UsingCredentials = true;
+                        return;
+                    }
+                }
+
+                LoginSuccess += successAction;
+                LoginCancel += cancelAction;
+                NxAuthLogin.IsOpen = true;
+            };
+            patcherContext.ShowDialogInternal += (title, message) =>
+            {
+                var returnResult = false;
+
+                Dispatcher.Invoke(async () =>
+                {
+                    var result = await this.ShowMessageAsync(title, message,
+                        MessageDialogStyle.AffirmativeAndNegative);
+
+                    returnResult = result == MessageDialogResult.Affirmative;
+                });
+
+                return returnResult;
+            };
+            patcherContext.CreateProgressIndicatorInternal += CreateProgressIndicator;
+            patcherContext.DestroyProgressIndicatorInternal += DestroyProgressIndicator;
+
+            if (!ActiveServerProfile.IsOfficial)
+            {
+                Patcher = new DefaultPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext);
+                return;
+            }
+
+            Patcher = ActiveClientProfile.Localization == ClientLocalization.NorthAmerica
+                ? new NxlPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext)
+                : (IPatcher)new LegacyPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext);
+        }
 
         private async Task DeletePackFiles()
         {
-            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Cleaning generated pack files...");
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.CleaningGeneratedPackFiles);
             await Task.Run(() =>
             {
                 var files = Directory.GetFiles(Path.GetDirectoryName(ActiveClientProfile.Location) + "\\package")
@@ -875,7 +1082,7 @@ namespace HyddwnLauncher
                     }
                     catch (Exception ex)
                     {
-                        Log.Exception(ex, $"Failed to delete '{file}'!");
+                        Log.Exception(ex, Properties.Resources.FailedToDeleteFileName, file);
                     }
             });
         }
@@ -912,13 +1119,13 @@ namespace HyddwnLauncher
                             Log.Exception(exception);
                             if (b)
                                 await Dispatcher.Invoke(async () =>
-                                    await this.ShowMessageAsync("Error", exception.Message));
+                                    await this.ShowMessageAsync(Properties.Resources.Error, exception.Message));
                         };
                         pluginContext.LogStringInternal += async (s, b) =>
                         {
                             Log.Info(s);
                             if (b)
-                                await Dispatcher.Invoke(async () => await this.ShowMessageAsync("Info", s));
+                                await Dispatcher.Invoke(async () => await this.ShowMessageAsync(Properties.Resources.Info, s));
                         };
                         pluginContext.GetNexonApiInternal += () => NexonApi.Instance;
                         pluginContext.CreatePackEngineInternal += () => new PackEngine();
@@ -1001,8 +1208,9 @@ namespace HyddwnLauncher
                     }
                     catch (Exception ex)
                     {
-                        Log.Exception(ex, $"Error occured when loading plugin: {plugin.Name}");
-                        MessageBox.Show($"Error loading {plugin.Name}, {ex.GetType().Name}: {ex.Message}", "Error");
+                        Log.Exception(ex, Properties.Resources.ErrorOccurredLoadingPlugin);
+                        MessageBox.Show(
+                            string.Format(Properties.Resources.ErrorOccurredLoadingPluginMessage, plugin.Name, ex.GetType().Name, ex.Message), Properties.Resources.Error);
                     }
                 });
 
@@ -1010,14 +1218,14 @@ namespace HyddwnLauncher
             PluginHost.ServerProfileChanged(ActiveServerProfile);
         }
 
-        private async void LaunchCustom()
+        private void LaunchCustom()
         {
             var arguments =
                 $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ActiveServerProfile.LoginIp} logport:{ActiveServerProfile.LoginPort} chatip:{ActiveServerProfile.ChatIp} chatport:{ActiveServerProfile.ChatPort} locale:USA env:Regular setting:file://data/features.xml";
 
-            Log.Info("Beginning client launch...");
+            Log.Info(Properties.Resources.BeginningClientLaunch);
 
-            Log.Info("Starting client.exe with the following args: {0}", arguments);
+            Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, arguments);
             try
             {
                 Process.Start(ActiveClientProfile.Location, arguments);
@@ -1026,15 +1234,21 @@ namespace HyddwnLauncher
             catch (Exception ex)
             {
                 IsPatching = false;
-                Log.Error("Cannot start Mabbinogi: {0}", ex.ToString());
+                Log.Error(Properties.Resources.CannotStartMabinogi, ex.ToString());
                 throw new ApplicationException(ex.ToString());
             }
 
-            Log.Info("Client start success");
+            Log.Info(Properties.Resources.ClientStartSuccess);
             Settings.SaveLauncherSettings();
 
-            PluginHost.ShutdownPlugins();
+            if (!Settings.LauncherSettings.CloseAfterLaunching)
+            {
+                IsPatching = false;
 
+                return;
+            }
+
+            PluginHost.ShutdownPlugins();
             Application.Current.Shutdown();
         }
 
@@ -1042,37 +1256,66 @@ namespace HyddwnLauncher
         {
             IsPatching = true;
 
-            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Launching...");
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.CheckForMaintenance);
+            var response = await Patcher.GetMaintenanceStatus();
+            if (response)
+            {
+                var result = await this.ShowMessageAsync(Properties.Resources.Maintenance,
+                    Properties.Resources.MaintenanceMessage,
+                    MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings
+                    {
+                        AffirmativeButtonText = Properties.Resources.Continue,
+                        NegativeButtonText = Properties.Resources.Cancel,
+                        DefaultButtonFocus = MessageDialogResult.Negative
+                    });
+
+                if (result != MessageDialogResult.Affirmative)
+                {
+                    IsPatching = false;
+                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                    return;
+                }
+            }
+
+            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Launching);
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Getting passport...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingPassport);
             var passport = await NexonApi.Instance.GetNxAuthHash();
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Starting client...");
-            var launchArgs =
-                "code:1622 verstr:248 ver:248 locale:USA env:Regular setting:file://data/features.xml " +
-                $"logip:35.162.171.43 logport:11000 chatip:54.214.176.167 chatport:8002 /P:{passport} -bgloader";
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
+            var launchArgs = await Patcher.GetLauncherArguments();
+            launchArgs = launchArgs.Replace("${passport}", passport);
 
             try
             {
                 try
                 {
-                    Log.Info($"Starting client with the following parameters: {launchArgs}");
+                    Log.Info(string.Format(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs));
                     Process.Start(ActiveClientProfile.Location, launchArgs);
                     PluginHost.PostLaunch();
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Cannot start Mabbinogi: {0}", ex.ToString());
+                    Log.Error(Properties.Resources.CannotStartMabinogi, ex.ToString());
 
                     throw new IOException();
                 }
 
-                Log.Info("Client start success");
+                Log.Info(Properties.Resources.ClientStartSuccess);
                 Settings.SaveLauncherSettings();
 
-                if (!Settings.LauncherSettings.CloseAfterLaunching) return;
+                if (!Settings.LauncherSettings.CloseAfterLaunching)
+                {
+                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                    MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                    MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                    MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                    IsPatching = false;
+
+                    return;
+                }
 
                 PluginHost.ShutdownPlugins();
                 Application.Current.Shutdown();
@@ -1084,8 +1327,8 @@ namespace HyddwnLauncher
                 MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                 IsPatching = false;
-                await this.ShowMessageAsync("Launch Failed", "Cannot start Mabinogi: " + ex.Message);
-                Log.Exception(ex, "Client start finished with errors");
+                await this.ShowMessageAsync(Properties.Resources.LaunchFailed, string.Format(Properties.Resources.CannotStartMabinogi, ex.Message));
+                Log.Exception(ex, Properties.Resources.ClientStartWithErrors);
             }
         }
 
@@ -1152,7 +1395,7 @@ namespace HyddwnLauncher
         {
             IsPatching = true;
             Closing += Updater_Closing;
-            ImporterTextBlock.SetTextBlockSafe("Self Update Check...");
+            ImporterTextBlock.SetTextBlockSafe(Properties.Resources.SelfUpdateCheck);
             ImportWindow.IsOpen = true;
             if (await CheckForUpdates())
             {
@@ -1191,12 +1434,10 @@ namespace HyddwnLauncher
 
         private async void UpdateAvailableLinkClick(object sender, RoutedEventArgs e)
         {
-            var response = await this.ShowMessageAsync("Update Available",
-                "A new version of Hyddwn Launcher is available." +
-                "\r\n" +
-                "\r\n" +
-                $"Current Version: {Assembly.GetExecutingAssembly().GetName().Version}\r\n" +
-                $"New Version: {_updateInfo["Version"]}", MessageDialogStyle.AffirmativeAndNegative);
+            var response = await this.ShowMessageAsync(Properties.Resources.UpdateAvailable,
+                string.Format(
+                    Properties.Resources.UpdateAvailableMessage,
+                    Assembly.GetExecutingAssembly().GetName().Version, _updateInfo["Version"]), MessageDialogStyle.AffirmativeAndNegative);
 
             if (response != MessageDialogResult.Affirmative) return;
 
@@ -1208,7 +1449,7 @@ namespace HyddwnLauncher
         private async void UpdaterUpdate()
         {
             if (File.Exists("Updater.exe")) return;
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Downloading App Updater...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingAppUpdater);
             MainProgressReporter.SetProgressBar(0);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
             await AsyncDownloader.DownloadFileWithCallbackAsync("http://www.imabrokedude.com/Updater.zip",
@@ -1221,7 +1462,7 @@ namespace HyddwnLauncher
             MainProgressReporter.SetProgressBar(0);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Extracting Updater...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.ExtractingUpdater);
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
             using (var zipFile = ZipFile.Read(Path.GetFullPath("Updater.zip")))
             {
@@ -1229,7 +1470,7 @@ namespace HyddwnLauncher
                 zipFile.ExtractAll(Path.GetDirectoryName(Path.GetFullPath("Updater.zip")));
             }
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Cleaning up...");
+            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CleaningUp);
             File.Delete("Updater.zip");
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
             MainProgressReporter.RighTextBlock.SetTextBlockSafe("");

@@ -156,6 +156,32 @@
     <Compile Include="Network\Rest\RestClient.cs" />
     <Compile Include="Network\Rest\RestRequest.cs" />
     <Compile Include="Network\Rest\RestResponse.cs" />
+    <Compile Include="Patcher\DefaultPatcher.cs" />
+    <Compile Include="Patcher\Legacy\LegacyPatcher.cs" />
+    <Compile Include="Patcher\Legacy\MabiVersion.cs" />
+    <Compile Include="Patcher\Legacy\OfficialPatchInfo.cs" />
+    <Compile Include="Patcher\Legacy\PatchDownloader.cs" />
+    <Compile Include="Patcher\Legacy\PatchFileInfo.cs" />
+    <Compile Include="Patcher\Legacy\PatchInfo.cs" />
+    <Compile Include="Patcher\Legacy\PatchSequence.cs" />
+    <Compile Include="Patcher\Legacy\PatchSequenceNotFoundException.cs" />
+    <Compile Include="Patcher\PatcherRegistry.cs" />
+    <Compile Include="Patcher\NxLauncher\FileDownloadInfo.cs" />
+    <Compile Include="Patcher\NxLauncher\FileInfoType.cs" />
+    <Compile Include="Patcher\NxLauncher\FilePartInfo.cs" />
+    <Compile Include="Patcher\NxLauncher\NxlPatcher.cs" />
+    <Compile Include="Patcher\NxLauncher\Patch.cs" />
+    <Compile Include="Patcher\NxLauncher\PatchDownloader.cs" />
+    <Compile Include="Patcher\NxLauncher\PatcherSettings.cs" />
+    <Compile Include="Patcher\NxLauncher\PatchIgnore.cs" />
+    <Compile Include="Patcher\NxLauncher\PatchReason.cs" />
+    <Compile Include="Patcher\NxLauncher\PatchSettingsManager.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\Resources.ja-JP.Designer.cs">
+      <DependentUpon>Resources.ja-JP.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Util\Commands\SimpleCommand.cs" />
     <Compile Include="Util\Helpers\ByteSizeHelper.cs" />
     <Compile Include="Network\NexonApi.cs" />
@@ -248,6 +274,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\default.png" />
     <Content Include="Libs\ImaBrokeDude.Controls.dll" />
     <Content Include="Libs\Ionic.Zip.Reduced.dll" />
   </ItemGroup>
@@ -288,6 +315,10 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Localization\" />
+    <Folder Include="Patcher\Custom\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

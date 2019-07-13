@@ -224,6 +224,8 @@ namespace HyddwnLauncher.Network
             var initialRequestBody = new AccountLoginRequest
             {
                 AutoLogin = false,
+                CaptchaToken = "HyddwnLauncher",
+                CaptchaVersion = "v3",
                 ClientId = BodyClientId,
                 DeviceId = deviceId,
                 Id = username,

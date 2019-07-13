@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Properties;
 
@@ -11,6 +12,8 @@ namespace HyddwnLauncher.Core
         private string _localization;
         private string _location;
         private string _name;
+        private string _profileUsername;
+        private string _profileImageUri;
 
         public ClientProfile()
         {
@@ -57,6 +60,28 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _localization) return;
                 _localization = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ProfileUsername
+        {
+            get => _profileUsername;
+            set
+            {
+                if (value == _profileUsername) return;
+                _profileUsername = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ProfileImageUri
+        {
+            get => _profileImageUri;
+            set
+            {
+                if (value == _profileImageUri) return;
+                _profileImageUri = value;
                 OnPropertyChanged();
             }
         }

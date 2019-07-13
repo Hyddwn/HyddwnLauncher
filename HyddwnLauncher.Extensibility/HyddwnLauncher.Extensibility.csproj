@@ -52,6 +52,7 @@
     <Compile Include="Interfaces\IClientProfile.cs" />
     <Compile Include="Interfaces\INexonApi.cs" />
     <Compile Include="Interfaces\IPackEngine.cs" />
+    <Compile Include="Interfaces\IPatcher.cs" />
     <Compile Include="Interfaces\IProgressIndicator.cs" />
     <Compile Include="Interfaces\IServerProfile.cs" />
     <Compile Include="Interfaces\ISettingsManager.cs" />
@@ -66,6 +67,8 @@
     <Compile Include="Model\TrustDeviceRequest.cs" />
     <Compile Include="Model\UserAvatar.cs" />
     <Compile Include="Model\UserProfileResponse.cs" />
+    <Compile Include="PatcherContext.cs" />
+    <Compile Include="PatcherType.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginContext.cs" />
     <Compile Include="Primitives\IPlugin.cs" />

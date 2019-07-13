@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 
@@ -182,14 +183,14 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
         public event Action<string> SaveOnChanged;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
             SaveOnChanged?.Raise(propertyName);
         }
     }
