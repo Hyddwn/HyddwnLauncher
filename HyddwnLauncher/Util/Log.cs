@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Properties;
 
 namespace HyddwnLauncher.Util
@@ -45,21 +46,25 @@ namespace HyddwnLauncher.Util
             }
         }
 
+        [StringFormatMethod("format")]
         public static void Info(string format, params object[] args)
         {
             WriteLine(LogLevel.Info, format, args);
         }
 
+        [StringFormatMethod("format")]
         public static void Warning(string format, params object[] args)
         {
             WriteLine(LogLevel.Warning, format, args);
         }
 
+        [StringFormatMethod("format")]
         public static void Error(string format, params object[] args)
         {
             WriteLine(LogLevel.Error, format, args);
         }
 
+        [StringFormatMethod("format")]
         public static void Debug(string format, params object[] args)
         {
             WriteLine(LogLevel.Debug, format, args);
@@ -70,11 +75,13 @@ namespace HyddwnLauncher.Util
             WriteLine(LogLevel.Debug, obj.ToString());
         }
 
+        [StringFormatMethod("format")]
         public static void Status(string format, params object[] args)
         {
             WriteLine(LogLevel.Status, format, args);
         }
 
+        [StringFormatMethod("description")]
         public static void Exception(Exception ex, string description = null, params object[] args)
         {
             if (description != null)
