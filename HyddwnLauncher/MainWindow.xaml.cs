@@ -253,7 +253,7 @@ namespace HyddwnLauncher
                 {
                     Arguments =
                         $"{"\"" + _updateInfo["File"] + "\""} {_updateInfo["SHA256"]} {"\"" + _updateInfo["Execute"] + "\""}",
-                    FileName = "Updater.exe"
+                    FileName = Path.Combine(Assemblypath, "Updater.exe")
                 };
 
                 // Process.Start is different that var process = new Process(processinfo).Start();
@@ -1459,12 +1459,12 @@ namespace HyddwnLauncher
 
         private async void UpdaterUpdate()
         {
-            if (File.Exists("Updater.exe")) return;
+            if (File.Exists(Path.Combine(Assemblypath, "Updater.exe"))) return;
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingAppUpdater);
             MainProgressReporter.SetProgressBar(0);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
             await AsyncDownloader.DownloadFileWithCallbackAsync("http://www.imabrokedude.com/Updater.zip",
-                "Updater.zip",
+                Path.Combine(Assemblypath, "Updater.zip"),
                 (d, s) =>
                 {
                     MainProgressReporter.SetProgressBar(d);
@@ -1475,14 +1475,14 @@ namespace HyddwnLauncher
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.ExtractingUpdater);
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
-            using (var zipFile = ZipFile.Read(Path.GetFullPath("Updater.zip")))
+            using (var zipFile = ZipFile.Read(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))))
             {
                 zipFile.ExtractExistingFile = ExtractExistingFileAction.OverwriteSilently;
-                zipFile.ExtractAll(Path.GetDirectoryName(Path.GetFullPath("Updater.zip")));
+                zipFile.ExtractAll(Path.GetDirectoryName(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))));
             }
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CleaningUp);
-            File.Delete("Updater.zip");
+            File.Delete(Path.Combine(Assemblypath, "Updater.zip"));
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
             MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
         }
