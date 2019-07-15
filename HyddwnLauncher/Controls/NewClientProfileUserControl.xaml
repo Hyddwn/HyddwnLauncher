@@ -10,7 +10,7 @@
              xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:core="clr-namespace:HyddwnLauncher.Core"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="310">
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="330">
     <UserControl.Resources>
         <DataTemplate x:Key="MabiLocalizationComboBoxItem" DataType="{x:Type core:MabiLocalizationData}">
             <StackPanel Orientation="Horizontal">
@@ -88,11 +88,19 @@
             </Grid>
             <Grid Margin="10 0 19 5" ToolTip="{x:Static p:Resources.DefaultProfileTip}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Top" Content="{x:Static p:Resources.DefaultProfile}" Margin="23,0" Checked="CheckBox_Checked" />
+                <CheckBox HorizontalAlignment="Left" VerticalAlignment="Top" Content="{x:Static p:Resources.DefaultProfile}" Checked="CheckBox_Checked" />
+            </Grid>
+            <Grid Margin="10 0 19 5" ToolTip="Enables an experimental MultiClient Memory Edit">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox HorizontalAlignment="Left" VerticalAlignment="Top" Content="[EXPERIMENTAL] MultiClient Memory Edit" IsChecked="{Binding ElementName=This, Path=ClientProfile.EnableMultiClientMemoryEdit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
             <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="{x:Static p:Resources.SavedCredentials}">
                 <GroupBox Header="{x:Static p:Resources.SavedCredentials}" Margin="5">

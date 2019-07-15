@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Navigation;
-using HyddwnLauncher.Controls;
-using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Network;
@@ -22,6 +19,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
     {
         private dynamic PatchData { get; set; }
         internal List<FileDownloadInfo> FileDownloadInfos { get; private set; }
+        internal PatchIgnore PatchIgnore { get; private set; }
         public List<Patch> Patches { get; private set; }
         private int _version;
         private bool _possibleNewPack;
@@ -31,6 +29,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         {
             PatcherType = DefaultPatcherTypes.NxLauncher;
             PatchSettingsManager.Initialize();
+            PatchIgnore = new PatchIgnore(PatcherContext);
         }
 
         public override async Task<bool> CheckForUpdates()
@@ -70,13 +69,24 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             return result;
         }
 
-        private async Task<bool> CheckForUpdatesInternal()
+        public override async Task<bool> RepairInstall()
+        {
+            var shouldUpdate = await CheckForUpdatesInternal(true);
+            if (shouldUpdate)
+                return await ApplyUpdates();
+
+            return true;
+        }
+
+        private async Task<bool> CheckForUpdatesInternal(bool overrideSettings = false)
         {
             if (ValidateAction()) return false;
 
             var version = -1;
 
             Patches = new List<Patch>();
+
+            PatchIgnore.Initialize(ClientProfile.Location);
 
             var latestVersion = await NexonApi.Instance.GetLatestVersion();
 
@@ -90,7 +100,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             if (version >= latestVersion && (version < latestVersion || !PatchSettingsManager.Instance.PatcherSettings.ForceUpdateCheck)) return false;
 
-            GetPatchList();
+            GetPatchList(overrideSettings);
 
             return Patches.Count > 0;
         }
@@ -100,6 +110,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             if (ValidateAction()) return false;
 
             PatcherContext.SetPatcherState(true);
+            PatcherContext.ShowSession();
             PatcherContext.UpdateMainProgress(Properties.Resources.ApplyingUpdates, "", 0, true, true);
 
             var patchDownloader = new PatchDownloader(Patches, ClientProfile, PatcherContext);
@@ -109,7 +120,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             PatcherContext.UpdateMainProgress(result ? Properties.Resources.PatchComplete : Properties.Resources.PatchFailed);
 
             PatcherContext.SetPatcherState(false);
-
+            PatcherContext.HideSession();
             return result;
         }
 
@@ -117,15 +128,9 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         {
             var response = await NexonApi.Instance.GetLaunchConfig();
             var args = response.LaunchConfig.Arguments;
-            var argString = "";
-            foreach (var arg in args)
-            {
-                if (arg.StartsWith("-NXAL"))
-                    continue;
-                argString += arg + " ";
-            }
+            var cla = new ClientLaunchArguments(args.ToArray());
 
-            return argString;
+            return cla.ToString();
         }
 
         public override async Task<bool> GetMaintenanceStatus()
@@ -293,16 +298,26 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             foreach (var fileDownloadInfo in FileDownloadInfos)
             {
                 entry++;
-                PatcherContext.UpdateMainProgress(Properties.Resources.CheckingFiles, $"{entry}/{entries}", entry / entries * 100, false,
+                PatcherContext.UpdateMainProgress(Properties.Resources.CheckingFiles, $"{entry}/{entries}",
+                    entry / entries * 100, false,
                     true);
 
                 var filePath = fileDownloadInfo.FileName;
 
-            if (!overrideSettings)
-                if (filePath.StartsWith("package\\")
-                    && PatchSettingsManager.Instance.PatcherSettings.IgnorePackageFolder
-                    && (_possibleNewPack && !filePath.Contains(_version.ToString()) || !_possibleNewPack)) continue;
+                if (!overrideSettings)
+                {
+                    if (filePath.StartsWith("package\\")
+                        && PatchSettingsManager.Instance.PatcherSettings.IgnorePackageFolder
+                        && (_possibleNewPack && !filePath.Contains(_version.ToString()) || !_possibleNewPack))
+                        continue;
 
+                    if (PatchIgnore.IgnoredFiles.Contains(filePath))
+                    {
+                        Log.Info($"File: '{filePath}' in ignore list, file will not be patched!");
+                        continue;
+                    }
+                }
+                    
 
                 if (fileDownloadInfo.FileInfoType == FileInfoType.Directory)
                 {
@@ -334,7 +349,8 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 {
                     var patch = new Patch(fileDownloadInfo, PatchReason.SizeNotMatch);
                     Patches.Add(patch);
-                    Log.Info(Properties.Resources.PatchRequiredForSize, filePath, patch.PatchReason.LocalizedPatchReason(), fileDownloadInfo.FileSize, length);
+                    Log.Info(Properties.Resources.PatchRequiredForSize, filePath,
+                        patch.PatchReason.LocalizedPatchReason(), fileDownloadInfo.FileSize, length);
                     continue;
                 }
 

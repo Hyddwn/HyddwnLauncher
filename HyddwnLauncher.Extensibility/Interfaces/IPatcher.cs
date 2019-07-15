@@ -42,6 +42,12 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         Task<bool> ApplyUpdates();
 
         /// <summary>
+        ///     Performs an update check
+        /// </summary>
+        /// <returns>A boolean representing whether an update is available</returns>
+        Task<bool> RepairInstall();
+
+        /// <summary>
         ///     Instructs the patcher to read the version
         /// </summary>
         /// <returns>An int representing the current version</returns>

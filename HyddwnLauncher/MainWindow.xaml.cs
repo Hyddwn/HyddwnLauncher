@@ -286,6 +286,13 @@ namespace HyddwnLauncher
                 await Patcher.ApplyUpdates();
         }
 
+        public async void AttemptClientRepair(object sender = null, RoutedEventArgs e = null)
+        {
+            if (!Settings.LauncherSettings.AllowPatching) return;
+            if (Patcher == null) return;
+            var updateRequired = await Patcher.RepairInstall();
+        }
+
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ChangeAppTheme();
@@ -395,7 +402,7 @@ namespace HyddwnLauncher
                         {
                             try
                             {
-                                Log.Info(string.Format(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs));
+                                Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs);
                                 Process.Start(ActiveClientProfile.Location, launchArgs);
                                 PluginHost.PostLaunch();
                             }
@@ -1024,6 +1031,24 @@ namespace HyddwnLauncher
             patcherContext.MainUpdaterInternal += PluginMainUpdator;
             patcherContext.SetPatcherStateInternal +=
                 isPatching => Dispatcher.Invoke(() => IsPatching = isPatching);
+            patcherContext.ShowSessionInternal += () =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    SessionTab.Visibility = Visibility.Visible;
+                    PatcherTabControl.SelectedIndex = 1;
+                    MainTabControl.SelectedIndex = 4;
+                });
+            };
+            patcherContext.HideSessionInternal += () =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    SessionTab.Visibility = Visibility.Collapsed;
+                    PatcherTabControl.SelectedIndex = 0;
+                    MainTabControl.SelectedIndex = 0;
+                });
+            };
             patcherContext.RequestUserLoginInternal += async (successAction, cancelAction) =>
             {
                 var credentials =
@@ -1244,7 +1269,13 @@ namespace HyddwnLauncher
             Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, arguments);
             try
             {
-                Process.Start(ActiveClientProfile.Location, arguments);
+                var process = Process.Start(ActiveClientProfile.Location, arguments);
+
+                if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit)
+                {
+                    EnableMultiClient(process);
+                }
+
                 PluginHost.PostLaunch();
             }
             catch (Exception ex)
@@ -1309,13 +1340,19 @@ namespace HyddwnLauncher
             {
                 try
                 {
-                    Log.Info(string.Format(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs));
-                    Process.Start(ActiveClientProfile.Location, launchArgs);
+                    Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs);
+                    var process = Process.Start(ActiveClientProfile.Location, launchArgs);
+
+                    if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit)
+                    {
+                        EnableMultiClient(process);
+                    }
+
                     PluginHost.PostLaunch();
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(Properties.Resources.CannotStartMabinogi, ex.ToString());
+                    Log.Error(Properties.Resources.CannotStartMabinogi, ex);
 
                     throw new IOException();
                 }
@@ -1346,6 +1383,21 @@ namespace HyddwnLauncher
                 IsPatching = false;
                 await this.ShowMessageAsync(Properties.Resources.LaunchFailed, string.Format(Properties.Resources.CannotStartMabinogi, ex.Message));
                 Log.Exception(ex, Properties.Resources.ClientStartWithErrors);
+            }
+        }
+
+        public void EnableMultiClient(Process process)
+        {
+            Log.Info("Attempting to enable multiclient");
+            try
+            {
+                var memoryEditor = new MemoryEditor(ActiveClientProfile, Patcher.ReadVersion());
+                memoryEditor.ApplyPatchesToProcessById(process.Id);
+                Log.Info("Patched successfully!");
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Failed to apply patch.");
             }
         }
 

@@ -224,7 +224,7 @@ namespace HyddwnLauncher.Network
             var initialRequestBody = new AccountLoginRequest
             {
                 AutoLogin = false,
-                CaptchaToken = "HyddwnLauncher",
+                CaptchaToken = CreateString(128),
                 CaptchaVersion = "v3",
                 ClientId = BodyClientId,
                 DeviceId = deviceId,
@@ -366,6 +366,20 @@ namespace HyddwnLauncher.Network
                 .ToLower();
 
             return deviceId;
+        }
+
+        private static readonly Random Rnd = new Random();
+        internal static string CreateString(int stringLength)
+        {
+            const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789_-";
+            var chars = new char[stringLength];
+
+            for (var i = 0; i < stringLength; i++)
+            {
+                chars[i] = allowedChars[Rnd.Next(0, allowedChars.Length)];
+            }
+
+            return new string(chars);
         }
     }
 }

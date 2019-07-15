@@ -147,6 +147,10 @@
     <Compile Include="Core\CredentialsStorage.cs" />
     <Compile Include="Core\LauncherSettingsManager.cs" />
     <Compile Include="Core\MabiLocalizationData.cs" />
+    <Compile Include="Core\Memory.cs" />
+    <Compile Include="Core\MemoryEditor.cs" />
+    <Compile Include="Core\MemoryPatch.cs" />
+    <Compile Include="Core\PatchDefinition.cs" />
     <Compile Include="Core\PluginHost.cs" />
     <Compile Include="Core\ServerProfile.cs" />
     <Compile Include="Core\SettingsManager.cs" />
@@ -165,6 +169,7 @@
     <Compile Include="Patcher\Legacy\PatchInfo.cs" />
     <Compile Include="Patcher\Legacy\PatchSequence.cs" />
     <Compile Include="Patcher\Legacy\PatchSequenceNotFoundException.cs" />
+    <Compile Include="Patcher\NxLauncher\ClientLaunchArguments.cs" />
     <Compile Include="Patcher\PatcherRegistry.cs" />
     <Compile Include="Patcher\NxLauncher\FileDownloadInfo.cs" />
     <Compile Include="Patcher\NxLauncher\FileInfoType.cs" />

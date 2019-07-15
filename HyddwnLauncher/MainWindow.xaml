@@ -442,7 +442,7 @@
                                             <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                 <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                     <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="Repair Install"/>
-                                                    <Button Margin="4 0 0 0" Content="Repair" IsEnabled="False" />
+                                                    <Button IsEnabled="{Binding ElementName=This, Path=Settings.LauncherSettings.AllowPatching}"  Margin="4 0 0 0" Content="Repair" Click="AttemptClientRepair" />
                                                     <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Margin="4 0 0 0"><Run FontWeight="Bold" Text="Note: Ignores the Ignore Package Folder Option"/></TextBlock>
                                                 </StackPanel>
                                             </StackPanel>
@@ -460,9 +460,9 @@
                         </Grid>
                     </controls:MetroTabItem>
                     <controls:MetroTabItem Header="Session"
-                               Visibility="Collapsed"
-                               x:Name="SessionTab">
-                        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 0 0 41">
+                                           Visibility="Collapsed"
+                                           x:Name="SessionTab">
+                        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <ItemsControl ItemsSource="{Binding Reporters, ElementName=This}" />
                         </ScrollViewer>
                     </controls:MetroTabItem>

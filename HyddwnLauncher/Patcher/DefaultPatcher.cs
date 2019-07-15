@@ -33,6 +33,11 @@ namespace HyddwnLauncher.Patcher
             return true;
         }
 
+        public virtual async Task<bool> RepairInstall()
+        {
+            return true;
+        }
+
         public virtual int ReadVersion()
         {
             try

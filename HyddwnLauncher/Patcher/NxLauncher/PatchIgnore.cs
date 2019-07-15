@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using HyddwnLauncher.Extensibility;
+using HyddwnLauncher.Util;
 using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Patcher.NxLauncher
@@ -16,27 +17,32 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         /// </summary>
         public ObservableCollection<string> IgnoredFiles;
 
-        private PluginContext _pluginContext;
+        private PatcherContext _pluginContext;
 
-        public PatchIgnore(PluginContext pluginContext)
+        public PatchIgnore(PatcherContext patcherContext)
         {
-            _pluginContext = pluginContext;
+            _pluginContext = patcherContext;
         }
 
         /// <summary>
-        /// Check for .patchignore file and loads the settings
+        /// Check for patchignore.json file and loads the settings
         /// </summary>
         public void Initialize(string clientPath)
         {
-            var patchIgnoreJsonPath = $"{clientPath}\\patchignore.json";
+            clientPath = Path.GetDirectoryName(clientPath);
 
-            _pluginContext.LogString(string.Format("Looking for {0}", patchIgnoreJsonPath), false);
+            var patchIgnoreJsonPath = $"{clientPath}\\Hyddwn Launcher\\patchignore.json";
+
+            if (!Directory.Exists($"{clientPath}\\Hyddwn Launcher"))
+                Directory.CreateDirectory($"{clientPath}\\Hyddwn Launcher");
+
+            Log.Info ("Looking for {0}", patchIgnoreJsonPath);
 
             if (!File.Exists(patchIgnoreJsonPath))
             {
                 IgnoredFiles = new ObservableCollection<string>();
-                var patchignoreJson = JsonConvert.SerializeObject(IgnoredFiles, Formatting.Indented);
-                File.AppendAllText(patchIgnoreJsonPath, patchignoreJson);
+                var patchIgnoreJson = JsonConvert.SerializeObject(IgnoredFiles, Formatting.Indented);
+                File.AppendAllText(patchIgnoreJsonPath, patchIgnoreJson);
                 return;
             }
 

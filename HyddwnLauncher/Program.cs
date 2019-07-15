@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.ServiceModel.Channels;
 using System.Windows;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
@@ -14,6 +13,7 @@ namespace HyddwnLauncher
         public static void Main(string[] args)
         {
             var assemblypath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //Thread.CurrentThread.CurrentUICulture = new CultureInfo("ja-JP");
 
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
             {

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Extensibility.Interfaces;
@@ -15,10 +17,15 @@ namespace HyddwnLauncher.Core
         private string _profileUsername;
         private string _profileImageUri;
         private string _arguments;
+        private bool _enableMultiClientMemoryEdit;
+        private int _lastVersionForPatternSearch;
+        private IntPtr _lastAddressForPatternSearch;
+        [field:NonSerialized] private bool _hasError;
 
         public ClientProfile()
         {
             Localization = "North America";
+            EnableMultiClientMemoryEdit = false;
         }
 
         public string Name
@@ -94,6 +101,39 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _arguments) return;
                 _arguments = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool EnableMultiClientMemoryEdit
+        {
+            get => _enableMultiClientMemoryEdit;
+            set
+            {
+                if (value == _enableMultiClientMemoryEdit) return;
+                _enableMultiClientMemoryEdit = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int LastVersionForPatternSearch
+        {
+            get => _lastVersionForPatternSearch;
+            set
+            {
+                if (value == _lastVersionForPatternSearch) return;
+                _lastVersionForPatternSearch = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IntPtr LastAddressForPatterSearch
+        {
+            get => _lastAddressForPatternSearch;
+            set
+            {
+                if (value == _lastAddressForPatternSearch) return;
+                _lastAddressForPatternSearch = value;
                 OnPropertyChanged();
             }
         }

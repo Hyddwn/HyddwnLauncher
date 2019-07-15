@@ -36,6 +36,16 @@ namespace HyddwnLauncher.Extensibility
         internal Action<bool> SetPatcherStateInternal;
 
         /// <summary>
+        ///     Changes the UI to show the progress of the patcher
+        /// </summary>
+        internal Action ShowSessionInternal;
+
+        /// <summary>
+        ///     Sets the UI to default state after patching
+        /// </summary>
+        internal Action HideSessionInternal;
+
+        /// <summary>
         ///     Shows a MessageDialogModal
         ///     string: title
         ///     string: message
@@ -92,6 +102,34 @@ namespace HyddwnLauncher.Extensibility
             if (SetPatcherStateInternal != null)
             {
                 SetPatcherStateInternal.Invoke(isEnabled);
+                return;
+            }
+
+            ThrowExceptionForUninitializedApiCall();
+        }
+
+        /// <summary>
+        ///     Changes the UI to show the progress of the patcher
+        /// </summary>
+        public void ShowSession()
+        {
+            if (ShowSessionInternal != null)
+            {
+                ShowSessionInternal.Invoke();
+                return;
+            }
+
+            ThrowExceptionForUninitializedApiCall();
+        }
+
+        /// <summary>
+        ///     Sets the UI to default state after patching
+        /// </summary>
+        public void HideSession()
+        {
+            if (HideSessionInternal != null)
+            {
+                HideSessionInternal.Invoke();
                 return;
             }
 

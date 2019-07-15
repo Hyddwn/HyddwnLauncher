@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility;
-using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher.Patcher.Legacy
@@ -90,20 +86,16 @@ namespace HyddwnLauncher.Patcher.Legacy
 
         public override async Task<bool> ApplyUpdates()
         {
-            //await Task.Run(() =>
-            //{
-            //    var downloader = new PatchDownloader(_patcherContext, _patchSequence, _officialPatchInfo, _clientProfile);
-
-            //    downloader.Prepare();
-
-            //    downloader.Patch();
-            //});
             PatcherContext.SetPatcherState(true);
+            PatcherContext.ShowSession();
+
             var downloader = new PatchDownloader(PatcherContext, _patchSequence, _officialPatchInfo, ClientProfile);
             await Task.Run(() => downloader.Prepare());
             await Task.Run(() => downloader.Patch());
             WriteVersion(_remoteVersion);
+
             PatcherContext.SetPatcherState(false);
+            PatcherContext.HideSession();
             return true;
         }
 
