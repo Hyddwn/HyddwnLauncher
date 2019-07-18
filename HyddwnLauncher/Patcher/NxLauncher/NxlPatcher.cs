@@ -66,15 +66,16 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             PatcherContext.SetPatcherState(false);
             PatcherContext.UpdateMainProgress("", "", 0, false, false);
+
             return result;
         }
 
         public override async Task<bool> RepairInstall()
         {
-            var shouldUpdate = await CheckForUpdatesInternal(ReadVersion(), true);
-            if (shouldUpdate)
-                return await ApplyUpdates();
-
+            var shouldUpdate = await CheckForUpdatesInternal(-1, true);
+            if (shouldUpdate) return await ApplyUpdates();
+            PatcherContext.SetPatcherState(false);
+            PatcherContext.UpdateMainProgress("", "", 0, false, false);
             return true;
         }
 
@@ -96,11 +97,15 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             FileDownloadInfos = await GetFileDownloadInfo();
 
-            if (version >= latestVersion && (version < latestVersion || !PatchSettingsManager.Instance.PatcherSettings.ForceUpdateCheck)) return false;
+            if (version < latestVersion || overrideSettings ||
+                (version == latestVersion && PatchSettingsManager.Instance.PatcherSettings.ForceUpdateCheck))
+            {
+                GetPatchList(overrideSettings);
 
-            GetPatchList(overrideSettings);
+                return Patches.Count > 0;
+            }
 
-            return Patches.Count > 0;
+            return false;
         }
 
         public override async Task<bool> ApplyUpdates()
