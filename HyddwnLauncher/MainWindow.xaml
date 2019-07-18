@@ -500,7 +500,7 @@
                 <Run x:Name="LauncherVersion" Text="0"/>
             </TextBlock>
             <TextBlock Visibility="{Binding ElementName=This, Path=IsBeta, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5 0 0 0" FontWeight="ExtraBold">
-                <Run Text="BETA "/>
+                <Run Text="BETA"/>
                 <Run x:Name="BetaVersion"/>
             </TextBlock>
         </StackPanel>
