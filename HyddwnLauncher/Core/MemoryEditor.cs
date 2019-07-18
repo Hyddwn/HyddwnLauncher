@@ -80,6 +80,8 @@ namespace HyddwnLauncher.Core
                 _clientProfile.LastVersionForPatternSearch = _version;
                 _clientProfile.LastAddressForPatterSearch = address;
             }
+            
+            Log.Info("Start Address: {0:x8} | Address of Pattern Match: {1:x8}", (int)moduleInfo.lpBaseOfDll, (int)address);
 
             memory.WriteProcMem(address + offset, edit);
 
