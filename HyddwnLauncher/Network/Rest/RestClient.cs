@@ -6,12 +6,14 @@ namespace HyddwnLauncher.Network.Rest
     internal class RestClient
     {
         private int _maxRetryCount;
+        public bool RequiresBase64Encode { get; protected set; }
 
-        public RestClient(Uri baseUrl, string accessToken)
+        public RestClient(Uri baseUrl, string accessToken, bool requiresBase64Encode = false)
         {
             BaseUrl = baseUrl;
             AccessToken = accessToken;
             DefaultQueryString = new List<KeyValuePair<string, string>>();
+            RequiresBase64Encode = requiresBase64Encode;
 
             MaxRetryCount = 0;
         }

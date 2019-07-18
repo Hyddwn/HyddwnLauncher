@@ -125,7 +125,7 @@ namespace HyddwnLauncher.Network.Rest
                     httpRequestMessage.Headers.Add("Cookie",
                         $"nxtk={_restClient.AccessToken};domain=.nexon.net;path=/;");
                     httpRequestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse(
-                        $"Bearer {Convert.ToBase64String(Encoding.UTF8.GetBytes(_restClient.AccessToken))}");
+                        $"Bearer {(_restClient.RequiresBase64Encode ? Convert.ToBase64String(Encoding.UTF8.GetBytes(_restClient.AccessToken)) : _restClient.AccessToken)}");
                 }
 
                 if ((httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put) && _bodyObj != null)

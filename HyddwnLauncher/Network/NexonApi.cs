@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Management;
 using System.Net;
 using System.Security.Cryptography;
@@ -30,11 +31,17 @@ namespace HyddwnLauncher.Network
 
         //Tokens
         private string _accessToken;
+        private string _idToken;
 
         //Token Expiry Timer
         private int _accessTokenExpiration;
         private DispatcherTimer _accessTokenExpiryTimer;
         private bool _accessTokenIsExpired;
+        private int _idTokenExpiration;
+        private DispatcherTimer _idTokenExpiryTimer;
+        private bool _idTokenIsExpired;
+
+
 
         private string _lastAuthenticationProfileGuid;
 
@@ -129,21 +136,43 @@ namespace HyddwnLauncher.Network
             if (!IsAccessTokenValid(_lastAuthenticationProfileGuid))
                 return _accessToken;
 
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), null);
 
-            var request = _restClient.Create("/users/me/passport");
+            var request = _restClient.Create("/game-auth/v2/check-playable");
 
-            var response = await request.ExecuteGet<string>();
+            var requestBody = new CheckPlayableV2Request
+            {
+                DeviceId = GetDeviceUuid(),
+                IdToken = _idToken,
+                ProductId = "10200"
+            };
+
+            request.SetBody(requestBody);
+
+            var response = await request.ExecutePost<CheckPlayableV2Response>();
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
                 return DevError;
 
-            //TODO: Error checking yo
-            var data = await response.GetContent();
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, false);
 
-            var body = JsonConvert.DeserializeObject<dynamic>(data);
+            request = _restClient.Create("/passport/v1/passport");
 
-            return body["passport"];
+            var requestBody2 = new PassportV1Request
+            {
+                ProductId = "10200"
+            };
+
+            request.SetBody(requestBody2);
+
+            var response2 = await request.ExecutePost<GetPassportV1Response>();
+
+            if (response2.StatusCode == HttpStatusCode.BadRequest)
+                return DevError;
+
+            var obj = await response2.GetDataObject();
+
+            return obj.Passport;
         }
 
         public async Task<UserProfileResponse> GetUserProfile()
@@ -224,7 +253,7 @@ namespace HyddwnLauncher.Network
             var initialRequestBody = new AccountLoginRequest
             {
                 AutoLogin = false,
-                CaptchaToken = CreateString(128),
+                CaptchaToken = "HyddwnLauncher",
                 CaptchaVersion = "v3",
                 ClientId = BodyClientId,
                 DeviceId = deviceId,
@@ -269,10 +298,13 @@ namespace HyddwnLauncher.Network
             var body = JsonConvert.DeserializeObject<dynamic>(data);
             _accessToken = body["access_token"];
             _accessTokenExpiration = body["access_token_expires_in"];
+            _idToken = body["id_token"];
+            _idTokenExpiration = body["id_token_expires_in"];
 
             _lastAuthenticationProfileGuid = profileGuid;
 
             _accessTokenIsExpired = false;
+            _idTokenIsExpired = false;
             StartAccessTokenExpiryTimer(_accessTokenExpiration);
 
             return new GetAccessTokenResponse {Success = true};

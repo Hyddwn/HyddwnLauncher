@@ -57,8 +57,12 @@
     <Compile Include="Interfaces\IServerProfile.cs" />
     <Compile Include="Interfaces\ISettingsManager.cs" />
     <Compile Include="Model\AccountLoginRequest.cs" />
+    <Compile Include="Model\CheckPlayableV2Response.cs" />
+    <Compile Include="Model\CheckPlayableV2Request.cs" />
     <Compile Include="Model\GetAccessTokenResponse.cs" />
     <Compile Include="Model\GetManifestResponse.cs" />
+    <Compile Include="Model\PassportV1Response.cs" />
+    <Compile Include="Model\PassportV1Request.cs" />
     <Compile Include="Model\LaunchConfig.cs" />
     <Compile Include="Model\LauncherConfigResponse.cs" />
     <Compile Include="Model\NexonPassport.cs" />
