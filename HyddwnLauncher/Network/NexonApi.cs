@@ -362,6 +362,7 @@ namespace HyddwnLauncher.Network
                 data = await response.GetContent();
                 var responseObject = JsonConvert.DeserializeObject<ErrorResponse>(data);
                 var rsp = new GetAccessTokenResponse(responseObject);
+                Log.Info("Login Error: {0} Message: {1}", rsp.Code, rsp.Message);
                 rsp.Success = false;
                 return rsp;
             }
@@ -370,8 +371,8 @@ namespace HyddwnLauncher.Network
             {
                 var responseObject = new GetAccessTokenResponse();
                 responseObject.Success = false;
-                responseObject.Description = "Username or Password is Incorrect";
-                responseObject.Code = "LOGINFAILED";
+                responseObject.Description = "Username does not exist!";
+                responseObject.Code = "NOTFOUND";
                 responseObject.Message = responseObject.Description;
                 return responseObject;
             }
