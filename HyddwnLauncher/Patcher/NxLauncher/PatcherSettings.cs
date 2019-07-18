@@ -2,18 +2,22 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using HyddwnLauncher.Annotations;
-using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher.Patcher.NxLauncher
 {
     public class PatcherSettings : INotifyPropertyChanged
     {
-
         private bool _ignorePackageFolder;
         private bool _forceUpdateCheck;
+        private bool _promptBeforePatching;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public PatcherSettings()
+        {
+            ForceUpdateCheck = false;
+            IgnorePackageFolder = true;
+            PromptBeforePatching = false;
+        }
 
         public bool IgnorePackageFolder
         {
@@ -37,7 +41,20 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             }
         }
 
+        public bool PromptBeforePatching
+        {
+            get => _promptBeforePatching;
+            set
+            {
+                if (value == _promptBeforePatching) return;
+                _promptBeforePatching = value;
+                OnPropertyChanged();
+            }
+        }
+
         public event Action<string> SaveOnChanged;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

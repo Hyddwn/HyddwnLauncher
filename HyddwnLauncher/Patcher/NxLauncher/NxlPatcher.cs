@@ -62,7 +62,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 return false;
             }
 
-            var result = await CheckForUpdatesInternal();
+            var result = await CheckForUpdatesInternal(ReadVersion());
 
             PatcherContext.SetPatcherState(false);
             PatcherContext.UpdateMainProgress("", "", 0, false, false);
@@ -71,18 +71,16 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
         public override async Task<bool> RepairInstall()
         {
-            var shouldUpdate = await CheckForUpdatesInternal(true);
+            var shouldUpdate = await CheckForUpdatesInternal(ReadVersion(), true);
             if (shouldUpdate)
                 return await ApplyUpdates();
 
             return true;
         }
 
-        private async Task<bool> CheckForUpdatesInternal(bool overrideSettings = false)
+        private async Task<bool> CheckForUpdatesInternal(int version = -1, bool overrideSettings = false)
         {
             if (ValidateAction()) return false;
-
-            var version = -1;
 
             Patches = new List<Patch>();
 

@@ -19,12 +19,6 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         public PatcherSettings PatcherSettings { get; protected set; }
         public bool ConfigurationDirty { get; }
 
-        private PatcherSettings DefaultSettings => new PatcherSettings
-        {
-            ForceUpdateCheck = false,
-            IgnorePackageFolder = true
-        };
-
         public static void Initialize()
         {
             if (Instance == null)
@@ -79,7 +73,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
         public void Reset()
         {
-            PatcherSettings = DefaultSettings;
+            PatcherSettings = new PatcherSettings();
             SavePatcherSettings();
         }
 
