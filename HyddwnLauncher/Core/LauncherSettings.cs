@@ -24,6 +24,7 @@ namespace HyddwnLauncher.Core
         private bool _closeAfterLaunching;
         private bool _allowPatching;
         private bool _disableLauncherUpdateCheck;
+        private string _lastClientProfileSetupPath;
 
         public LauncherSettings()
         {
@@ -42,6 +43,7 @@ namespace HyddwnLauncher.Core
             CloseAfterLaunching = true;
             AllowPatching = true;
             DisableLauncherUpdateCheck = false;
+            LastClientProfileSetupPath = "C:\\Nexon\\Library\\mabinogi\\appdata\\Client.exe";
         }
 
         public bool UsePackFiles
@@ -205,6 +207,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _disableLauncherUpdateCheck) return;
                 _disableLauncherUpdateCheck = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string LastClientProfileSetupPath
+        {
+            get => _lastClientProfileSetupPath;
+            set
+            {
+                if (value == _lastClientProfileSetupPath) return;
+                _lastClientProfileSetupPath = value;
                 OnPropertyChanged();
             }
         }

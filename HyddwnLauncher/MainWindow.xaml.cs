@@ -802,6 +802,7 @@ namespace HyddwnLauncher
 
         private void ProfileEditorOnProfileCLosingFinished(object sender, RoutedEventArgs e)
         {
+            Settings.LauncherSettings.LastClientProfileSetupPath = ActiveClientProfile.Location;
             ConfigureLauncher();
             ProfileManager.SaveClientProfiles();
             ProfileManager.SaveServerProfiles();
@@ -847,7 +848,7 @@ namespace HyddwnLauncher
 
         private void AddClientProfile()
         {
-            var clientProfile = new ClientProfile {Name = Properties.Resources.NewProfile, Guid = Guid.NewGuid().ToString()};
+            var clientProfile = new ClientProfile {Name = Properties.Resources.NewProfile, Guid = Guid.NewGuid().ToString(), Location = Settings.LauncherSettings.LastClientProfileSetupPath };
             ProfileManager.ClientProfiles.Add(clientProfile);
             ClientProfileListBox.SelectedItem = clientProfile;
         }
