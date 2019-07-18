@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Extensibility.Model
 {
-    public class CheckPlayableV2Request
+    public struct CheckPlayableV2Request
     {
         [JsonProperty(PropertyName = "device_id")]
         public string DeviceId { get; set; }

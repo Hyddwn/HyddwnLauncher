@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Extensibility.Model
 {
-    public class CheckPlayableV2Response
+    public struct CheckPlayableV2Response
     {
         [JsonProperty(PropertyName = "product_id")]
         public string ProductId { get; set; }
