@@ -56,9 +56,11 @@
     <Compile Include="Interfaces\IProgressIndicator.cs" />
     <Compile Include="Interfaces\IServerProfile.cs" />
     <Compile Include="Interfaces\ISettingsManager.cs" />
+    <Compile Include="Model\AccountLoginResponse.cs" />
     <Compile Include="Model\AccountLoginRequest.cs" />
     <Compile Include="Model\CheckPlayableV2Response.cs" />
     <Compile Include="Model\CheckPlayableV2Request.cs" />
+    <Compile Include="Model\ErrorResponse.cs" />
     <Compile Include="Model\GetAccessTokenResponse.cs" />
     <Compile Include="Model\GetManifestResponse.cs" />
     <Compile Include="Model\PassportV1Response.cs" />
