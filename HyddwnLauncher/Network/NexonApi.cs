@@ -266,7 +266,7 @@ namespace HyddwnLauncher.Network
 
             RestResponse response = null;
 
-            response = await request.ExecutePost<string>();
+            response = await request.ExecutePost();
 
             // dispose of password yo
             password = null;
@@ -279,9 +279,10 @@ namespace HyddwnLauncher.Network
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
                 data = await response.GetContent();
-                var responseObject = JsonConvert.DeserializeObject<GetAccessTokenResponse>(data);
-                responseObject.Success = false;
-                return responseObject;
+                var responseObject = JsonConvert.DeserializeObject<ErrorResponse>(data);
+                var rsp = new GetAccessTokenResponse(responseObject);
+                rsp.Success = false;
+                return rsp;
             }
 
             if (response.StatusCode == HttpStatusCode.NotFound)
@@ -295,11 +296,11 @@ namespace HyddwnLauncher.Network
             }
 
             data = await response.GetContent();
-            var body = JsonConvert.DeserializeObject<dynamic>(data);
-            _accessToken = body["access_token"];
-            _accessTokenExpiration = body["access_token_expires_in"];
-            _idToken = body["id_token"];
-            _idTokenExpiration = body["id_token_expires_in"];
+            var body = JsonConvert.DeserializeObject<AccountLoginResponse>(data);
+            _accessToken = body.AccessToken;
+            _accessTokenExpiration = body.AccessTokenExpiresIn;
+            _idToken = body.IdToken;
+            _idTokenExpiration = body.IdTokenExpiresIn;
 
             _lastAuthenticationProfileGuid = profileGuid;
 
