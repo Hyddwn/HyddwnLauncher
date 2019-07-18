@@ -1,14 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Extensibility.Interfaces;
-using HyddwnLauncher.Properties;
 
 namespace HyddwnLauncher.Core
 {
-    public class ClientProfile : INotifyPropertyChanged, IClientProfile
+    public class ClientProfile : IClientProfile
     {
         private string _guid;
         private string _localization;
@@ -20,7 +18,10 @@ namespace HyddwnLauncher.Core
         private bool _enableMultiClientMemoryEdit;
         private int _lastVersionForPatternSearch;
         private IntPtr _lastAddressForPatternSearch;
-        [field:NonSerialized] private bool _hasError;
+        [NonSerialized] private bool _hasError;
+        private string _lastIdToken;
+        private DateTime _lastRefreshTime;
+        private int _tokenExpirationTimeFrame;
 
         public ClientProfile()
         {
@@ -137,6 +138,51 @@ namespace HyddwnLauncher.Core
                 OnPropertyChanged();
             }
         }
+
+        public bool HasError
+        {
+            get => _hasError;
+            set
+            {
+                if (value == _hasError) return;
+                _hasError = value;
+                OnPropertyChanged();
+            }
+        }
+        
+        public string LastIdToken
+        {
+            get => _lastIdToken;
+            set
+            {
+                if (value == _lastIdToken) return;
+                _lastIdToken = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public DateTime LastRefreshTime
+        {
+            get => _lastRefreshTime;
+            set
+            {
+                if (value == _lastRefreshTime) return;
+                _lastRefreshTime = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int TokenExpirationTimeFrame
+        {
+            get => _tokenExpirationTimeFrame;
+            set
+            {
+                if (value == _tokenExpirationTimeFrame) return;
+                _tokenExpirationTimeFrame = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

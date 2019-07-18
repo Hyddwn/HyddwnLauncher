@@ -267,6 +267,8 @@ namespace HyddwnLauncher
                 Process.Start(processInfo);
             }
 
+            ProfileManager.SaveClientProfiles();
+            ProfileManager.SaveServerProfiles();
             PluginHost.ShutdownPlugins();
 
             Application.Current.Shutdown();
@@ -325,8 +327,8 @@ namespace HyddwnLauncher
 
                             if (credentials != null)
                             {
-                                var success = await NexonApi.Instance.GetAccessToken(credentials.Username,
-                                    credentials.Password, ActiveClientProfile.Guid);
+                                var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
+                                    credentials.Password, ActiveClientProfile);
 
                                 LastResponseObject = success;
 
@@ -602,7 +604,7 @@ namespace HyddwnLauncher
             if (RememberMeCheckBox.IsChecked != null && (bool) RememberMeCheckBox.IsChecked)
                 CredentialsStorage.Instance.Add(ActiveClientProfile.Guid, username, password);
 
-            var success = await NexonApi.Instance.GetAccessToken(username, password, ActiveClientProfile.Guid);
+            var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, password, ActiveClientProfile);
 
             if (!success.Success)
             {
@@ -692,13 +694,13 @@ namespace HyddwnLauncher
             if (UsingCredentials)
             {
                 if (credentials != null)
-                    loginSuccess = await NexonApi.Instance.GetAccessToken(credentials.Username, credentials.Password,
-                        ActiveClientProfile.Guid);
+                    loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username, credentials.Password,
+                        ActiveClientProfile);
             }
             else
             {
-                loginSuccess = await NexonApi.Instance.GetAccessToken(username, NxAuthLoginPassword.Password,
-                    ActiveClientProfile.Guid);
+                loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, NxAuthLoginPassword.Password,
+                    ActiveClientProfile);
             }
 
             if (!loginSuccess.Success)
@@ -1057,9 +1059,9 @@ namespace HyddwnLauncher
 
                 if (credentials != null)
                 {
-                    var success = await NexonApi.Instance.GetAccessToken(credentials.Username,
+                    var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
                         credentials.Password,
-                        ActiveClientProfile.Guid);
+                        ActiveClientProfile);
 
                     if (success.Success)
                     {
@@ -1178,9 +1180,9 @@ namespace HyddwnLauncher
 
                             if (credentials != null)
                             {
-                                var success = await NexonApi.Instance.GetAccessToken(credentials.Username,
+                                var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
                                     credentials.Password,
-                                    ActiveClientProfile.Guid);
+                                    ActiveClientProfile);
 
                                 if (success.Success)
                                 {
@@ -1296,6 +1298,8 @@ namespace HyddwnLauncher
                 return;
             }
 
+            ProfileManager.SaveClientProfiles();
+            ProfileManager.SaveServerProfiles();
             PluginHost.ShutdownPlugins();
             Application.Current.Shutdown();
         }
@@ -1371,7 +1375,8 @@ namespace HyddwnLauncher
 
                     return;
                 }
-
+                ProfileManager.SaveClientProfiles();
+                ProfileManager.SaveServerProfiles();
                 PluginHost.ShutdownPlugins();
                 Application.Current.Shutdown();
             }

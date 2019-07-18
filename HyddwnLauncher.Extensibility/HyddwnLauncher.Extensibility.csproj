@@ -63,6 +63,7 @@
     <Compile Include="Model\ErrorResponse.cs" />
     <Compile Include="Model\GetAccessTokenResponse.cs" />
     <Compile Include="Model\GetManifestResponse.cs" />
+    <Compile Include="Model\IdTokenRefreshRequest.cs" />
     <Compile Include="Model\PassportV1Response.cs" />
     <Compile Include="Model\PassportV1Request.cs" />
     <Compile Include="Model\LaunchConfig.cs" />

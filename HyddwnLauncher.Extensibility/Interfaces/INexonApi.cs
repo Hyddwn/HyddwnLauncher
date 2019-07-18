@@ -15,10 +15,10 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// <param name="password">The SHA512 hashed password to log in with</param>
         /// <param name="guid">THe currently active profile GUID</param>
         /// <returns></returns>
-        Task<GetAccessTokenResponse> GetAccessToken(string username, string password, string guid);
+        Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile);
 
         /// <summary>
-        ///     Attempts to identify the newets version of the mabinogi client
+        ///     Attempts to identify the newest version of the Mabinogi client
         /// </summary>
         /// <returns></returns>
         Task<int> GetLatestVersion();

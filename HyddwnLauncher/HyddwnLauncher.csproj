@@ -104,6 +104,9 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Swebs">
+      <HintPath>.\Swebs.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
@@ -155,6 +158,7 @@
     <Compile Include="Core\ServerProfile.cs" />
     <Compile Include="Core\SettingsManager.cs" />
     <Compile Include="Core\Unmanaged.cs" />
+    <Compile Include="Http\WebServer.cs" />
     <Compile Include="Network\AsyncDownloader.cs" />
     <Compile Include="Network\Rest\ParameterType.cs" />
     <Compile Include="Network\Rest\RestClient.cs" />
@@ -215,6 +219,9 @@
     <Compile Include="Util\ThemeUtil.cs" />
     <Compile Include="Util\Validation\MabiLocalizationValidationRule.cs" />
     <Compile Include="Util\Validation\LocationValidationRule.cs" />
+    <Compile Include="web\captcha.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
     <Page Include="Controls\NewClientProfileUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -280,7 +287,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\default.png" />
-    <Content Include="Http\captcha.html" />
+    <Content Include="web\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Libs\ImaBrokeDude.Controls.dll" />
     <Content Include="Libs\Ionic.Zip.Reduced.dll" />
   </ItemGroup>
@@ -323,6 +332,7 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Network\NewFolder1\" />
     <Folder Include="Patcher\Custom\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Management;
 using System.Net;
@@ -7,8 +8,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Extensibility.Model;
+using HyddwnLauncher.Http;
 using HyddwnLauncher.Network.Rest;
 using HyddwnLauncher.Util;
 using Microsoft.Win32;
@@ -32,6 +35,7 @@ namespace HyddwnLauncher.Network
         //Tokens
         private string _accessToken;
         private string _idToken;
+        private string _recaptcaToken;
 
         //Token Expiry Timer
         private int _accessTokenExpiration;
@@ -239,10 +243,85 @@ namespace HyddwnLauncher.Network
             return version;
         }
 
-        public async Task<GetAccessTokenResponse> GetAccessToken(string username, string password, string profileGuid)
+        public async Task<GetAccessTokenResponse> GetAccessTokenWithIdTokenOrPassword(string username, string password, IClientProfile clientProfile)
         {
-            if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == profileGuid)
+            var currentDate = DateTime.Now;
+
+            if (string.IsNullOrWhiteSpace(clientProfile.LastIdToken) ||  currentDate.Subtract(clientProfile.LastRefreshTime) > TimeSpan.FromSeconds(clientProfile.TokenExpirationTimeFrame))
+            {
+                Log.Info("Using username and password");
+                return await GetAccessToken(username, password, clientProfile);
+            }
+
+            _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
+
+            var request = _restClient.Create("/account-webapi/login/launcher");
+
+            var deviceId = GetDeviceUuid();
+
+            var initialRequestBody = new IdTokenRefreshRequest
+            {
+                IdToken = clientProfile.LastIdToken,
+                ClientId = BodyClientId,
+                DeviceId = deviceId
+            };
+
+            request.SetBody(initialRequestBody);
+
+            RestResponse response = null;
+
+            response = await request.ExecutePost();
+
+            var data = "";
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                data = await response.GetContent();
+                var error = JsonConvert.DeserializeObject<ErrorResponse>(data);
+                Log.Info("Refresh failed, using username and password: \r\nError: {0}\r\nMessage: {1}", error.Code, error.Message);
+                return await GetAccessToken(username, password, clientProfile);
+            }
+
+            // dispose of password yo
+            password = null;
+            initialRequestBody = new IdTokenRefreshRequest();
+            // Compiler tricks to ensure it isn't optimized away
+            var ps = password;
+
+            
+
+            data = await response.GetContent();
+            var body = JsonConvert.DeserializeObject<AccountLoginResponse>(data);
+            _accessToken = body.AccessToken;
+            _accessTokenExpiration = body.AccessTokenExpiresIn;
+            _idToken = body.IdToken;
+            _idTokenExpiration = body.IdTokenExpiresIn;
+
+            ((ClientProfile)clientProfile).LastIdToken = _idToken;
+            ((ClientProfile)clientProfile).TokenExpirationTimeFrame = _idTokenExpiration;
+            ((ClientProfile)clientProfile).LastRefreshTime = DateTime.Now;
+
+            _lastAuthenticationProfileGuid = clientProfile.Guid;
+
+            _accessTokenIsExpired = false;
+            _idTokenIsExpired = false;
+            StartAccessTokenExpiryTimer(_accessTokenExpiration);
+
+            return new GetAccessTokenResponse { Success = true };
+        }
+
+        public async Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile)
+        {
+            if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == clientProfile.Guid)
                 return new GetAccessTokenResponse {Success = true};
+
+            WebServer.Instance.Completed += s => _recaptcaToken = s;
+            WebServer.Instance.Run();
+
+            Process.Start("http://nexon.com");
+
+            while (_recaptcaToken == null)
+                await Task.Delay(100);
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -252,8 +331,8 @@ namespace HyddwnLauncher.Network
 
             var initialRequestBody = new AccountLoginRequest
             {
-                AutoLogin = false,
-                CaptchaToken = "HyddwnLauncher",
+                AutoLogin = true,
+                CaptchaToken = _recaptcaToken,
                 CaptchaVersion = "v3",
                 ClientId = BodyClientId,
                 DeviceId = deviceId,
@@ -265,6 +344,8 @@ namespace HyddwnLauncher.Network
             request.SetBody(initialRequestBody);
 
             RestResponse response = null;
+
+            WebServer.Instance.Stop();
 
             response = await request.ExecutePost();
 
@@ -302,7 +383,11 @@ namespace HyddwnLauncher.Network
             _idToken = body.IdToken;
             _idTokenExpiration = body.IdTokenExpiresIn;
 
-            _lastAuthenticationProfileGuid = profileGuid;
+            ((ClientProfile)clientProfile).LastIdToken = _idToken;
+            ((ClientProfile)clientProfile).TokenExpirationTimeFrame = _accessTokenExpiration;
+            ((ClientProfile)clientProfile).LastRefreshTime = DateTime.Now;
+
+            _lastAuthenticationProfileGuid = clientProfile.Guid;
 
             _accessTokenIsExpired = false;
             _idTokenIsExpired = false;

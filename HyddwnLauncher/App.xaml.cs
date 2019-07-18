@@ -172,6 +172,8 @@ namespace HyddwnLauncher
         {
             Log.Info(HyddwnLauncher.Properties.Resources.AppShutdown);
             base.OnExit(e);
+
+            Environment.Exit(0);
         }
     }
 }

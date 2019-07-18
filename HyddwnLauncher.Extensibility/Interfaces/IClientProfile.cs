@@ -1,9 +1,12 @@
-﻿namespace HyddwnLauncher.Extensibility.Interfaces
+﻿using System;
+using System.ComponentModel;
+
+namespace HyddwnLauncher.Extensibility.Interfaces
 {
     /// <summary>
     ///     Represents a ClientProfile
     /// </summary>
-    public interface IClientProfile
+    public interface IClientProfile : INotifyPropertyChanged
     {
         /// <summary>
         ///     The file path of the mabinogi executable
@@ -39,5 +42,11 @@
         ///     The profile picture uri as report by the account system.
         /// </summary>
         string ProfileImageUri { get; }
+
+        string LastIdToken { get; set; }
+
+        DateTime LastRefreshTime { get; set; }
+
+        int TokenExpirationTimeFrame { get; set; }
     }
 }
