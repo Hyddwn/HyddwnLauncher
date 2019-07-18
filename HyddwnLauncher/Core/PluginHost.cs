@@ -28,14 +28,11 @@ namespace HyddwnLauncher.Core
                 Log.Warning(Properties.Resources.PluginDirectoryNotFound);
                 try
                 {
-                    Directory.CreateDirectory(".\\Plugins");
+                    Directory.CreateDirectory(_pluginRoot);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(
-                        string.Format(
-                            Properties.Resources.ExceptionCreatingPluginDirectory,
-                            ex.GetType().Name, ex.Message));
+                    Log.Error(Properties.Resources.ExceptionCreatingPluginDirectory, ex.GetType().Name, ex.Message);
                 }
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
