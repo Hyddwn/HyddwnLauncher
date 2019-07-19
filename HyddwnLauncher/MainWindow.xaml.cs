@@ -943,7 +943,7 @@ namespace HyddwnLauncher
                     var fileReader =
                         new FileReader(await
                             webClient.OpenReadTaskAsync(
-                                "http://launcher.hyddwnproject.com/version/test")))
+                                "http://launcher.hyddwnproject.com/version")))
                 {
                     foreach (var str in fileReader)
                     {
