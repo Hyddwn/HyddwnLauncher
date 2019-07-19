@@ -24,11 +24,11 @@ namespace HyddwnLauncher.Http
 
         public void Run()
         {
-            var lines = File.ReadAllLines(HostsFilePath);
+            var lines = File.ReadAllLines(HostsFilePath).ToList();
             var nexonLine = lines.FirstOrDefault(l => l.Contains("nexon.com"));
             if (string.IsNullOrWhiteSpace(nexonLine))
             {
-                lines.ToList().Add("127.0.0.1 nexon.com");
+                lines.Add("127.0.0.1 nexon.com");
                 File.WriteAllLines(HostsFilePath, lines);
             }
 
@@ -52,16 +52,15 @@ namespace HyddwnLauncher.Http
 
         public void CompletedAction(string value)
         {
-            var lines = File.ReadAllLines(HostsFilePath);
+            var lines = File.ReadAllLines(HostsFilePath).ToList();
             var nexonLine = lines.FirstOrDefault(l => l.Contains("nexon.com"));
             if (!string.IsNullOrWhiteSpace(nexonLine))
             {
-                lines.ToList().Remove(nexonLine);
+                lines.Remove(nexonLine);
                 File.WriteAllLines(HostsFilePath, lines);
             }
 
             Completed?.Raise(value);
-            
         }
 
         public void Stop()
