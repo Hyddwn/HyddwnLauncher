@@ -526,9 +526,10 @@ namespace HyddwnLauncher
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingUpdate);
             try
             {
-                UpdaterUpdate();
+                await UpdaterUpdate();
                 MainProgressReporter.SetProgressBar(0.0);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+
                 await AsyncDownloader.DownloadFileWithCallbackAsync(
                     _updateInfo["Link"],
                     Path.Combine(Assemblypath, _updateInfo["File"]),
@@ -538,6 +539,7 @@ namespace HyddwnLauncher
                         MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
                     }
                 );
+
                 MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadSuccessfulLaunchingUpdater);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                 Closing -= Updater_Closing;
@@ -941,7 +943,7 @@ namespace HyddwnLauncher
                     var fileReader =
                         new FileReader(await
                             webClient.OpenReadTaskAsync(
-                                "http://launcher.hyddwnproject.com/version")))
+                                "http://launcher.hyddwnproject.com/version/test")))
                 {
                     foreach (var str in fileReader)
                     {
@@ -1521,34 +1523,81 @@ namespace HyddwnLauncher
             _backgroundWorker.RunWorkerAsync();
         }
 
-        private async void UpdaterUpdate()
+        private async Task UpdaterUpdate()
         {
-            if (File.Exists(Path.Combine(Assemblypath, "Updater.exe"))) return;
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingAppUpdater);
-            MainProgressReporter.SetProgressBar(0);
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-            await AsyncDownloader.DownloadFileWithCallbackAsync("http://www.imabrokedude.com/Updater.zip",
-                Path.Combine(Assemblypath, "Updater.zip"),
-                (d, s) =>
-                {
-                    MainProgressReporter.SetProgressBar(d);
-                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
-                });
-            MainProgressReporter.SetProgressBar(0);
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.ExtractingUpdater);
-            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
-            using (var zipFile = ZipFile.Read(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))))
+            var shouldUpdate = false;
+            var fileExists = true;
+            var updaterPath = Path.Combine(Assemblypath, "Updater.exe");
+            if (File.Exists(updaterPath))
             {
-                zipFile.ExtractExistingFile = ExtractExistingFileAction.OverwriteSilently;
-                zipFile.ExtractAll(Path.GetDirectoryName(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))));
+                fileExists = false;
             }
 
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CleaningUp);
-            File.Delete(Path.Combine(Assemblypath, "Updater.zip"));
-            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+            var webClient = new WebClient();
+            using (
+                var fileReader =
+                    new FileReader(await
+                        webClient.OpenReadTaskAsync(
+                            "http://launcher.hyddwnproject.com/update/version")))
+            {
+                foreach (var str in fileReader)
+                {
+                    int length;
+                    if ((length = str.IndexOf(':')) >= 0)
+                        _updateInfo[str.Substring(0, length).Trim()] = str.Substring(length + 1).Trim();
+                }
+            }
+
+            var current = fileExists ? new Version(0, 0, 0, 0) : AssemblyName.GetAssemblyName(updaterPath).Version;
+
+            _updateInfo["UpdateCurrent"] = current.ToString();
+            var version2 = new Version(_updateInfo["UpdateVersion"]);
+
+            if (current < version2)
+            {
+                MainProgressReporter.SetProgressBar(0.0);
+                MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+                Application.Current.Dispatcher.Invoke(() => { IsPatching = true; });
+                MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingAppUpdater);
+                try
+                {
+                    MainProgressReporter.SetProgressBar(0.0);
+                    MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+
+                    await AsyncDownloader.DownloadFileWithCallbackAsync(
+                        _updateInfo["UpdateLink"],
+                        Path.Combine(Assemblypath, _updateInfo["UpdateFile"]),
+                        (d, s) =>
+                        {
+                            MainProgressReporter.SetProgressBar(d);
+                            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
+                        }
+                    );
+
+                    MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+                    MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.ExtractingUpdater);
+                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                    using (var zipFile = ZipFile.Read(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))))
+                    {
+                        zipFile.ExtractExistingFile = ExtractExistingFileAction.OverwriteSilently;
+                        zipFile.ExtractAll(Path.GetDirectoryName(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))));
+                    }
+
+                    MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CleaningUp);
+                    File.Delete(Path.Combine(Assemblypath, "Updater.zip"));
+                    MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                    MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                    IsPatching = false;
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception(ex, Properties.Resources.ErrorOccurredDuringUpdate);
+                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.FailedToDownloadUpdateCont);
+                    MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                    MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                    IsPatching = false;
+                }
+            }
         }
 
         #endregion
