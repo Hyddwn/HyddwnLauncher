@@ -95,7 +95,7 @@
                         <ListBox x:Name="ClientProfileListBox" Grid.Row="1" Grid.Column="0"
                                  ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
                                  ItemTemplate="{DynamicResource ClientProfileDataTemplate}"
-                                 SelectionChanged="ProfileEditorOnClientFrofileListBoxSelectionChanged" />
+                                 SelectionChanged="ProfileEditorOnClientProfileListBoxSelectionChanged" />
                         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <controls1:NewClientProfileUserControl x:Name="ClientProfileUserControl"
@@ -122,7 +122,7 @@
                         <ListBox x:Name="ServerProfileListBox" Grid.Row="1" Grid.Column="0"
                                  ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
                                  ItemTemplate="{DynamicResource ServerProfileDataTemplate}"
-                                 SelectionChanged="ProfileEditorOnServerFrofileListBoxSelectionChanged" />
+                                 SelectionChanged="ProfileEditorOnServerProfileListBoxSelectionChanged" />
                         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                             <ScrollViewer>
                                 <controls1:NewServerProfileUserControl x:Name="ServerProfileUserControl"

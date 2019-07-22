@@ -164,7 +164,8 @@ Application Directory: {3}
 Current Directory: {4}
 System Folder: {5}
 .NET Runtime: {6}
-Exception Details: {7}</value>
+Role: {7}
+Exception Details: {8}</value>
   </data>
   <data name="InitializingLauncherContext" xml:space="preserve">
     <value>Initializing Launcher Context</value>

@@ -59,11 +59,15 @@
     <script>
         grecaptcha.ready(function () {
             grecaptcha.execute('6Le5h6gUAAAAAGhwvFIRD3fR-cKshC1bJ5vnz90k', { action: 'launcher_login' }).then(function (token) {
-                var url = `http://nexon.com/captcha.cs?t=${token}`;
-                axios.get(url).then(s => {
+                var url = 'http://nexon.com/captcha.cs?t=' + token;
+                axios.get(url).then(function (success) {
+                        var win = window.open("", "_top", "", "true");
+                        win.opener = true;
                         window.close();
                     },
-                    e => {
+                    function (error) {
+                        var win = window.open("", "_top", "", "true");
+                        win.opener = true;
                         window.close();
                     });
 
@@ -75,7 +79,7 @@
     <div id="card">
         <h1>Hyddwn Launcher</h1>
         <div class="loader_ajax_small"></div>
-        <h3>Retreiving Captcha Token...</h3>
+        <h3>Retrieving Captcha Token...</h3>
     </div>
 </body>
 </html>

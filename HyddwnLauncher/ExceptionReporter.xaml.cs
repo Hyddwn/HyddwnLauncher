@@ -25,7 +25,7 @@ namespace HyddwnLauncher
                 HyddwnLauncher.Properties.Resources.ExceptionReporterString,
                 Assembly.GetExecutingAssembly().GetName().Version, DateTime.Now, Environment.OSVersion,
                 AppDomain.CurrentDomain.BaseDirectory, Environment.CurrentDirectory, Environment.SystemDirectory,
-                RuntimeEnvironment.GetSystemVersion(), _ex);
+                RuntimeEnvironment.GetSystemVersion(), App.IsAdministrator() ? "Admin" : "Non-Admin", _ex);
 
             Log.Info(ExceptionBox.Text);
         }

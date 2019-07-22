@@ -955,7 +955,8 @@ namespace HyddwnLauncher.Properties {
         ///Current Directory: {4}
         ///System Folder: {5}
         ///.NET Runtime: {6}
-        ///Exception Details: {7}.
+        ///Role: {7}
+        ///Exception Details: {8}.
         /// </summary>
         public static string ExceptionReporterString {
             get {

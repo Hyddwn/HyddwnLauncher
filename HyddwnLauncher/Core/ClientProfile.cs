@@ -22,6 +22,7 @@ namespace HyddwnLauncher.Core
         private string _lastIdToken;
         private DateTime _lastRefreshTime;
         private int _tokenExpirationTimeFrame;
+        private bool _autoLogin;
 
         public ClientProfile()
         {
@@ -179,6 +180,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _tokenExpirationTimeFrame) return;
                 _tokenExpirationTimeFrame = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool AutoLogin
+        {
+            get => _autoLogin;
+            set
+            {
+                if (value == _autoLogin) return;
+                _autoLogin = value;
                 OnPropertyChanged();
             }
         }

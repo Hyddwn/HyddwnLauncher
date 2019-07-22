@@ -33,7 +33,7 @@ namespace HyddwnLauncher
 
             Log.LogFile = logFile;
             var version = Assembly.GetExecutingAssembly().GetName().Version;
-            var launcherVersionString = $"{version.Major}.{version.Minor}.{version.Build}";
+            var launcherVersionString = $"{version.Major}.{version.Minor}.{version.Build}{(version.Revision > 0 ? $" Beta {version.Revision}" : "")}";
             var betaVersion = $"{version.Revision}";
 
             Log.Info(HyddwnLauncher.Properties.Resources.AppStartup);

@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Management;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -29,13 +31,15 @@ namespace HyddwnLauncher.Network
         public static readonly string LoginFailed = "LOGINFAILED";
         public static readonly string DevError = "DEVERROR_HEHEHE";
         public static readonly string TrustedDeviceRequired = "TRUST_DEVICE_REQUIRED";
+        public static readonly string UserDoesNotExist = "NOT_EXIST_USER";
+        public static readonly string InvalidParameter = "INVALID_PARAMETER";
 
         public static readonly NexonApi Instance = new NexonApi();
 
         //Tokens
         private string _accessToken;
         private string _idToken;
-        private string _recaptcaToken;
+        private string _recaptchaToken;
 
         //Token Expiry Timer
         private int _accessTokenExpiration;
@@ -243,14 +247,14 @@ namespace HyddwnLauncher.Network
             return version;
         }
 
-        public async Task<GetAccessTokenResponse> GetAccessTokenWithIdTokenOrPassword(string username, string password, IClientProfile clientProfile)
+        public async Task<GetAccessTokenResponse> GetAccessTokenWithIdTokenOrPassword(string username, string password, IClientProfile clientProfile, bool rememberMe)
         {
             var currentDate = DateTime.Now;
 
-            if (string.IsNullOrWhiteSpace(clientProfile.LastIdToken) ||  currentDate.Subtract(clientProfile.LastRefreshTime) > TimeSpan.FromSeconds(clientProfile.TokenExpirationTimeFrame))
+            if (string.IsNullOrWhiteSpace(clientProfile.LastIdToken) ||  currentDate.Subtract(clientProfile.LastRefreshTime) > TimeSpan.FromSeconds(clientProfile.TokenExpirationTimeFrame) || !rememberMe)
             {
                 Log.Info("Using username and password");
-                return await GetAccessToken(username, password, clientProfile);
+                return await GetAccessToken(username, password, clientProfile, rememberMe);
             }
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
@@ -279,7 +283,7 @@ namespace HyddwnLauncher.Network
                 data = await response.GetContent();
                 var error = JsonConvert.DeserializeObject<ErrorResponse>(data);
                 Log.Info("Refresh failed, using username and password: \r\nError: {0}\r\nMessage: {1}", error.Code, error.Message);
-                return await GetAccessToken(username, password, clientProfile);
+                return await GetAccessToken(username, password, clientProfile, true);
             }
 
             // dispose of password yo
@@ -287,8 +291,6 @@ namespace HyddwnLauncher.Network
             initialRequestBody = new IdTokenRefreshRequest();
             // Compiler tricks to ensure it isn't optimized away
             var ps = password;
-
-            
 
             data = await response.GetContent();
             var body = JsonConvert.DeserializeObject<AccountLoginResponse>(data);
@@ -300,28 +302,24 @@ namespace HyddwnLauncher.Network
             ((ClientProfile)clientProfile).LastIdToken = _idToken;
             ((ClientProfile)clientProfile).TokenExpirationTimeFrame = _idTokenExpiration;
             ((ClientProfile)clientProfile).LastRefreshTime = DateTime.Now;
+            ((ClientProfile)clientProfile).AutoLogin = true;
 
             _lastAuthenticationProfileGuid = clientProfile.Guid;
 
             _accessTokenIsExpired = false;
             _idTokenIsExpired = false;
             StartAccessTokenExpiryTimer(_accessTokenExpiration);
+            StartIdTokenExpiryTimer(_idTokenExpiration);
 
             return new GetAccessTokenResponse { Success = true };
         }
 
-        public async Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile)
+        public async Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile, bool rememberMe)
         {
             if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == clientProfile.Guid)
                 return new GetAccessTokenResponse {Success = true};
 
-            WebServer.Instance.Completed += s => _recaptcaToken = s;
-            WebServer.Instance.Run();
-
-            Process.Start("http://nexon.com");
-
-            while (_recaptcaToken == null)
-                await Task.Delay(100);
+            _recaptchaToken = App.IsAdministrator() ? await WebServer.Instance.Run() ?? CreateString(128) : CreateString(128);
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -331,8 +329,8 @@ namespace HyddwnLauncher.Network
 
             var initialRequestBody = new AccountLoginRequest
             {
-                AutoLogin = true,
-                CaptchaToken = _recaptcaToken,
+                AutoLogin = rememberMe,
+                CaptchaToken = _recaptchaToken,
                 CaptchaVersion = "v3",
                 ClientId = BodyClientId,
                 DeviceId = deviceId,
@@ -345,7 +343,14 @@ namespace HyddwnLauncher.Network
 
             RestResponse response = null;
 
-            WebServer.Instance.Stop();
+            try
+            {
+                WebServer.Instance.Stop();
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Failure during WebServer.Stop");
+            }
 
             response = await request.ExecutePost();
 
@@ -364,6 +369,12 @@ namespace HyddwnLauncher.Network
                 var rsp = new GetAccessTokenResponse(responseObject);
                 Log.Info("Login Error: {0} Message: {1}", rsp.Code, rsp.Message);
                 rsp.Success = false;
+
+                if (rsp.Code == UserDoesNotExist)
+                    rsp.Message = "Username does not exist!";
+                if (rsp.Code == InvalidParameter && rsp.Message.Contains("error.email"))
+                    rsp.Message = "Malformed email!";
+
                 return rsp;
             }
 
@@ -384,15 +395,28 @@ namespace HyddwnLauncher.Network
             _idToken = body.IdToken;
             _idTokenExpiration = body.IdTokenExpiresIn;
 
-            ((ClientProfile)clientProfile).LastIdToken = _idToken;
-            ((ClientProfile)clientProfile).TokenExpirationTimeFrame = _accessTokenExpiration;
-            ((ClientProfile)clientProfile).LastRefreshTime = DateTime.Now;
+            if (!rememberMe)
+            {
+                // Unset to be safe because I seem to be adding more bugs than fixes....
+                ((ClientProfile) clientProfile).LastIdToken = "";
+                ((ClientProfile) clientProfile).TokenExpirationTimeFrame = 0;
+                ((ClientProfile) clientProfile).LastRefreshTime = DateTime.MinValue;
+            }
+            else
+            {
+                ((ClientProfile) clientProfile).LastIdToken = _idToken;
+                ((ClientProfile) clientProfile).TokenExpirationTimeFrame = _idTokenExpiration;
+                ((ClientProfile) clientProfile).LastRefreshTime = DateTime.Now;
+            }
+
+            ((ClientProfile)clientProfile).AutoLogin = rememberMe;
 
             _lastAuthenticationProfileGuid = clientProfile.Guid;
 
             _accessTokenIsExpired = false;
             _idTokenIsExpired = false;
             StartAccessTokenExpiryTimer(_accessTokenExpiration);
+            StartIdTokenExpiryTimer(_idTokenExpiration);
 
             return new GetAccessTokenResponse {Success = true};
         }
@@ -431,6 +455,14 @@ namespace HyddwnLauncher.Network
 
             _accessTokenExpiryTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(timeout)};
             _accessTokenExpiryTimer.Tick += (sender, args) => _accessTokenIsExpired = true;
+        }
+
+        private void StartIdTokenExpiryTimer(int timeout = 1209600)
+        {
+            _idTokenExpiryTimer?.Stop();
+
+            _idTokenExpiryTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(timeout) };
+            _idTokenExpiryTimer.Tick += (sender, args) => _idTokenIsExpired = true;
         }
 
         /// <summary>

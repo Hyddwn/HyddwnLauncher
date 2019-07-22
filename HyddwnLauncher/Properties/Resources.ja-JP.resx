@@ -288,7 +288,8 @@ OS:{2}
 カレントディレクトリ:{4}
 システムフォルダ:{5}
 .NET Runtime:{6}
-例外の詳細:{7}</value>
+Role: {7}
+例外の詳細:{8}</value>
   </data>
   <data name="ExceptionWhileAttemptingToRecover" xml:space="preserve">
     <value>破損または不正な構成からの回復{0}</value>

@@ -48,5 +48,7 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         DateTime LastRefreshTime { get; set; }
 
         int TokenExpirationTimeFrame { get; set; }
+
+        bool AutoLogin { get; set; }
     }
 }

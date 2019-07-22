@@ -320,6 +320,9 @@ namespace HyddwnLauncher
                     {
                         await DeletePackFiles();
 
+                        MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Getting passport...");
+                        MainProgressReporter.RighTextBlock.SetTextBlockSafe("Get Access Token...");
+
                         if (!NexonApi.Instance.IsAccessTokenValid(ActiveClientProfile.Guid))
                         {
                             var credentials =
@@ -328,7 +331,7 @@ namespace HyddwnLauncher
                             if (credentials != null)
                             {
                                 var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
-                                    credentials.Password, ActiveClientProfile);
+                                    credentials.Password, ActiveClientProfile, true);
 
                                 LastResponseObject = success;
 
@@ -460,10 +463,13 @@ namespace HyddwnLauncher
             ActiveServerProfile = ((ComboBox) sender).SelectedItem as ServerProfile;
             ActiveServerProfile?.GetUpdates();
             if (!IsInitialized || !IsLoaded) return;
+            ConfigureLauncher();
+            ConfigurePatcher();
+            CheckForClientUpdates();
             PluginHost.ServerProfileChanged(ActiveServerProfile);
         }
 
-        private async void ClientProfileComboBoxOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ClientProfileComboBoxOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ActiveClientProfile = ((ComboBox) sender).SelectedItem as ClientProfile;
             if (!IsInitialized || !IsLoaded) return;
@@ -606,7 +612,7 @@ namespace HyddwnLauncher
             if (RememberMeCheckBox.IsChecked != null && (bool) RememberMeCheckBox.IsChecked)
                 CredentialsStorage.Instance.Add(ActiveClientProfile.Guid, username, password);
 
-            var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, password, ActiveClientProfile);
+            var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, password, ActiveClientProfile, RememberMeCheckBox.IsChecked != null && (bool)RememberMeCheckBox.IsChecked);
 
             if (!success.Success)
             {
@@ -615,7 +621,7 @@ namespace HyddwnLauncher
                 {
                     ToggleLoginControls();
 
-                    NxAuthLoginNotice.Text = Properties.Resources.UsernameOrPasswordIncorrect;
+                    NxAuthLoginNotice.Text = success.Message;
                     NxAuthLoginNotice.Visibility = Visibility.Visible;
 
                     NxAuthLoginPassword.Focus();
@@ -697,19 +703,19 @@ namespace HyddwnLauncher
             {
                 if (credentials != null)
                     loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username, credentials.Password,
-                        ActiveClientProfile);
+                        ActiveClientProfile, true);
             }
             else
             {
                 loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, NxAuthLoginPassword.Password,
-                    ActiveClientProfile);
+                    ActiveClientProfile, false);
             }
 
             if (!loginSuccess.Success)
             {
                 NxDeviceTrust.IsOpen = false;
 
-                NxAuthLoginNotice.Text = Properties.Resources.UsernameOrPasswordIncorrect;
+                NxAuthLoginNotice.Text = loginSuccess.Message;
                 NxAuthLoginNotice.Visibility = Visibility.Visible;
 
                 NxAuthLoginPassword.Focus();
@@ -753,14 +759,14 @@ namespace HyddwnLauncher
 
             if (ProfileEditor.IsOpen || !_settingUpProfile) return;
 
-            var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem).Location;
+            var selectedProfileLocation = ((ClientProfile) ClientProfileListBox.SelectedItem)?.Location ?? "";
             if (string.IsNullOrWhiteSpace(selectedProfileLocation) || !File.Exists(selectedProfileLocation))
                 await this.ShowMessageAsync(Properties.Resources.InvalidFileOrpath, Properties.Resources.InValidFileOrPathMessage);
 
             _settingUpProfile = false;
         }
 
-        private void ProfileEditorOnClientFrofileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ProfileEditorOnClientProfileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ClientProfileUserControl.CredentialUsername = "";
 
@@ -775,7 +781,7 @@ namespace HyddwnLauncher
             ProfileManager.SaveClientProfiles();
         }
 
-        private void ProfileEditorOnServerFrofileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ProfileEditorOnServerProfileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var serverProfile = ServerProfileListBox.SelectedItem as ServerProfile;
             serverProfile?.GetUpdates();
@@ -806,7 +812,7 @@ namespace HyddwnLauncher
 
         private void ProfileEditorOnProfileCLosingFinished(object sender, RoutedEventArgs e)
         {
-            Settings.LauncherSettings.LastClientProfileSetupPath = ActiveClientProfile.Location;
+            Settings.LauncherSettings.LastClientProfileSetupPath = ActiveClientProfile?.Location ?? "C:\\Nexon\\Library\\mabinogi\\appdata\\Client.exe";
             ConfigureLauncher();
             ProfileManager.SaveClientProfiles();
             ProfileManager.SaveServerProfiles();
@@ -1056,6 +1062,9 @@ namespace HyddwnLauncher
             };
             patcherContext.RequestUserLoginInternal += async (successAction, cancelAction) =>
             {
+                if (ActiveClientProfile == null) return;
+                if (ActiveServerProfile == null) return;
+
                 var credentials =
                     CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
 
@@ -1063,7 +1072,7 @@ namespace HyddwnLauncher
                 {
                     var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
                         credentials.Password,
-                        ActiveClientProfile);
+                        ActiveClientProfile, true);
 
                     if (success.Success)
                     {
@@ -1184,7 +1193,7 @@ namespace HyddwnLauncher
                             {
                                 var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
                                     credentials.Password,
-                                    ActiveClientProfile);
+                                    ActiveClientProfile, true);
 
                                 if (success.Success)
                                 {
@@ -1525,7 +1534,6 @@ namespace HyddwnLauncher
 
         private async Task UpdaterUpdate()
         {
-            var shouldUpdate = false;
             var fileExists = true;
             var updaterPath = Path.Combine(Assemblypath, "Updater.exe");
             if (File.Exists(updaterPath))
