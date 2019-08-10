@@ -206,6 +206,38 @@
                 </StackPanel>
             </Grid>
         </simpleChildWindow:ChildWindow>
+        <simpleChildWindow:ChildWindow x:Name="NxAuthenticator"
+                                       IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
+                                       ChildWindowWidth="300" ChildWindowHeight="275" CloseByEscape="False">
+            <Grid>
+                <StackPanel Margin="0 10 0 0">
+                    <TextBlock Text="Enter Security Code" HorizontalAlignment="Center" FontSize="30" />
+                    <CheckBox x:Name="NxAuthenticatorRememberMe" Content="{x:Static p:Resources.RememberThisDevice}" Margin="75 5 75 2" />
+                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="12,5">
+                        <Run Text="Please enter the code found in Authenticator app." />
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
+                    <TextBox x:Name="NxAuthenticatorCode" controls:TextBoxHelper.UseFloatingWatermark="True"
+                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Code" />
+                    <TextBlock x:Name="NxAuthenticatorNotice" VerticalAlignment="Center" Visibility="Collapsed"
+                               TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
+                </StackPanel>
+                <StackPanel VerticalAlignment="Bottom" Margin="15 0 15 10">
+                    <wpf:LoadingIndicator HorizontalAlignment="Center" Margin="0,0,0,5" IsTabStop="False"
+                                          x:Name="NxAuthenticatorLoadingIndicator"
+                                          Style="{StaticResource LoadingIndicatorArcsStyle}" IsActive="False" />
+                    <DockPanel VerticalAlignment="Bottom">
+                        <Button x:Name="NxAuthenticatorContinue" DockPanel.Dock="Left" IsDefault="True" Width="100"
+                                HorizontalAlignment="Left" VerticalAlignment="Center" Content="{x:Static p:Resources.Continue}"
+                                Click="NxAuthenticatorOnContinue" />
+                        <Button x:Name="NxAuthenticatorCancel" DockPanel.Dock="Right" IsCancel="True" Width="100"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Content="{x:Static p:Resources.Cancel}"
+                                Click="NxAuthenticatorOnCancel" />
+                    </DockPanel>
+                </StackPanel>
+            </Grid>
+        </simpleChildWindow:ChildWindow>
         <simpleChildWindow:ChildWindow x:Name="NoticeWindow"
                                        HorizontalContentAlignment="Center"
                                        VerticalContentAlignment="Center" Title=""

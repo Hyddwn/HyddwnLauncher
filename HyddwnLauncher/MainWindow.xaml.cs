@@ -245,6 +245,8 @@ namespace HyddwnLauncher
         public event Action LoginCancel;
         public event Action DeviceTrustSuccess;
         public event Action DeviceTrustCancel;
+        public event Action AuthenticatorSuccess;
+        public event Action AuthenticatorCancel;
 
         #endregion
 
@@ -346,9 +348,16 @@ namespace HyddwnLauncher
 
                                 LoginSuccess += LaunchOfficial;
 
-                                if (success.Code == NexonApi.TrustedDeviceRequired)
+                                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                                 {
                                     NxDeviceTrust.IsOpen = true;
+                                    UsingCredentials = true;
+                                    return;
+                                }
+
+                                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
+                                {
+                                    NxAuthenticator.IsOpen = true;
                                     UsingCredentials = true;
                                     return;
                                 }
@@ -617,24 +626,36 @@ namespace HyddwnLauncher
             if (!success.Success)
             {
                 // TODO: Release+: Add proper support for detection of response codes
-                if (success.Code != NexonApi.TrustedDeviceRequired)
+                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                 {
-                    ToggleLoginControls();
+                    NxAuthLogin.IsOpen = false;
 
-                    NxAuthLoginNotice.Text = success.Message;
-                    NxAuthLoginNotice.Visibility = Visibility.Visible;
+                    NxAuthLoginPassword.Password = password;
+                    NxAuthLoginPassword.IsEnabled = false;
 
-                    NxAuthLoginPassword.Focus();
+                    NxDeviceTrust.IsOpen = true;
+
                     return;
                 }
 
-                NxAuthLogin.IsOpen = false;
+                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
+                {
+                    NxAuthLogin.IsOpen = false;
 
-                NxAuthLoginPassword.Password = password;
-                NxAuthLoginPassword.IsEnabled = false;
+                    NxAuthLoginPassword.Password = password;
+                    NxAuthLoginPassword.IsEnabled = false;
 
-                NxDeviceTrust.IsOpen = true;
+                    NxAuthenticator.IsOpen = true;
 
+                    return;
+                }
+
+                ToggleLoginControls();
+
+                NxAuthLoginNotice.Text = success.Message;
+                NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginPassword.Focus();
                 return;
             }
 
@@ -741,6 +762,97 @@ namespace HyddwnLauncher
             NxDeviceTrust.IsOpen = false;
 
             OnDeviceTrustCancel();
+            OnLoginCancel();
+
+            NxAuthLoginPassword.Password = "";
+            NxAuthLoginPassword.IsEnabled = true;
+        }
+
+        private async void NxAuthenticatorOnContinue(object sender, RoutedEventArgs e)
+        {
+            if (NxAuthenticatorNotice.Visibility == Visibility.Visible)
+            {
+                NxAuthenticatorNotice.Visibility = Visibility.Collapsed;
+                NxAuthenticatorNotice.Text = "";
+            }
+
+            ToggleAuthenticatorControls();
+
+            if (string.IsNullOrWhiteSpace(NxAuthenticatorCode.Text))
+            {
+                ToggleAuthenticatorControls();
+
+                NxAuthenticatorNotice.Text = Properties.Resources.VerificationCodeEmpty;
+                NxAuthenticatorNotice.Visibility = Visibility.Visible;
+
+                NxAuthenticatorCode.Focus();
+                return;
+            }
+
+            var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+
+            var username = UsingCredentials ? credentials.Username : NxAuthLoginUsername.Text;
+            var verification = NxAuthenticatorCode.Text;
+            var saveDevice = NxAuthenticatorRememberMe.IsChecked != null && (bool)NxAuthenticatorRememberMe.IsChecked;
+
+            var success =
+                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice);
+
+            if (!success)
+            {
+                ToggleAuthenticatorControls();
+
+                NxAuthenticatorNotice.Text = "Invalid authentication code.";
+                NxAuthenticatorNotice.Visibility = Visibility.Visible;
+
+                NxAuthenticatorCode.Focus();
+                return;
+            }
+
+            var loginSuccess = new GetAccessTokenResponse();
+
+            if (UsingCredentials)
+            {
+                if (credentials != null)
+                    loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username, credentials.Password,
+                        ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
+            }
+            else
+            {
+                loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, NxAuthLoginPassword.Password,
+                    ActiveClientProfile, false, Settings.LauncherSettings.EnableDeviceIdTagging);
+            }
+
+            if (!loginSuccess.Success)
+            {
+                NxAuthenticator.IsOpen = false;
+
+                NxAuthLoginNotice.Text = loginSuccess.Message;
+                NxAuthLoginNotice.Visibility = Visibility.Visible;
+
+                NxAuthLoginPassword.Focus();
+
+                NxAuthLogin.IsOpen = true;
+                return;
+            }
+
+            NxAuthenticatorNotice.Visibility = Visibility.Collapsed;
+            NxAuthenticatorNotice.Text = "";
+
+            NxAuthLoginPassword.Password = "";
+            NxAuthLoginPassword.IsEnabled = true;
+
+            NxAuthenticator.IsOpen = false;
+
+            OnAuthenticatorSuccess();
+            OnLoginSuccess();
+        }
+
+        private void NxAuthenticatorOnCancel(object sender, RoutedEventArgs e)
+        {
+            NxAuthenticator.IsOpen = false;
+
+            OnAuthenticatorCancel();
             OnLoginCancel();
 
             NxAuthLoginPassword.Password = "";
@@ -1083,9 +1195,16 @@ namespace HyddwnLauncher
                     LoginSuccess += successAction;
                     LoginCancel += cancelAction;
 
-                    if (success.Code == NexonApi.TrustedDeviceRequired)
+                    if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                     {
                         NxDeviceTrust.IsOpen = true;
+                        UsingCredentials = true;
+                        return;
+                    }
+
+                    if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
+                    {
+                        NxAuthenticator.IsOpen = true;
                         UsingCredentials = true;
                         return;
                     }
@@ -1204,9 +1323,16 @@ namespace HyddwnLauncher
                                 LoginSuccess += successAction;
                                 LoginCancel += cancelAction;
 
-                                if (success.Code == NexonApi.TrustedDeviceRequired)
+                                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                                 {
                                     NxDeviceTrust.IsOpen = true;
+                                    UsingCredentials = true;
+                                    return;
+                                }
+
+                                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
+                                {
+                                    NxAuthenticator.IsOpen = true;
                                     UsingCredentials = true;
                                     return;
                                 }
@@ -1450,6 +1576,20 @@ namespace HyddwnLauncher
             foreach (var d in DeviceTrustCancel.GetInvocationList()) DeviceTrustCancel -= d as Action;
         }
 
+        public void OnAuthenticatorSuccess()
+        {
+            AuthenticatorSuccess?.Raise();
+            if (AuthenticatorSuccess == null) return;
+            foreach (var d in AuthenticatorSuccess.GetInvocationList()) AuthenticatorSuccess -= d as Action;
+        }
+
+        public void OnAuthenticatorCancel()
+        {
+            AuthenticatorCancel?.Raise();
+            if (AuthenticatorCancel == null) return;
+            foreach (var d in AuthenticatorCancel.GetInvocationList()) AuthenticatorCancel -= d as Action;
+        }
+
         private void PluginMainUpdator(string leftText, string rightText, double value, bool isIntermediate,
             bool isVisible)
         {
@@ -1516,6 +1656,16 @@ namespace HyddwnLauncher
             NxDeviceTrustCancel.IsEnabled = !NxDeviceTrustCancel.IsEnabled;
 
             NxDeviceTrustLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
+        }
+
+        private void ToggleAuthenticatorControls()
+        {
+            NxAuthenticatorCode.IsEnabled = !NxAuthenticatorCode.IsEnabled;
+            NxAuthenticatorRememberMe.IsEnabled = !NxAuthenticatorRememberMe.IsEnabled;
+            NxAuthenticatorContinue.IsEnabled = !NxAuthenticatorContinue.IsEnabled;
+            NxAuthenticatorCancel.IsEnabled = !NxAuthenticatorCancel.IsEnabled;
+
+            NxAuthenticatorLoadingIndicator.IsActive = !NxAuthenticatorLoadingIndicator.IsActive;
         }
 
         private async void UpdateAvailableLinkClick(object sender, RoutedEventArgs e)

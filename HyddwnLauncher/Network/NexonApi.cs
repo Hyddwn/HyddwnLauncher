@@ -28,12 +28,6 @@ namespace HyddwnLauncher.Network
         private static readonly string BodyClientId = "7853644408";
         private static readonly string BodyScope = "us.launcher.all";
 
-        public static readonly string LoginFailed = "LOGINFAILED";
-        public static readonly string DevError = "DEVERROR_HEHEHE";
-        public static readonly string TrustedDeviceRequired = "TRUST_DEVICE_REQUIRED";
-        public static readonly string UserDoesNotExist = "NOT_EXIST_USER";
-        public static readonly string InvalidParameter = "INVALID_PARAMETER";
-
         public static readonly NexonApi Instance = new NexonApi();
 
         //Tokens
@@ -136,7 +130,7 @@ namespace HyddwnLauncher.Network
         public bool IsAccessTokenValid(string guid)
         {
             return _accessToken != null && !_accessTokenIsExpired &&
-                   (_accessToken != LoginFailed || _accessToken != DevError) && guid == _lastAuthenticationProfileGuid;
+                   (_accessToken != NexonErrorCode.LoginFailed || _accessToken != NexonErrorCode.DevError) && guid == _lastAuthenticationProfileGuid;
         }
 
         public async Task<string> GetNxAuthHash()
@@ -160,7 +154,7 @@ namespace HyddwnLauncher.Network
             var response = await request.ExecutePost<CheckPlayableV2Response>();
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
-                return DevError;
+                return NexonErrorCode.DevError;
 
             _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, false);
 
@@ -176,7 +170,7 @@ namespace HyddwnLauncher.Network
             var response2 = await request.ExecutePost<GetPassportV1Response>();
 
             if (response2.StatusCode == HttpStatusCode.BadRequest)
-                return DevError;
+                return NexonErrorCode.DevError;
 
             var obj = await response2.GetDataObject();
 
@@ -370,9 +364,9 @@ namespace HyddwnLauncher.Network
                 Log.Info("Login Error: {0} Message: {1}", rsp.Code, rsp.Message);
                 rsp.Success = false;
 
-                if (rsp.Code == UserDoesNotExist)
+                if (rsp.Code == NexonErrorCode.UserDoesNotExist)
                     rsp.Message = "Username does not exist!";
-                if (rsp.Code == InvalidParameter && rsp.Message.Contains("error.email"))
+                if (rsp.Code == NexonErrorCode.InvalidParameter && rsp.Message.Contains("error.email"))
                     rsp.Message = "Malformed email!";
 
                 return rsp;
