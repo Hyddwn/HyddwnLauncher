@@ -25,6 +25,7 @@ namespace HyddwnLauncher.Network
     {
         private static readonly SHA512Managed Sha512 = new SHA512Managed();
         private static readonly SHA256Managed Sha256 = new SHA256Managed();
+        private static readonly Random Random = new Random();
         private static readonly string BodyClientId = "7853644408";
         private static readonly string BodyScope = "us.launcher.all";
 
@@ -520,7 +521,7 @@ namespace HyddwnLauncher.Network
             return deviceId;
         }
 
-        private static readonly Random Rnd = new Random();
+        
         internal static string CreateString(int stringLength)
         {
             const string allowedChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789_-";
@@ -528,7 +529,7 @@ namespace HyddwnLauncher.Network
 
             for (var i = 0; i < stringLength; i++)
             {
-                chars[i] = allowedChars[Rnd.Next(0, allowedChars.Length)];
+                chars[i] = allowedChars[Random.Next(0, allowedChars.Length)];
             }
 
             return new string(chars);
