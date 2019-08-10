@@ -34,6 +34,7 @@ namespace HyddwnLauncher.Network
         private string _accessToken;
         private string _idToken;
         private string _recaptchaToken;
+        private string _lastLoginUsername;
 
         //Token Expiry Timer
         private int _accessTokenExpiration;
