@@ -405,12 +405,8 @@ namespace HyddwnLauncher
                         MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
                         MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
-                        MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingPassport);
-                        var passport = await NexonApi.Instance.GetNxAuthHash();
-
                         MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
                         var launchArgs = await Patcher.GetLauncherArguments();
-                        launchArgs = launchArgs.Replace("${passport}", passport);
 
                         try
                         {
