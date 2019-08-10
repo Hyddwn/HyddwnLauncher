@@ -22,25 +22,25 @@ namespace HyddwnLauncher.Extensibility
         /// </summary>
         public const string JapanHangame = "Japan Hangame";
 
-        /// <summary>
-        ///     Represents the Korean version of the game
-        /// </summary>
-        public const string Korea = "Korea";
+        ///// <summary>
+        /////     Represents the Korean version of the game
+        ///// </summary>
+        //public const string Korea = "Korea";
 
-        /// <summary>
-        ///     Represents the Korean Test version of the game
-        /// </summary>
-        public const string KoreaTest = "Korea Test";
+        ///// <summary>
+        /////     Represents the Korean Test version of the game
+        ///// </summary>
+        //public const string KoreaTest = "Korea Test";
 
         /// <summary>
         ///     Represents the North American version of the game
         /// </summary>
         public const string NorthAmerica = "North America";
 
-        /// <summary>
-        ///     Represents the Taiwanese version of the game
-        /// </summary>
-        public const string Taiwan = "Taiwan";
+        ///// <summary>
+        /////     Represents the Taiwanese version of the game
+        ///// </summary>
+        //public const string Taiwan = "Taiwan";
 
         /// <summary>
         ///     Attempts to retrieve the ClientLocalization field name for the given value

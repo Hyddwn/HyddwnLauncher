@@ -3,6 +3,7 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:p="clr-namespace:HyddwnLauncher.Properties"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
                       xmlns:wpf="clr-namespace:ImaBrokeDude.Controls.WPF;assembly=ImaBrokeDude.Controls"
@@ -16,7 +17,7 @@
                       NonActiveGlowBrush="Red"
                       Icon="Icon_Internal_a.ico"
                       Closed="OnClose"
-                      x:Name="This" Title="Hyddwn Launcher" Height="480" Width="830">
+                      x:Name="This" Title="Hyddwn Launcher" Height="470" Width="830">
     <!--DISABLED EVENTS  KeyDown="This_KeyDown" KeyUp="This_KeyUp" DISABLED EVENTS-->
     <FrameworkElement.Style>
         <Style TargetType="{x:Type controls:MetroWindow}">
@@ -44,13 +45,13 @@
             <DataTemplate x:Key="AppThemeComboBoxItem" DataType="{x:Type util:AppThemeMenuData}">
                 <StackPanel Orientation="Horizontal">
                     <ContentPresenter Height="16" Width="16" Margin="4" Content="{StaticResource AppThemeMenuIcon}" />
-                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 5 0" Text="{Binding Name}" />
+                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 5 0" Text="{Binding TranslatedName}" />
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="AccentComboBoxItem" DataType="{x:Type util:AccentColorMenuData}">
                 <StackPanel Orientation="Horizontal">
                     <ContentPresenter Height="16" Width="16" Margin="4" Content="{StaticResource AccentMenuIcon}" />
-                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 5 0" Text="{Binding Name}" />
+                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 5 0" Text="{Binding TranslatedName}" />
                 </StackPanel>
             </DataTemplate>
         </ResourceDictionary>
@@ -58,10 +59,10 @@
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ProfileEditor"
                                        TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
-                                       Title="Profile Editor" IsOpenChanged="ProfileEditorIsOpenChanged"
+                                       Title="{x:Static p:Resources.ProfileEditor}" IsOpenChanged="ProfileEditorIsOpenChanged"
                                        IsModal="true" ShowTitleBar="true" ShowCloseButton="true"
-                                       ClosingFinished="ProfileEditorOnProfileCLosingFinished" ChildWindowWidth="560"
-                                       ChildWindowHeight="440">
+                                       ClosingFinished="ProfileEditorOnProfileCLosingFinished" ChildWindowWidth="520"
+                                       ChildWindowHeight="420">
             <simpleChildWindow:ChildWindow.Resources>
                 <DataTemplate x:Key="ClientProfileDataTemplate" DataType="core:ClientProfile">
                     <Grid>
@@ -77,26 +78,26 @@
                 </DataTemplate>
             </simpleChildWindow:ChildWindow.Resources>
             <controls:MetroAnimatedSingleRowTabControl>
-                <TabItem Header="Clients">
+                <TabItem Header="{x:Static p:Resources.Clients}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="3*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="37" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
-                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddClientProfileButtonCLick" />
-                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveClientProfileButtonCLick" />
+                            <Button Margin="5" Content="{x:Static p:Resources.Add}" Click="ProfileEditorOnAddClientProfileButtonCLick" />
+                            <Button Margin="5" Content="{x:Static p:Resources.Remove}" Click="ProfileEditorOnRemoveClientProfileButtonCLick" />
                         </StackPanel>
                         <ListBox x:Name="ClientProfileListBox" Grid.Row="1" Grid.Column="0"
                                  ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
                                  ItemTemplate="{DynamicResource ClientProfileDataTemplate}"
-                                 SelectionChanged="ProfileEditorOnClientFrofileListBoxSelectionChanged" />
+                                 SelectionChanged="ProfileEditorOnClientProfileListBoxSelectionChanged" />
                         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
-                            <ScrollViewer>
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <controls1:NewClientProfileUserControl x:Name="ClientProfileUserControl"
                                                                        VerticalAlignment="Top"
                                                                        ClientProfile="{Binding ElementName=ClientProfileListBox, Path=SelectedItem}" />
@@ -104,7 +105,7 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Servers">
+                <TabItem Header="{x:Static p:Resources.Servers}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -115,13 +116,13 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
-                            <Button Margin="5" Content="Add" Click="ProfileEditorOnAddServerProfileButtonCLick" />
-                            <Button Margin="5" Content="Remove" Click="ProfileEditorOnRemoveServerProfileButtonCLick" />
+                            <Button Margin="5" Content="{x:Static p:Resources.Add}" Click="ProfileEditorOnAddServerProfileButtonCLick" />
+                            <Button Margin="5" Content="{x:Static p:Resources.Remove}" Click="ProfileEditorOnRemoveServerProfileButtonCLick" />
                         </StackPanel>
                         <ListBox x:Name="ServerProfileListBox" Grid.Row="1" Grid.Column="0"
                                  ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
                                  ItemTemplate="{DynamicResource ServerProfileDataTemplate}"
-                                 SelectionChanged="ProfileEditorOnServerFrofileListBoxSelectionChanged" />
+                                 SelectionChanged="ProfileEditorOnServerProfileListBoxSelectionChanged" />
                         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                             <ScrollViewer>
                                 <controls1:NewServerProfileUserControl x:Name="ServerProfileUserControl"
@@ -138,21 +139,21 @@
                                        ChildWindowWidth="350" ChildWindowHeight="350" CloseByEscape="False">
             <Grid>
                 <StackPanel Margin="0 10 0 0">
-                    <TextBlock Text="Nexon Passport" HorizontalAlignment="Center" FontSize="36" />
+                    <TextBlock Text="{x:Static p:Resources.NexonPassport}" HorizontalAlignment="Center" FontSize="36" />
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
                         <Run
-                            Text="Please log in using your Nexon Username and Password. All Information used is immediately discarded for your protection." />
+                            Text="{x:Static p:Resources.NexonPassportMessage1}" />
                         <LineBreak /><Run />
                         <Run FontWeight="Bold"
-                             Text="Do not enter your username or password into closed sourced launchers without verifying they are safe to use." />
+                             Text="{x:Static p:Resources.NexonPassportMessage2}" />
                     </TextBlock>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
                     <TextBox x:Name="NxAuthLoginUsername" controls:TextBoxHelper.UseFloatingWatermark="True"
-                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Username" />
+                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="{x:Static p:Resources.Username}" />
                     <PasswordBox x:Name="NxAuthLoginPassword" controls:TextBoxHelper.UseFloatingWatermark="True"
-                                 Margin="0 5 0 2" controls:TextBoxHelper.Watermark="Password" />
-                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember Login Details" Margin="0 5 0 2" />
+                                 Margin="0 5 0 2" controls:TextBoxHelper.Watermark="{x:Static p:Resources.Password}" />
+                    <CheckBox x:Name="RememberMeCheckBox" Content="{x:Static p:Resources.RememberLoginDetails}" Margin="0 5 0 2" />
                     <TextBlock x:Name="NxAuthLoginNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>
@@ -162,10 +163,10 @@
                                           Style="{StaticResource LoadingIndicatorArcsStyle}" IsActive="False" />
                     <DockPanel VerticalAlignment="Bottom">
                         <Button DockPanel.Dock="Left" IsDefault="True" x:Name="NxAuthLoginSubmit" Width="100"
-                                HorizontalAlignment="Left" VerticalAlignment="Center" Content="Login"
+                                HorizontalAlignment="Left" VerticalAlignment="Center" Content="{x:Static p:Resources.Login}"
                                 Click="NxAuthLoginOnSubmit" />
                         <Button DockPanel.Dock="Right" IsCancel="True" x:Name="NxAuthLoginCancel" Width="100"
-                                HorizontalAlignment="Right" VerticalAlignment="Center" Content="Cancel"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Content="{x:Static p:Resources.Cancel}"
                                 Click="NxAuthLoginOnCancel" />
                     </DockPanel>
                 </StackPanel>
@@ -176,17 +177,17 @@
                                        ChildWindowWidth="350" ChildWindowHeight="275" CloseByEscape="False">
             <Grid>
                 <StackPanel Margin="0 10 0 0">
-                    <TextBlock Text="Trusted Device Required" HorizontalAlignment="Center" FontSize="30" />
+                    <TextBlock Text="{x:Static p:Resources.TrustedDeviceRequired}" HorizontalAlignment="Center" FontSize="30" />
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
                         <Run
-                            Text="Please check your email, you should have received an email with a verification code. You will need to enter it below to continue." />
+                            Text="{x:Static p:Resources.TrustedDeviceRequiredMessage1}" />
                         <Run />
                     </TextBlock>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
                     <TextBox x:Name="NxDeviceTrustVerificationCode" controls:TextBoxHelper.UseFloatingWatermark="True"
-                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Verification Code" />
-                    <CheckBox x:Name="NxDeviceTrustRememberMe" Content="Remember This Device" Margin="75 5 75 2" />
+                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="{x:Static p:Resources.VerificationCode}" />
+                    <CheckBox x:Name="NxDeviceTrustRememberMe" Content="{x:Static p:Resources.RememberThisDevice}" Margin="75 5 75 2" />
                     <TextBlock x:Name="NxDeviceTrustNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>
@@ -196,11 +197,43 @@
                                           Style="{StaticResource LoadingIndicatorArcsStyle}" IsActive="False" />
                     <DockPanel VerticalAlignment="Bottom">
                         <Button x:Name="NxDeviceTrustContinue" DockPanel.Dock="Left" IsDefault="True" Width="100"
-                                HorizontalAlignment="Left" VerticalAlignment="Center" Content="Continue"
+                                HorizontalAlignment="Left" VerticalAlignment="Center" Content="{x:Static p:Resources.Continue}"
                                 Click="NxDeviceTrustOnContinue" />
                         <Button x:Name="NxDeviceTrustCancel" DockPanel.Dock="Right" IsCancel="True" Width="100"
-                                HorizontalAlignment="Right" VerticalAlignment="Center" Content="Cancel"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Content="{x:Static p:Resources.Cancel}"
                                 Click="NxDeviceTrustOnCancel" />
+                    </DockPanel>
+                </StackPanel>
+            </Grid>
+        </simpleChildWindow:ChildWindow>
+        <simpleChildWindow:ChildWindow x:Name="NxAuthenticator"
+                                       IsModal="True" ShowTitleBar="False" ShowCloseButton="False"
+                                       ChildWindowWidth="300" ChildWindowHeight="275" CloseByEscape="False">
+            <Grid>
+                <StackPanel Margin="0 10 0 0">
+                    <TextBlock Text="Enter Security Code" HorizontalAlignment="Center" FontSize="30" />
+                    <CheckBox x:Name="NxAuthenticatorRememberMe" Content="{x:Static p:Resources.RememberThisDevice}" Margin="75 5 75 2" />
+                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="12,5">
+                        <Run Text="Please enter the code found in Authenticator app." />
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
+                    <TextBox x:Name="NxAuthenticatorCode" controls:TextBoxHelper.UseFloatingWatermark="True"
+                             Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Code" />
+                    <TextBlock x:Name="NxAuthenticatorNotice" VerticalAlignment="Center" Visibility="Collapsed"
+                               TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
+                </StackPanel>
+                <StackPanel VerticalAlignment="Bottom" Margin="15 0 15 10">
+                    <wpf:LoadingIndicator HorizontalAlignment="Center" Margin="0,0,0,5" IsTabStop="False"
+                                          x:Name="NxAuthenticatorLoadingIndicator"
+                                          Style="{StaticResource LoadingIndicatorArcsStyle}" IsActive="False" />
+                    <DockPanel VerticalAlignment="Bottom">
+                        <Button x:Name="NxAuthenticatorContinue" DockPanel.Dock="Left" IsDefault="True" Width="100"
+                                HorizontalAlignment="Left" VerticalAlignment="Center" Content="{x:Static p:Resources.Continue}"
+                                Click="NxAuthenticatorOnContinue" />
+                        <Button x:Name="NxAuthenticatorCancel" DockPanel.Dock="Right" IsCancel="True" Width="100"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Content="{x:Static p:Resources.Cancel}"
+                                Click="NxAuthenticatorOnCancel" />
                     </DockPanel>
                 </StackPanel>
             </Grid>
@@ -226,20 +259,20 @@
                                        ShowTitleBar="false"
                                        ShowCloseButton="false" ChildWindowWidth="300" ChildWindowHeight="80">
             <Grid>
-                <TextBlock x:Name="ImporterTextBlock" Text="Special Thanks to Carsey" FontWeight="Bold" FontSize="16"
+                <TextBlock x:Name="ImporterTextBlock" Text="Special Thanks to cursey" FontWeight="Bold" FontSize="16"
                            VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" />
             </Grid>
         </simpleChildWindow:ChildWindow>
         <controls:MetroAnimatedSingleRowTabControl Name="MainTabControl"
                                                    TabStripPlacement="Bottom"
                                                    Margin="0,0,0,130">
-            <controls:MetroTabItem Header="News">
+            <controls:MetroTabItem Header="{x:Static p:Resources.NewsTab}">
                 <Grid>
                     <Image x:Name="HostImage" Source="{Binding ElementName=This, Path=LauncherContext.HostImage}"
                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                 </Grid>
             </controls:MetroTabItem>
-            <controls:MetroTabItem Header="Log">
+            <controls:MetroTabItem Header="{x:Static p:Resources.LogTab}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -249,22 +282,22 @@
                              IsReadOnly="True" IsReadOnlyCaretVisible="False" x:Name="LogView"
                              VerticalScrollBarVisibility="Auto" TextChanged="LogViewOnTextChanged" Grid.ColumnSpan="3" />
                     <StackPanel Orientation="Horizontal" Grid.Row="1">
-                        <Button HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" Height="28" Content="Open Log File" Width="83" Click="OpenLogFileOnClick"></Button>
-                        <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"><Run FontWeight="Bold">LogFile Location:</Run></TextBlock>
+                        <Button HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" Height="28" Content="{x:Static p:Resources.OpenLogFile}" Width="83" Click="OpenLogFileOnClick" ToolTip="Open the log file for viewing."></Button>
+                        <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"><Run FontWeight="Bold" Text="{x:Static p:Resources.LogFileLocation}"/></TextBlock>
                         <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" Text="{Binding ElementName=This, Path=LauncherContext.LogFileLocationTruncated}"/>
                     </StackPanel>
                 </Grid>
             </controls:MetroTabItem>
-            <controls:MetroTabItem Header="Options">
+            <controls:MetroTabItem Header="{x:Static p:Resources.OptionsTab}">
                 <Grid>
                     <ScrollViewer>
                         <StackPanel x:Name="OptionStackPanel" Margin="10">
-                            <TextBlock Margin="5" Text="Options" FontWeight="Bold" FontSize="16" />
+                            <TextBlock Margin="5" Text="{x:Static p:Resources.OptionsTab}" FontWeight="Bold" FontSize="16" />
                             <StackPanel Margin="5">
-                                <TextBlock Margin="5" Text="Theme Options" FontWeight="Bold" />
+                                <TextBlock Margin="5" Text="{x:Static p:Resources.ThemeOptions}" FontWeight="Bold" />
                                 <StackPanel Margin="5">
                                     <StackPanel Margin="5 2.5">
-                                        <TextBlock Margin="5" Text="Theme base color" />
+                                        <TextBlock Margin="5" Text="{x:Static p:Resources.ThemeBaseColor}" />
                                         <ComboBox SelectedValuePath="Name"
                                                   SelectedValue="{Binding ElementName=This, Path=Settings.LauncherSettings.Theme}"
                                                   ItemTemplate="{DynamicResource AppThemeComboBoxItem}"
@@ -272,7 +305,7 @@
                                                   SelectionChanged="ComboBox_SelectionChanged" />
                                     </StackPanel>
                                     <StackPanel Margin="5 2.5">
-                                        <TextBlock Margin="5" Text="Theme accent color" />
+                                        <TextBlock Margin="5" Text="{x:Static p:Resources.ThemeAccentColor}" />
                                         <ComboBox SelectedValuePath="Name"
                                                   SelectedValue="{Binding ElementName=This, Path=Settings.LauncherSettings.Accent}"
                                                   ItemTemplate="{DynamicResource AccentComboBoxItem}"
@@ -280,41 +313,57 @@
                                                   SelectionChanged="ComboBox_SelectionChanged" />
                                     </StackPanel>
                                 </StackPanel>
-                                <TextBlock Margin="5" Text="Profile Options" FontWeight="Bold" />
+                                <TextBlock Margin="5" Text="{x:Static p:Resources.ProfileOptions}" FontWeight="Bold" />
                                 <StackPanel Margin="5">
                                     <StackPanel Margin="5 2.5">
                                         <CheckBox Margin="5 2.5"
-                                                  Content="Warn if the directory of the active Client Profile does not appear to be the root folder for Mabinogi."
+                                                  Content="{x:Static p:Resources.WarnIfDirectory}"
                                                   IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.WarnIfRootIsNotMabiRoot}" />
                                     </StackPanel>
                                 </StackPanel>
-                                <TextBlock Margin="5" Text="Reset Options" FontWeight="Bold" />
+                                <TextBlock Margin="5" Text="{x:Static p:Resources.ResetOptions}" FontWeight="Bold" />
                                 <StackPanel Margin="5 2.5">
-                                    <CheckBox x:Name="ResetCredentialsCheckBox" Content="Reset Credential Storage"
+                                    <CheckBox x:Name="ResetCredentialsCheckBox" Content="{x:Static p:Resources.ResetCredentialStorage}"
                                               Margin="0 1" />
-                                    <CheckBox x:Name="ResetClietProfilesCheckBox" Content="Reset Client Profiles"
+                                    <CheckBox x:Name="ResetClientProfilesCheckBox" Content="{x:Static p:Resources.ResetClientProfiles}"
                                               Margin="0 1" />
-                                    <CheckBox x:Name="ResetServerProfilesCheckBox" Content="Reset Server Profiles"
+                                    <CheckBox x:Name="ResetServerProfilesCheckBox" Content="{x:Static p:Resources.ResetServerProfiles}"
                                               Margin="0 1" />
                                     <CheckBox x:Name="ResetLauncherConfigurationCheckBox"
-                                              Content="Reset Launcher Configuration" Margin="0 1" />
+                                              Content="{x:Static p:Resources.ResetLauncherConfiguration}" Margin="0 1" />
                                     <StackPanel Orientation="Horizontal" Margin="0 2.5">
-                                        <Button Content="Reset" Click="ResetOptionsResetBottonOnClick" />
+                                        <Button Content="{x:Static p:Resources.Reset}" Click="ResetOptionsResetBottonOnClick" />
                                     </StackPanel>
                                 </StackPanel>
-                                <TextBlock Margin="5 2.5" Text="Advanced Options" FontWeight="Bold" />
+                                <TextBlock Margin="5 2.5" Text="{x:Static p:Resources.AdvancedOptions}" FontWeight="Bold" />
                                 <StackPanel Margin="5 2.5">
-                                    <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                    <StackPanel Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5">
-                                            <CheckBox Content="Close Launcher After Launching (DO NOT DISABLE)" IsEnabled="False"
+                                            <CheckBox Content="Disable Launcher Update Check"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.DisableLauncherUpdateCheck}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="Enable patching system"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.AllowPatching}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="{x:Static p:Resources.CloseLauncherAfterLaunching}"
                                                       IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.CloseAfterLaunching}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="Enable Device ID Tagging (Affects ALL Logins)"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.EnableDeviceIdTagging}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="Enable Captcha Bypass (Web) [Requires Admin]"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.EnableCaptchaBypass}"/>
                                         </StackPanel>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5">
                                             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
-                                                       Text="Delete Custom Server Pack Files" />
-                                            <Button Margin="4 0 0 0" Content="Delete" Click="Button_Click" />
+                                                       Text="{x:Static p:Resources.DeleteCustomServerPackFiles}" />
+                                            <Button Margin="4 0 0 0" Content="{x:Static p:Resources.Delete}" Click="Button_Click" />
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
@@ -323,7 +372,7 @@
                     </ScrollViewer>
                 </Grid>
             </controls:MetroTabItem>
-            <controls:MetroTabItem Header="About">
+            <controls:MetroTabItem Header="{x:Static p:Resources.AboutTab}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="180" />
@@ -336,11 +385,12 @@
                     <Image Source="Icon_Internal_a.ico" HorizontalAlignment="Left" VerticalAlignment="Top" />
                     <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="1">
                         <TextBlock FontWeight="Bold" TextAlignment="Center" Text="Hyddwn Launcher" />
-                        <TextBlock TextAlignment="Center"
-                                   Text="{Binding ElementName=LauncherVersion, Path=Text, StringFormat={}Version: {0}}" />
+                        <TextBlock TextAlignment="Center">
+                            <Run Text="{x:Static p:Resources.Version}" /><Run Text="{Binding ElementName=LauncherVersion, Path=Text}" />
+                        </TextBlock>
                         <TextBlock TextWrapping="Wrap" TextAlignment="Center">
-                            <Run Text="Author: Sven" /><LineBreak />
-                            <Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778">MabiMods Profile</Hyperlink>
+                            <Run Text="{x:Static p:Resources.Author}" /><Run Text=": Sven" /><LineBreak />
+                            <Hyperlink NavigateUri="https://mabimods.net/index.php?action=profile;u=24778"><Run Text="{x:Static p:Resources.MabiModsProfile}"/></Hyperlink>
                         </TextBlock>
                     </StackPanel>
                     <ScrollViewer Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
@@ -361,17 +411,28 @@
                             </GroupBox>
                             <TextBlock TextAlignment="Center" FontWeight="Bold" Text="Credits &amp; Thanks" />
                             <TextBlock>
-                                <Run FontWeight="Bold" Text="cursey" /><Run Text=" - NXAuth Login Method" />
+                                <Run FontWeight="Bold" Text="cursey" />
+                                <Run Text=" - NXAuth Login Method (NA)" />
                             </TextBlock>
                             <TextBlock>
                                 <Run FontWeight="Bold" Text="Xcelled194" />
                                 <Run Text=" - PowerPatcher (What the launcher was originally based on)" />
                             </TextBlock>
                             <TextBlock>
-                                <Run FontWeight="Bold" Text="Choko" /><Run Text=" - QA and Testing" />
+                                <Run FontWeight="Bold" Text="Rydian"/>
+                                <Run Text=" - Patching research release"/>
                             </TextBlock>
                             <TextBlock>
-                                <Run FontWeight="Bold" Text="ShaggyZE" /><Run Text=" - QA and Testing" />
+                                <Run FontWeight="Bold" Text="ShaggyZE" />
+                                <Run Text=" - QA and Testing" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="Choko" />
+                                <Run Text=" - QA and Testing" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Run FontWeight="Bold" Text="Chacha" />
+                                <Run Text=" - QA and Testing" />
                             </TextBlock>
                             <TextBlock>
                                 <Run FontWeight="Bold" Text="Playtime" />
@@ -384,10 +445,74 @@
                     </ScrollViewer>
                 </Grid>
             </controls:MetroTabItem>
+            <controls:MetroTabItem Header="{x:Static p:Resources.PatcherTab}">
+                <controls:MetroAnimatedSingleRowTabControl TabStripPlacement="Bottom" x:Name="PatcherTabControl">
+                    <controls:MetroTabItem Header="Settings">
+                        <Grid>
+                            <ScrollViewer>
+                                <StackPanel Margin="10">
+                                    <TextBlock Margin="5" Text="Settings" FontWeight="Bold" FontSize="16" />
+                                    <StackPanel Margin="5">
+                                        <TextBlock Margin="5 2.5" Text="Advanced Settings" FontWeight="Bold" />
+                                        <StackPanel Margin="5 2.5">
+                                            <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                    <CheckBox Content="Ignore Package Folder" VerticalAlignment="Center"
+                                                  ToolTip="Forces the patcher to skip updating files in the package folder."
+                                                  IsChecked="{Binding ElementName=This, Path=PatcherSettings.IgnorePackageFolder}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                    <CheckBox Content="Force Automatic Updates" VerticalAlignment="Center"
+                                                  ToolTip="Forces the patcher to always check for and apply patches, even when the game is up to date."
+                                                  IsChecked="{Binding ElementName=This, Path=PatcherSettings.ForceUpdateCheck}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <TextBlock Margin="5 2.5" Text="Advanced Operations" FontWeight="Bold" />
+                                        <StackPanel Margin="5 2.5">
+                                            <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                                                   Text="Check For Updates" />
+                                                    <Button IsEnabled="{Binding ElementName=This, Path=Settings.LauncherSettings.AllowPatching}" Margin="4 0 0 0" Content="Update" Click="CheckForClientUpdates" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="Repair Install"/>
+                                                    <Button IsEnabled="{Binding ElementName=This, Path=Settings.LauncherSettings.AllowPatching}"  Margin="4 0 0 0" Content="Repair" Click="AttemptClientRepair" />
+                                                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Margin="4 0 0 0"><Run FontWeight="Bold" Text="Note: Ignores the Ignore Package Folder Option"/></TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                                    <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                                                   Text="Redownload Launguage Pack" />
+                                                    <Button Margin="4 0 0 0" Content="Download Language Pack" IsEnabled="False" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </controls:MetroTabItem>
+                    <controls:MetroTabItem Header="Session"
+                                           Visibility="Collapsed"
+                                           x:Name="SessionTab">
+                        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <ItemsControl ItemsSource="{Binding Reporters, ElementName=This}" />
+                        </ScrollViewer>
+                    </controls:MetroTabItem>
+                </controls:MetroAnimatedSingleRowTabControl>
+            </controls:MetroTabItem>
         </controls:MetroAnimatedSingleRowTabControl>
-        <TextBlock Margin="704,423,11,17" TextWrapping="Wrap" Text="Copyright © Project Hyddwn" Width="111"
-                   FontSize="8" />
-        <Button Click="LaunchButton_Click" x:Name="LaunchButton" Content="Launch" HorizontalAlignment="Left"
+        <TextBlock Margin="704,423,0,0" VerticalAlignment="Top" TextWrapping="Wrap" FontSize="8">
+            <Run Text="{x:Static p:Resources.Copyright}"/><Run Text=" © Project Hyddwn"/>
+        </TextBlock>
+        <Button Click="LaunchButton_Click" x:Name="LaunchButton" Content="{x:Static p:Resources.Launch}" HorizontalAlignment="Left"
                 Margin="704,374,0,0" VerticalAlignment="Top" Width="112" Height="45" />
         <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="185,374,0,0"
                                      VerticalAlignment="Top" Width="514" Height="44" />
@@ -401,28 +526,54 @@
                   SelectedIndex="{Binding ElementName=This, Path=Settings.LauncherSettings.ServerProfileSelectedIndex}"
                   SelectionChanged="ServerProfileComboBoxOnSelectionChanged"
                   HorizontalAlignment="Left" Margin="13,374,0,0" VerticalAlignment="Top" Width="167" />
-        <TextBlock HorizontalAlignment="Left" Margin="464,419,0,0" TextWrapping="Wrap"
-                   Text="Launcher Version:" VerticalAlignment="Top" Width="102" />
-        <TextBlock HorizontalAlignment="Left" Height="16" Margin="333,419,0,0" TextWrapping="Wrap"
-                   Text="Client Version:" VerticalAlignment="Top" Width="82" />
-        <TextBlock x:Name="LauncherVersion" HorizontalAlignment="Left" Margin="566,419,0,0" TextWrapping="Wrap"
-                   Text="0" VerticalAlignment="Top" />
-        <TextBlock x:Name="ClientVersion" HorizontalAlignment="Left" Margin="415,419,0,0" TextWrapping="Wrap" Text="0"
-                   VerticalAlignment="Top" />
-        <Button x:Name="NewProfileButton" Content="Profiles" HorizontalAlignment="Left" Margin="185,331,0,0"
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top" Margin="276,420,0,0">
+            <TextBlock>
+                <Run Text="{x:Static p:Resources.ClientVersion}"/>
+                <Run Text=": "/>
+                <Run x:Name="ClientVersion" Text="0"/>
+            </TextBlock>
+            <TextBlock Margin="5 0 0 0">
+                <Run Text="{x:Static p:Resources.LauncherVersion}"/>
+                <Run Text=": "/>
+                <Run x:Name="LauncherVersion" Text="0"/>
+            </TextBlock>
+            <TextBlock Visibility="{Binding ElementName=This, Path=IsBeta, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5 0 0 0" FontWeight="ExtraBold">
+                <Run Text="BETA"/>
+                <Run x:Name="BetaVersion"/>
+            </TextBlock>
+        </StackPanel>
+        <!-- 
+            OLD CODE NOT TRANSLATION COMPLIANT
+        
+            <TextBlock HorizontalAlignment="Left" Margin="464,419,0,0" TextWrapping="Wrap"
+                       Text="{x:Static p:Resources.LauncherVersion}" VerticalAlignment="Top" Width="102" />
+            <TextBlock x:Name="ClientVersion" HorizontalAlignment="Left" Margin="415,419,0,0" TextWrapping="Wrap" Text="0"
+                       VerticalAlignment="Top" />
+            <TextBlock HorizontalAlignment="Left" Height="16" Margin="333,419,0,0" TextWrapping="Wrap"
+                       Text="{x:Static p:Resources.ClientVersion}" VerticalAlignment="Top" Width="82" />
+            <TextBlock x:Name="LauncherVersion" HorizontalAlignment="Left" Margin="566,419,0,0" TextWrapping="Wrap"
+                       Text="0" VerticalAlignment="Top" />
+        -->
+        <Button x:Name="NewProfileButton" Content="{x:Static p:Resources.ProfileSettings}" HorizontalAlignment="Left" Margin="185,331,0,0"
                 VerticalAlignment="Top" Width="100" Click="ProfilesButton_Click" Height="26" />
         <TextBlock HorizontalAlignment="Left" Margin="13,316,0,0" TextWrapping="Wrap" VerticalAlignment="Top"
-                   Text="Client Profile" />
-        <TextBlock HorizontalAlignment="Left" Margin="13,359,0,0" TextWrapping="Wrap" Text="Server Profile"
+                   Text="{x:Static p:Resources.ClientProfile}" />
+        <TextBlock HorizontalAlignment="Left" Margin="13,359,0,0" TextWrapping="Wrap" Text="{x:Static p:Resources.ServerProfile}"
                    VerticalAlignment="Top" />
-        <CheckBox x:Name="UsePackfilesCheckBox" Content="Use Pack File" HorizontalAlignment="Left" Margin="291,331,0,0"
+        <CheckBox x:Name="UsePackfilesCheckBox" Content="{x:Static p:Resources.UsePackFile}" HorizontalAlignment="Left" Margin="291,331,0,0"
                   VerticalAlignment="Top"
                   IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UsePackFiles}" Height="26" />
+        <TextBlock x:Name="IsInMaintenanceTextBlock" HorizontalAlignment="Left" Height="16" Margin="725,353,0,0"
+                   TextWrapping="Wrap" Text="{x:Static p:Resources.Maintenance}" Foreground="{DynamicResource AccentColorBrush}"
+                   Visibility="{Binding ElementName=This, Path=IsInMaintenance, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   FontWeight="Bold" VerticalAlignment="Top"/>
         <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0"
                    TextWrapping="Wrap"
                    Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
                    FontWeight="Bold" VerticalAlignment="Top">
-            <Hyperlink Foreground="{DynamicResource AccentColorBrush}" Click="UpdateAvailableLinkClick">Update Available!</Hyperlink>
+            <Hyperlink Foreground="{DynamicResource AccentColorBrush}" Click="UpdateAvailableLinkClick"><TextBlock Text="{x:Static p:Resources.UpdateAvailableLink}"/></Hyperlink>
         </TextBlock>
     </Grid>
 

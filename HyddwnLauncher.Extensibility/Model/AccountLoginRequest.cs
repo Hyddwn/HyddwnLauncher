@@ -19,6 +19,18 @@ namespace HyddwnLauncher.Extensibility.Model
         public bool AutoLogin { get; set; }
 
         /// <summary>
+        /// The captcha token
+        /// </summary>
+        [JsonProperty(PropertyName = "captcha_token")]
+        public string CaptchaToken { get; set; }
+
+        /// <summary>
+        /// The captcha version
+        /// </summary>
+        [JsonProperty(PropertyName = "captcha_version")]
+        public string CaptchaVersion { get; set; }
+
+        /// <summary>
         /// The client id of the launcher?
         /// </summary>
         [JsonProperty(PropertyName = "client_id")]

@@ -12,6 +12,7 @@ namespace HyddwnLauncher.Network
         public static async Task DownloadFileWithCallbackAsync(string url, string file,
             Action<double, string> callback)
         {
+            await Task.Delay(1);
             var client = new WebClient();
             var sw = new Stopwatch();
 
@@ -23,7 +24,7 @@ namespace HyddwnLauncher.Network
                     $"{ByteSizeHelper.ToString(args.BytesReceived)}/{ByteSizeHelper.ToString(args.TotalBytesToReceive)} @ {ByteSizeHelper.ToString(bytesPerSecond, mode: ByteSizeMode.Network)}/s");
             };
             sw.Start();
-            await client.DownloadFileTaskAsync(url, file);
+            client.DownloadFileTaskAsync(url, file).Wait();
         }
     }
 }

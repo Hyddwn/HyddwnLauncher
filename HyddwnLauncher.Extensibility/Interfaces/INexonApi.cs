@@ -13,12 +13,14 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// </summary>
         /// <param name="username">The username to log in with</param>
         /// <param name="password">The SHA512 hashed password to log in with</param>
-        /// <param name="guid">THe currently active profile GUID</param>
+        /// <param name="clientProfile">The related client profile</param>
+        /// <param name="rememberMe">Whether to remember and as a result enable auto-login</param>
+        /// <param name="enableTagging">Whether the device id should ne tagged.</param>
         /// <returns></returns>
-        Task<GetAccessTokenResponse> GetAccessToken(string username, string password, string guid);
+        Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging);
 
         /// <summary>
-        ///     Attempts to identify the newets version of the mabinogi client
+        ///     Attempts to identify the newest version of the Mabinogi client
         /// </summary>
         /// <returns></returns>
         Task<int> GetLatestVersion();
@@ -27,7 +29,8 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         ///     Attempts to retrieve the NX Passport Hash
         /// </summary>
         /// <returns></returns>
-        Task<string> GetNxAuthHash();
+        /// <param name="username">THe username to be used for device id tagging</param>
+        Task<string> GetNxAuthHash(string username);
 
         /// <summary>
         ///     Hashs the password with SHA512 hash algorithm

@@ -8,6 +8,8 @@ namespace HyddwnLauncher.Core
 {
     public class LauncherContext
     {
+        public static readonly LauncherContext Instance = new LauncherContext();
+
         private readonly string[] _images =
         {
             "bangor.png",
@@ -19,18 +21,20 @@ namespace HyddwnLauncher.Core
             "vans.png"
         };
 
-        public LauncherContext(string logFileLocation, string version)
+        public void Initialize(string logFileLocation, string version, string betaVersion)
         {
             LogFileLocation = logFileLocation;
             Version = version;
-            Log.Info("LauncherContext: Loading Settings...");
+            BetaVersion = betaVersion;
+            Log.Info(Properties.Resources.LauncherContextLoadingSettings);
             LauncherSettingsManager = new LauncherSettingsManager();
-            Log.Info("LauncherContext: Load Complete!");
+            Log.Info(Properties.Resources.LauncherContextLoadingComplete);
         }
 
         public string LogFileLocation { get; protected set; }
         public string LogFileLocationTruncated => Unmanaged.TruncatePath(LogFileLocation, 100);
         public string Version { get; protected set; }
+        public string BetaVersion { get; protected set; }
 
         public LauncherSettingsManager LauncherSettingsManager { get; protected set; }
 

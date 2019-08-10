@@ -62,8 +62,12 @@ namespace HyddwnLauncher.Core
 
                 return result ?? new ObservableCollection<ClientProfile>();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Exception(ex, Properties.Resources.UnableToLoadClientProfileData);
+                MessageBox.Show(
+                    string.Format(Properties.Resources.UnableToLoadClientProfileDataMessage,
+                        ex.Message), Properties.Resources.Error);
                 return new ObservableCollection<ClientProfile>();
             }
         }
@@ -82,8 +86,12 @@ namespace HyddwnLauncher.Core
 
                 return result ?? new ObservableCollection<ServerProfile>();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Exception(ex, Properties.Resources.UnableToLoadServerProfileData);
+                MessageBox.Show(
+                    string.Format(Properties.Resources.UnableToLoadServerProfileDataMessage,
+                        ex.Message), Properties.Resources.Error);
                 return new ObservableCollection<ServerProfile>();
             }
         }
@@ -97,8 +105,11 @@ namespace HyddwnLauncher.Core
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Unable to save client profile data");
-                MessageBox.Show("Unable to save ClientProfile data.\r\n\r\n" + ex.Message, "Error");
+                Log.Exception(ex, Properties.Resources.UnableToSaveClientProfileData);
+                MessageBox.Show(
+                    string.Format(
+                        Properties.Resources.UnableToSaveClientProfileDataMessage,
+                        ex.Message), Properties.Resources.Error);
             }
         }
 
@@ -111,8 +122,11 @@ namespace HyddwnLauncher.Core
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Unable to save server profile data");
-                MessageBox.Show("Unable to save ServerProfile data.\r\n\r\n" + ex.Message, "Error");
+                Log.Exception(ex, Properties.Resources.UnableToSaveServerProfileData);
+                MessageBox.Show(
+                    string.Format(
+                        Properties.Resources.UnableToSaveServerProfileDataMessage,
+                        ex.Message), Properties.Resources.Error);
             }
         }
 

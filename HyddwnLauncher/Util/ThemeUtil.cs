@@ -10,6 +10,7 @@ namespace HyddwnLauncher.Util
     {
         private ICommand _changeAccentCommand;
         public string Name { get; set; }
+        public string TranslatedName => Name?.LocalizedThemeColor();
         public Brush BorderColorBrush { get; set; }
         public Brush ColorBrush { get; set; }
 

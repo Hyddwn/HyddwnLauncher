@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;

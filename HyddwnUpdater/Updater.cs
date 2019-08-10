@@ -142,7 +142,7 @@ namespace HyddwnUpdater
                 Log.Warning("Process not running or access denied, update may fail.");
             }
 
-            Log.Info("Chech if Administrator...");
+            Log.Info("Check if Administrator...");
             CheckForAdmin();
 
 
@@ -212,18 +212,25 @@ namespace HyddwnUpdater
 
                     Log.Info("////// Begin File Copy //////");
 
-                    foreach (var str in Directory.GetFiles(outputDirectory))
+                    // Now Create all of the directories
+                    foreach (string dirPath in Directory.GetDirectories(outputDirectory, "*",
+                        SearchOption.AllDirectories))
                     {
-                        var fileName = Path.GetFileName(str);
-                        var path = directoryName + "\\" + fileName;
-                        Log.Info("Copying {0} to {1}", str, path);
-                        if (path == directoryName + @"\Updater.exe")
-                            File.Move(directoryName + @"\Updater.exe", directoryName + @"\Updater.old");
-                        if (File.Exists(path))
-                            File.Delete(path);
-
-                        File.Copy(str, directoryName + "\\" + fileName);
+                        if (!Directory.Exists(dirPath.Replace(outputDirectory, directoryName)))
+                            Directory.CreateDirectory(dirPath.Replace(outputDirectory, directoryName));
                     }
+
+                    // Copy all the files & Replaces any files with the same name
+                    foreach (string newPath in Directory.GetFiles(outputDirectory, "*.*",
+                        SearchOption.AllDirectories))
+                    {
+                        if (newPath.Replace(outputDirectory, directoryName) == directoryName + @"\Updater.exe")
+                            File.Move(directoryName + @"\Updater.exe", directoryName + @"\Updater.old");
+                        
+                        Log.Info("Copying {0} to {1}", newPath, newPath.Replace(outputDirectory, directoryName));
+                        File.Copy(newPath, newPath.Replace(outputDirectory, directoryName), true);
+                    }
+                    
                     Log.Info("/////// End File Copy ///////");
                     changingOutput.PrintResult(true);
                 }

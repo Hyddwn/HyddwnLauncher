@@ -14,6 +14,7 @@ namespace HyddwnLauncher.PackOps.Core
 		private bool _isSequenceTargetable;
 		private string _packName;
 		private int _packVersion;
+	    private int _fromPackVersion;
 
 		public PackOperationsViewModel()
 		{
@@ -27,7 +28,21 @@ namespace HyddwnLauncher.PackOps.Core
 			var match = Regex.Match(PackName, PackFileTestRegex).Value;
 			IsSequenceTargetable = match == PackName;
 
-			if (PackName.Contains("full"))
+		    if (PackName.Contains("_to_"))
+		    {
+		        var matchRegex = @"(_\d+)";
+		        match = Regex.Match(PackName, matchRegex).Value;
+		        var toMatch = match.Replace("_", "");
+
+		        var packVersion = 0;
+
+		        int.TryParse(toMatch, out packVersion);
+
+		        PackVersion = packVersion;
+		        return;
+		    }
+
+            if (PackName.Contains("full"))
 			{
 				var matchRegex = @"(\d+_)";
 				match = Regex.Match(PackName, matchRegex).Value;
@@ -36,20 +51,6 @@ namespace HyddwnLauncher.PackOps.Core
 				var packVersion = 0;
 
 				int.TryParse(fromMatch, out packVersion);
-
-				PackVersion = packVersion;
-				return;
-			}
-
-			if (PackName.Contains("_to_"))
-			{
-				var matchRegex = @"(_\d+)";
-				match = Regex.Match(PackName, matchRegex).Value;
-				var toMatch = match.Replace("_", "");
-
-				var packVersion = 0;
-
-				int.TryParse(toMatch, out packVersion);
 
 				PackVersion = packVersion;
 				return;

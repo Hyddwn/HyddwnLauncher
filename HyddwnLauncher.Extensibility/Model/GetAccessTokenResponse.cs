@@ -10,8 +10,27 @@ namespace HyddwnLauncher.Extensibility.Model
     /// <summary>
     /// Object modeling the response from Nexon
     /// </summary>
-    public struct GetAccessTokenResponse
+    public class GetAccessTokenResponse
     {
+        /// <summary>
+        ///     Creates an empty <see cref="GetAccessTokenResponse"/>
+        /// </summary>
+        public GetAccessTokenResponse()
+        {
+            
+        }
+
+
+        /// <summary>
+        ///     Creates an <see cref="GetAccessTokenResponse"/> which accepts a <see cref="ErrorResponse"/>
+        /// </summary>
+        public GetAccessTokenResponse(ErrorResponse errorResponse)
+        {
+            Code = errorResponse.Code;
+            Description = errorResponse.Description;
+            Message = errorResponse.Message;
+        }
+
         /// <summary>
         /// The response code
         /// </summary>

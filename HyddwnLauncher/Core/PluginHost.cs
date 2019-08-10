@@ -25,25 +25,24 @@ namespace HyddwnLauncher.Core
             }
             catch (DirectoryNotFoundException)
             {
-                Log.Warning("Plugin directory was not found, creating.");
+                Log.Warning(Properties.Resources.PluginDirectoryNotFound);
                 try
                 {
-                    Directory.CreateDirectory(".\\Plugins");
+                    Directory.CreateDirectory(_pluginRoot);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(
-                        $"Exception of type {ex.GetType().Name} occured when attempting to create the plugin directory: {ex.Message}");
+                    Log.Error(Properties.Resources.ExceptionCreatingPluginDirectory, ex.GetType().Name, ex.Message);
                 }
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
             {
-                Log.Exception(unauthorizedAccessException, "Unable to load plugins.");
+                Log.Exception(unauthorizedAccessException, Properties.Resources.UnableToLoadPlugins);
             }
             catch (Exception ex)
             {
                 Log.Exception(ex);
-                MessageBox.Show(ex.Message, "Plugin Load Failure");
+                MessageBox.Show(ex.Message, Properties.Resources.PluginLoadFailure);
             }
 
             if (Plugins == null) Plugins = new Collection<IPlugin>();
@@ -60,7 +59,7 @@ namespace HyddwnLauncher.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, $"Error shutting down {plugin.Name}");
+                    Log.Exception(ex, string.Format(Properties.Resources.ErrorShuttingDownPlugin, plugin.Name));
                 }
         }
 
@@ -73,7 +72,7 @@ namespace HyddwnLauncher.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, $"Error calling PatchBegin {plugin.Name}");
+                    Log.Exception(ex, string.Format(Properties.Resources.ErrorCallingMethodInPlugin, "PatchBegin", plugin.Name));
                 }
         }
 
@@ -86,7 +85,7 @@ namespace HyddwnLauncher.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, $"Error called PatchEnd {plugin.Name}");
+                    Log.Exception(ex, string.Format(Properties.Resources.ErrorCallingMethodInPlugin, "PatchEnd", plugin.Name));
                 }
         }
 
@@ -109,7 +108,7 @@ namespace HyddwnLauncher.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, $"Error sending client profile update to {plugin.Name}");
+                    Log.Exception(ex, string.Format(Properties.Resources.ErrorSendingClientProfile, plugin.Name));
                 }
         }
 
@@ -122,7 +121,7 @@ namespace HyddwnLauncher.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Exception(ex, $"Error sending server profile update to {plugin.Name}");
+                    Log.Exception(ex, string.Format(Properties.Resources.ErrorSendingServerProfile, plugin.Name));
                 }
         }
     }

@@ -16,6 +16,21 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -89,6 +104,9 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Swebs">
+      <HintPath>.\Swebs.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
@@ -131,16 +149,50 @@
     <Compile Include="Core\ClientProfile.cs" />
     <Compile Include="Core\CredentialsStorage.cs" />
     <Compile Include="Core\LauncherSettingsManager.cs" />
+    <Compile Include="Core\MabiLocalizationData.cs" />
+    <Compile Include="Core\Memory.cs" />
+    <Compile Include="Core\MemoryEditor.cs" />
+    <Compile Include="Core\MemoryPatch.cs" />
+    <Compile Include="Core\PatchDefinition.cs" />
     <Compile Include="Core\PluginHost.cs" />
     <Compile Include="Core\ServerProfile.cs" />
     <Compile Include="Core\SettingsManager.cs" />
     <Compile Include="Core\Unmanaged.cs" />
+    <Compile Include="Http\WebServer.cs" />
     <Compile Include="Network\AsyncDownloader.cs" />
     <Compile Include="Network\Rest\ParameterType.cs" />
     <Compile Include="Network\Rest\RestClient.cs" />
     <Compile Include="Network\Rest\RestRequest.cs" />
     <Compile Include="Network\Rest\RestResponse.cs" />
+    <Compile Include="Patcher\DefaultPatcher.cs" />
+    <Compile Include="Patcher\Legacy\LegacyPatcher.cs" />
+    <Compile Include="Patcher\Legacy\MabiVersion.cs" />
+    <Compile Include="Patcher\Legacy\OfficialPatchInfo.cs" />
+    <Compile Include="Patcher\Legacy\PatchDownloader.cs" />
+    <Compile Include="Patcher\Legacy\PatchFileInfo.cs" />
+    <Compile Include="Patcher\Legacy\PatchInfo.cs" />
+    <Compile Include="Patcher\Legacy\PatchSequence.cs" />
+    <Compile Include="Patcher\Legacy\PatchSequenceNotFoundException.cs" />
+    <Compile Include="Patcher\NxLauncher\ClientLaunchArguments.cs" />
+    <Compile Include="Patcher\PatcherRegistry.cs" />
+    <Compile Include="Patcher\NxLauncher\FileDownloadInfo.cs" />
+    <Compile Include="Patcher\NxLauncher\FileInfoType.cs" />
+    <Compile Include="Patcher\NxLauncher\FilePartInfo.cs" />
+    <Compile Include="Patcher\NxLauncher\NxlPatcher.cs" />
+    <Compile Include="Patcher\NxLauncher\Patch.cs" />
+    <Compile Include="Patcher\NxLauncher\PatchDownloader.cs" />
+    <Compile Include="Patcher\NxLauncher\PatcherSettings.cs" />
+    <Compile Include="Patcher\NxLauncher\PatchIgnore.cs" />
+    <Compile Include="Patcher\NxLauncher\PatchReason.cs" />
+    <Compile Include="Patcher\NxLauncher\PatchSettingsManager.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\Resources.ja-JP.Designer.cs">
+      <DependentUpon>Resources.ja-JP.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Util\Commands\SimpleCommand.cs" />
+    <Compile Include="Util\Helpers\BrowserHelper.cs" />
     <Compile Include="Util\Helpers\ByteSizeHelper.cs" />
     <Compile Include="Network\NexonApi.cs" />
     <Compile Include="Util\Helpers\ByteSizeMode.cs" />
@@ -158,9 +210,9 @@
     <Compile Include="Core\PackEngine.cs" />
     <Compile Include="Core\ProfileManager.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Util\Extentions.cs" />
     <Compile Include="Util\FileReader.cs" />
+    <Compile Include="Util\Helpers\PatternHelper.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Util\LogLevel.cs" />
     <Compile Include="Util\MoreEnumerable.cs" />
@@ -169,6 +221,9 @@
     <Compile Include="Util\ThemeUtil.cs" />
     <Compile Include="Util\Validation\MabiLocalizationValidationRule.cs" />
     <Compile Include="Util\Validation\LocationValidationRule.cs" />
+    <Compile Include="web\captcha.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
     <Page Include="Controls\NewClientProfileUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -212,9 +267,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Properties\Resources.ja-JP.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.ja-JP.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="packages.config" />
@@ -228,6 +288,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\default.png" />
+    <Content Include="web\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Libs\ImaBrokeDude.Controls.dll" />
     <Content Include="Libs\Ionic.Zip.Reduced.dll" />
   </ItemGroup>
@@ -269,10 +333,26 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Network\NewFolder1\" />
+    <Folder Include="Patcher\Custom\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_ConfigurationName="Release" BuildVersion_StartDate="2000/1/1" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_BuildVersioningStyle="None.None.Increment.None" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.None" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_StartDate="2000/1/1" BuildVersion_ConfigurationName="Release" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 
@@ -21,6 +22,11 @@ namespace HyddwnLauncher.Core
         private bool _usePackFiles;
         private bool _warnIfRootIsNotMabiRoot;
         private bool _closeAfterLaunching;
+        private bool _allowPatching;
+        private bool _disableLauncherUpdateCheck;
+        private string _lastClientProfileSetupPath;
+        private bool _enableDeviceIdTagging;
+        private bool _enableCaptchaBypass;
 
         public LauncherSettings()
         {
@@ -37,6 +43,11 @@ namespace HyddwnLauncher.Core
             Accent = "Cobalt";
             DisableMultiClientCheck = false;
             CloseAfterLaunching = true;
+            AllowPatching = true;
+            DisableLauncherUpdateCheck = false;
+            LastClientProfileSetupPath = "C:\\Nexon\\Library\\mabinogi\\appdata\\Client.exe";
+            EnableDeviceIdTagging = false;
+            EnableCaptchaBypass = false;
         }
 
         public bool UsePackFiles
@@ -182,14 +193,69 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public bool AllowPatching
+        {
+            get => _allowPatching;
+            set
+            {
+                if (value == _allowPatching) return;
+                _allowPatching = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool DisableLauncherUpdateCheck
+        {
+            get => _disableLauncherUpdateCheck;
+            set
+            {
+                if (value == _disableLauncherUpdateCheck) return;
+                _disableLauncherUpdateCheck = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string LastClientProfileSetupPath
+        {
+            get => _lastClientProfileSetupPath;
+            set
+            {
+                if (value == _lastClientProfileSetupPath) return;
+                _lastClientProfileSetupPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool EnableDeviceIdTagging
+        {
+            get => _enableDeviceIdTagging;
+            set
+            {
+                if (value == _enableDeviceIdTagging) return;
+                _enableDeviceIdTagging = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool EnableCaptchaBypass
+        {
+            get => _enableCaptchaBypass;
+            set
+            {
+                if (value == _enableCaptchaBypass) return;
+                _enableCaptchaBypass = value;
+                OnPropertyChanged();
+            }
+        }
+
         public event Action<string> SaveOnChanged;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
             SaveOnChanged?.Raise(propertyName);
         }
     }

@@ -5,66 +5,116 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:HyddwnLauncher.Controls"
+             xmlns:p="clr-namespace:HyddwnLauncher.Properties"
              xmlns:validation="clr-namespace:HyddwnLauncher.Util.Validation"
              xmlns:simpleChildWindow="clr-namespace:MahApps.Metro.SimpleChildWindow;assembly=MahApps.Metro.SimpleChildWindow"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="285">
+             xmlns:core="clr-namespace:HyddwnLauncher.Core"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="330">
+    <UserControl.Resources>
+        <DataTemplate x:Key="MabiLocalizationComboBoxItem" DataType="{x:Type core:MabiLocalizationData}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Text="{Binding TranslatedName}" />
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ErrorWindow"
                                        Grid.RowSpan="2" TitleBarBackground="{DynamicResource WindowBackgroundBrush}"
                                        IsModal="true" ShowTitleBar="True" ShowCloseButton="True"
-                                       Title="No Profile Selected"
+                                       Title="{x:Static p:Resources.NoProfileSelected}"
                                        ChildWindowWidth="300" ChildWindowHeight="80">
             <Grid>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0"
                            TextWrapping="Wrap" TextAlignment="Center"
-                           Text="You must select or create a Client Profile before setting properties." />
+                           Text="{x:Static p:Resources.NoProfileSelectedMessage}" />
             </Grid>
         </simpleChildWindow:ChildWindow>
-        <StackPanel Margin="5">
+        <StackPanel Margin="5" IsEnabled="{Binding ElementName=This, Path=ClientProfile, TargetNullValue=false}">
             <StackPanel Margin="5" Orientation="Horizontal">
-                <TextBlock Text="Client Profile Editor" FontWeight="Bold" FontSize="16" />
+                <TextBlock Text="{x:Static p:Resources.ClientProfileEditor}" FontWeight="Bold" FontSize="16" />
             </StackPanel>
-            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
-                        ToolTip="The nick name for this instance of Mabinogi.">
-                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Nick Name" />
-                <TextBox Margin="61 0 0 0" Width="180" ToolTip="A Friendly Name for your Client Profile"
-                         Text="{Binding ElementName=This, Path=ClientProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
-            <StackPanel Margin="5 0 5 5" Orientation="Horizontal" ToolTip="Location of Mabinogi's Client.exe">
-                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Path to Client" />
-                <TextBox Margin="48 0 0 0" Width="180" ToolTip="The File Path to Client.exe">
-                    <Binding Path="ClientProfile.Location" ElementName="This" UpdateSourceTrigger="PropertyChanged">
+            <Grid Margin="10 0 10 5" ToolTip="{x:Static p:Resources.NickNameTip}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Center" Text="{x:Static p:Resources.ClientProfile}" />
+                <TextBox Grid.Column="1" ToolTip="{x:Static p:Resources.NicknameInputTip}"
+                         Text="{Binding ElementName=This, Path=ClientProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged" />
+            </Grid>
+            <Grid Margin="10 0 10 5" ToolTip="{x:Static p:Resources.PathToClientExeTip}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Center" Text="{x:Static p:Resources.PathToClientExe}" />
+                <TextBox x:Name="LocationTextBox" ToolTip="{x:Static p:Resources.PathToClientExeInputTip}" Grid.Column="1" TextChanged="LocationTextBox_TextChanged">
+                    <Binding Path="ClientProfile.Location" ElementName="This" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
                             <validation:LocationValidationRule />
                         </Binding.ValidationRules>
                     </Binding>
                 </TextBox>
-                <Button Margin="5 0 0 0" Content=". . ."
+                <Button Margin="5 0 5 0" Content=". . ."
                         IsEnabled="{Binding Path=ClientProfile, TargetNullValue=False}" Height="26"
-                        Click="BrowseButtonOnClick" />
-            </StackPanel>
-            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
-                        ToolTip="The locale for this instance of Mabinogi.">
-                <TextBlock Margin="0 5 0 5" TextAlignment="Center" Text="Localization" />
-                <ComboBox Margin="57 0 0 0" Width="180"
+                        Click="BrowseButtonOnClick" Grid.Column="2" VerticalAlignment="Top" />
+            </Grid>
+            <Grid Margin="10 0 10 5" ToolTip="Additional arguments appended at the end.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Center" Text="Additional Arguments" />
+                <TextBox Grid.Column="1" ToolTip="Set arguments that are to be appended to the end of the arguments."
+                         Text="{Binding ElementName=This, Path=ClientProfile.Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged_1" />
+            </Grid>
+            <Grid Margin="10 0 10 5" ToolTip="{x:Static p:Resources.LocalizationTip}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextAlignment="Center" Text="{x:Static p:Resources.Localization}" />
+                <ComboBox Grid.Column="1"
+                          SelectedValuePath="Name"
+                          ItemTemplate="{DynamicResource MabiLocalizationComboBoxItem}"
                           SelectedValue="{Binding ElementName=This, Path=ClientProfile.Localization, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           ItemsSource="{Binding ElementName=This, Path=MabiLocalizations}"
-                          ToolTip="The version of the client you are using." />
-            </StackPanel>
-            <StackPanel Margin="5 0 5 5" Orientation="Horizontal"
-                        ToolTip="Whether this profile is the default profile.">
-                <CheckBox Margin="0 5 0 5" Content="Default Profile" />
-            </StackPanel>
-            <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="Saved Crednetials">
-                <GroupBox Header="Saved Credentials" Margin="5">
+                          ToolTip="{x:Static p:Resources.LocalizationInputTip}" SelectionChanged="ComboBox_SelectionChanged" />
+            </Grid>
+            <Grid Margin="10 0 19 5" ToolTip="{x:Static p:Resources.DefaultProfileTip}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox HorizontalAlignment="Left" VerticalAlignment="Top" Content="{x:Static p:Resources.DefaultProfile}" Checked="CheckBox_Checked" />
+            </Grid>
+            <Grid Margin="10 0 19 5" ToolTip="Enables an experimental MultiClient Memory Edit">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox HorizontalAlignment="Left" VerticalAlignment="Top" Content="[NA] MultiClient Memory Edit (Requires Admin)" IsChecked="{Binding ElementName=This, Path=ClientProfile.EnableMultiClientMemoryEdit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="{x:Static p:Resources.SavedCredentials}">
+                <GroupBox Header="{x:Static p:Resources.SavedCredentials}" Margin="5">
                     <StackPanel>
-                        <TextBox x:Name="CredentialTextBox" Margin="10,5,10,0" IsEnabled="False" IsReadOnly="True"
-                                 Text="{Binding ElementName=This, Path=CredentialUsername}" />
-                        <StackPanel Orientation="Horizontal" Margin="10 5">
-                            <Button Margin="0 0 0 0"
+                        <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                            <Image Source="{Binding ElementName=This, Path=UserAvatarSource}" x:Name="UserAvatar" Height="32" Width="32"/>
+                            <TextBlock Text="{Binding ElementName=This, Path=ProfileUsername}" VerticalAlignment="Center" Margin="10 0 0 0" x:Name="UserProfileName"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0 2.5">
+                            <TextBox x:Name="CredentialTextBox" Width="268" Margin="10,5,10,0" IsEnabled="False" IsReadOnly="True"
+                                     Text="{Binding ElementName=This, Path=CredentialUsername}" />
+                            <Button Margin="0 5 10 0"
                                     IsEnabled="{Binding ElementName=CredentialTextBox, Path=Text.Length}"
-                                    x:Name="ClientProfileSavedCredentialsRemoveButton" Content="Remove"
+                                    x:Name="ClientProfileSavedCredentialsRemoveButton" Content="{x:Static p:Resources.Remove}"
                                     Click="ClientProfileSavedCredentialsRemoveButtonOnClick" />
                         </StackPanel>
                     </StackPanel>

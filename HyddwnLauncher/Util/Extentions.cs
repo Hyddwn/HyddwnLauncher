@@ -3,8 +3,11 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
+using HyddwnLauncher.Extensibility;
+using HyddwnLauncher.Patcher.NxLauncher;
 
 namespace HyddwnLauncher.Util
 {
@@ -60,6 +63,16 @@ namespace HyddwnLauncher.Util
             textBlock.SetTextBlockSafe(string.Format(format, args));
         }
 
+        public static void SetRunSafe(this Run run, string text)
+        {
+            Application.Current.Dispatcher.Invoke((Action)(() => run.Text = text), DispatcherPriority.Send);
+        }
+
+        public static void SetRunSafe(this Run run, string format, params object[] args)
+        {
+            run.SetRunSafe(string.Format(format, args));
+        }
+
         public static void SetMetroProgressIndeterminateSafe(this ProgressBar progressBar, bool value)
         {
             Application.Current.Dispatcher.Invoke((Action) (() => progressBar.IsIndeterminate = value));
@@ -68,6 +81,143 @@ namespace HyddwnLauncher.Util
         public static void SetForegroundSafe(this Control element, Brush brush)
         {
             Application.Current.Dispatcher.Invoke((Action) (() => element.Foreground = brush));
+        }
+
+        public static string LocalizedThemeColor(this string theme)
+        {
+            switch (theme)
+            {
+                case "BaseDark":
+                    return Properties.Resources.BaseDark;
+                case "BaseLight":
+                    return Properties.Resources.BaseLight;
+                case "Red":
+                    return Properties.Resources.Red;
+                case "Green":
+                    return Properties.Resources.Green;
+                case "Blue":
+                    return Properties.Resources.Blue;
+                case "Purple":
+                    return Properties.Resources.Purple;
+                case "Orange":
+                    return Properties.Resources.Orange;
+                case "Lime":
+                    return Properties.Resources.Lime;
+                case "Emerald":
+                    return Properties.Resources.Emerald;
+                case "Teal":
+                    return Properties.Resources.Teal;
+                case "Cyan":
+                    return Properties.Resources.Cyan;
+                case "Cobalt":
+                    return Properties.Resources.Cobalt;
+                case "Indigo":
+                    return Properties.Resources.Indigo;
+                case "Violet":
+                    return Properties.Resources.Violet;
+                case "Pink":
+                    return Properties.Resources.Pink;
+                case "Magenta":
+                    return Properties.Resources.Magenta;
+                case "Crimson":
+                    return Properties.Resources.Crimson;
+                case "Amber":
+                    return Properties.Resources.Amber;
+                case "Yellow":
+                    return Properties.Resources.Yellow;
+                case "Brown":
+                    return Properties.Resources.Brown;
+                case "Olive":
+                    return Properties.Resources.Olive;
+                case "Steel":
+                    return Properties.Resources.Steel;
+                case "Mauve":
+                    return Properties.Resources.Mauve;
+                case "Taupe":
+                    return Properties.Resources.Taupe;
+                case "Sienna":
+                    return Properties.Resources.Sienna;
+                default:
+                    return theme;
+            }
+        }
+
+        public static string LocalizedLocalization(this string localization)
+        {
+            switch (localization)
+            {
+                case ClientLocalization.NorthAmerica:
+                    return Properties.Resources.NorthAmerica;
+                case ClientLocalization.Japan:
+                    return Properties.Resources.Japan;
+                case ClientLocalization.JapanHangame:
+                    return Properties.Resources.JapanHangame;
+                //case ClientLocalization.Korea:
+                //    return Properties.Resources.Korea;
+                //case ClientLocalization.KoreaTest:
+                //    return Properties.Resources.KoreaTest;
+                //case ClientLocalization.Taiwan:
+                //    return Properties.Resources.Taiwan;
+                default:
+                    return localization;
+            }
+        }
+
+        public static string LocalizedPatchReason(this PatchReason reason)
+        {
+            switch (reason)
+            {
+                case PatchReason.None:
+                    return Properties.Resources.None;
+                case PatchReason.Modified:
+                    return Properties.Resources.Modified;
+                case PatchReason.Older:
+                    return Properties.Resources.Older;
+                case PatchReason.DoesNotExist:
+                    return Properties.Resources.DoesNotExist;
+                case PatchReason.SizeNotMatch:
+                    return Properties.Resources.SizeNotMatch;
+                case PatchReason.Repair:
+                    return Properties.Resources.Repair;
+                case PatchReason.Force:
+                    return Properties.Resources.Force;
+                default:
+                    return reason.ToString();
+            }
+        }
+
+        public static string ToExtendedLaunchArguments(this string localization)
+        {
+            switch (localization)
+            {
+                case ClientLocalization.Japan:
+                    return "setting:\"file://data/features.xml=Regular, Japan\"";
+                case ClientLocalization.JapanHangame:
+                    return "setting:\"file://data/features.xml=Regular, Japan\" sublocale:nhnjapan";
+                default:
+                    return "setting:file://data/features.xml locale:USA env:Regular";
+            }
+        }
+
+        public static string LocalizedLogLevel(this LogLevel level)
+        {
+            switch (level)
+            {
+                case LogLevel.Info:
+                    return Properties.Resources.Info;
+                case LogLevel.Warning:
+                    return Properties.Resources.Warning;
+                case LogLevel.Error:
+                    return Properties.Resources.Error;
+                case LogLevel.Debug:
+                    return Properties.Resources.Debug;
+                case LogLevel.Status:
+                    return Properties.Resources.Status;
+                case LogLevel.Exception:
+                    return Properties.Resources.Exception;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(level), level, null);
+            }
         }
 
         /// <summary>
