@@ -192,6 +192,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Util\Commands\SimpleCommand.cs" />
+    <Compile Include="Util\Helpers\BrowserHelper.cs" />
     <Compile Include="Util\Helpers\ByteSizeHelper.cs" />
     <Compile Include="Network\NexonApi.cs" />
     <Compile Include="Util\Helpers\ByteSizeMode.cs" />
