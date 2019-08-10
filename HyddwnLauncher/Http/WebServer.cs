@@ -204,7 +204,8 @@ namespace HyddwnLauncher.Http
 
         public void Stop()
         {
-            HttpServer.Stop();
+            if (HttpServer.State != HttpServerState.Started)
+                HttpServer.Stop();
             HttpServer.Dispose();
             HttpServer = null;
         }
