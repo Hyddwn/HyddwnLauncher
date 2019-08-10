@@ -418,7 +418,7 @@ namespace HyddwnLauncher
                             }
                             catch (Exception ex)
                             {
-                                Log.Error(Properties.Resources.CannotStartMabinogi, ex.ToString());
+                                Log.Error(Properties.Resources.CannotStartMabinogi, ex.Message);
 
                                 throw new IOException();
                             }
@@ -1419,7 +1419,7 @@ namespace HyddwnLauncher
             catch (Exception ex)
             {
                 IsPatching = false;
-                Log.Error(Properties.Resources.CannotStartMabinogi, ex.ToString());
+                Log.Error(Properties.Resources.CannotStartMabinogi, ex.Message);
                 throw new ApplicationException(ex.ToString());
             }
 
