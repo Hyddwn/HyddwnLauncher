@@ -259,10 +259,12 @@ namespace HyddwnLauncher.Network.Rest
 
             Debug.Assert(timesToTry >= 1);
 
+            HttpResponseMessage httpResponseMessage;
+
             do
             {
                 var httpRequest = PrepRequest(method);
-                var httpResponseMessage = await new HttpClient().SendAsync(httpRequest).ConfigureAwait(false);
+                httpResponseMessage = await new HttpClient().SendAsync(httpRequest).ConfigureAwait(false);
 
                 if (httpResponseMessage.StatusCode == (HttpStatusCode) 429)
                 {
@@ -274,7 +276,6 @@ namespace HyddwnLauncher.Network.Rest
                         if (retryAfter.Value.TotalSeconds > 0)
                             await Task.Delay(retryAfter.Value).ConfigureAwait(false);
                         else
-                            // TMDb sometimes gives us 0-second waits, which can lead to rapid succession of requests
                             await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
                     }
 
@@ -288,8 +289,7 @@ namespace HyddwnLauncher.Network.Rest
                     return httpResponseMessage;
             } while (timesToTry-- > 0);
 
-            // We never reached a success
-            throw new RequestLimitExceededException();
+            return httpResponseMessage;
         }
     }
 }
