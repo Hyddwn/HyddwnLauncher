@@ -211,6 +211,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Util\Extentions.cs" />
     <Compile Include="Util\FileReader.cs" />
+    <Compile Include="Util\Helpers\PatternHelper.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Util\LogLevel.cs" />
     <Compile Include="Util\MoreEnumerable.cs" />

@@ -67,8 +67,6 @@ namespace HyddwnLauncher.Core
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
-        public static IntPtr OpenProcess(ProcessAccessRights dwDesiredAccess, bool bInheritHandle, int dwProcessId) => OpenProcess((uint)dwDesiredAccess, bInheritHandle, dwProcessId);
-
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, out IntPtr lpNumberOfBytesRead);
 
@@ -80,13 +78,6 @@ namespace HyddwnLauncher.Core
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool VirtualProtectEx(IntPtr hProcess, IntPtr lpAddress, UIntPtr dwSize, uint flNewProtect, out uint lpflOldProtect);
-
-        public static bool VirtualProtectEx(IntPtr hProcess, IntPtr lpAddress, UIntPtr dwSize, MemoryProtectionConstants flNewProtect, out MemoryProtectionConstants lpflOldProtect)
-        {
-            var ret = VirtualProtectEx(hProcess, lpAddress, dwSize, (uint)flNewProtect, out uint oldProtect);
-            lpflOldProtect = (MemoryProtectionConstants)oldProtect;
-            return ret;
-        }
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
@@ -102,6 +93,16 @@ namespace HyddwnLauncher.Core
 
         [DllImport("shlwapi.dll", CharSet = CharSet.Auto)]
         static extern bool PathCompactPathEx([Out] StringBuilder pszOut, string szPath, int cchMax, int dwFlags);
+
+
+        public static IntPtr OpenProcess(ProcessAccessRights dwDesiredAccess, bool bInheritHandle, int dwProcessId) => OpenProcess((uint)dwDesiredAccess, bInheritHandle, dwProcessId);
+
+        public static bool VirtualProtectEx(IntPtr hProcess, IntPtr lpAddress, UIntPtr dwSize, MemoryProtectionConstants flNewProtect, out MemoryProtectionConstants lpflOldProtect)
+        {
+            var ret = VirtualProtectEx(hProcess, lpAddress, dwSize, (uint)flNewProtect, out uint oldProtect);
+            lpflOldProtect = (MemoryProtectionConstants)oldProtect;
+            return ret;
+        }
 
         public static string TruncatePath(string path, int length)
         {

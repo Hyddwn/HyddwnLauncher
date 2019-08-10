@@ -1399,7 +1399,7 @@ namespace HyddwnLauncher
             PluginHost.ServerProfileChanged(ActiveServerProfile);
         }
 
-        private void LaunchCustom()
+        private async void LaunchCustom()
         {
             var arguments =
                 $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ActiveServerProfile.LoginIp} logport:{ActiveServerProfile.LoginPort} chatip:{ActiveServerProfile.ChatIp} chatport:{ActiveServerProfile.ChatPort} locale:USA env:Regular setting:file://data/features.xml {ActiveClientProfile.Arguments}";
@@ -1413,7 +1413,9 @@ namespace HyddwnLauncher
 
                 if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                 {
-                    EnableMultiClient(process);
+                    var message = EnableMultiClient(process);
+                    if (message != null)
+                        await this.ShowMessageAsync("Patch Failed!", message);
                 }
 
                 PluginHost.PostLaunch();
@@ -1487,7 +1489,9 @@ namespace HyddwnLauncher
 
                     if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                     {
-                        EnableMultiClient(process);
+                        var message = EnableMultiClient(process);
+                        if (message != null)
+                            await this.ShowMessageAsync("Patch Failed!", message);
                     }
 
                     PluginHost.PostLaunch();
@@ -1529,19 +1533,24 @@ namespace HyddwnLauncher
             }
         }
 
-        public void EnableMultiClient(Process process)
+        public string EnableMultiClient(Process process)
         {
             Log.Info("Attempting to enable multiclient");
             try
             {
                 var memoryEditor = new MemoryEditor(ActiveClientProfile, Patcher.ReadVersion());
-                memoryEditor.ApplyPatchesToProcessById(process.Id);
-                Log.Info("Patched successfully!");
+                var error = memoryEditor.ApplyPatchesToProcessById(process.Id);
+                if (error == null)
+                    Log.Info("Patched successfully!");
+
+                return error;
             }
             catch (Exception ex)
             {
                 Log.Exception(ex, "Failed to apply patch.");
             }
+
+            return null;
         }
 
         public void OnLoginCancel()

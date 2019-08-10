@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using HyddwnLauncher.Util;
+using HyddwnLauncher.Util.Helpers;
 
 namespace HyddwnLauncher.Core
 {
@@ -33,14 +34,20 @@ namespace HyddwnLauncher.Core
             //});
         }
 
-        public void ApplyPatchesToProcessById(int processId)
+        public string ApplyPatchesToProcessById(int processId)
         {
             Log.Info("Started patching process with ID: {0}", processId);
             var memory = new Memory(processId);
+
+            Log.Info("Attempting to get module handle.");
             var moduleHandle = memory.GetProcessModuleHandle("client.exe");
 
             if (moduleHandle == IntPtr.Zero)
-                Log.Error("Failed to get module handle");
+            {
+                Log.Error("Patch Failed: Failed to get module handle");
+                return "Patch failed! (Failed to get module handle)";
+            }
+                
 
             var moduleInfo = new MODULEINFO();
             var success = Unmanaged.GetModuleInformation(memory.GetProcessHandle(), moduleHandle, out moduleInfo,
@@ -49,10 +56,11 @@ namespace HyddwnLauncher.Core
             if (!success)
             {
                 var error = new Win32Exception(Marshal.GetLastWin32Error());
-                Log.Error("Failed to get module info: {0}", error.Message);
+                Log.Error("Patch Failed: Failed to get module info: {0}", error.Message);
+                return string.Format("Patch Failed: Failed to get module info: {0}", error.Message);
             }
 
-            Log.Info("Applying patch: Enable MultiClient");
+            Log.Info("Attempting to applying patch: Enable MultiClient");
 
             var pattern = new short[]
             {
@@ -62,7 +70,7 @@ namespace HyddwnLauncher.Core
             var offset = 0x07;
             var edit = new byte[] {0x90, 0x90};
 
-            Log.Info("Pattern: {0}\r\nEdit Offset: {1}\r\nEdit: {2}", string.Join(", ", pattern), offset, string.Join(", ", edit));
+            Log.Info("Pattern: {0}\r\nEdit Offset: {1}\r\nEdit: {2}", PatternHelper.ConvertToPatternString(pattern), offset, PatternHelper.ConvertToPatternString(edit));
 
             var address = IntPtr.Zero;
 
@@ -77,10 +85,16 @@ namespace HyddwnLauncher.Core
                 address = memory.QuickSearch((uint)moduleInfo.lpBaseOfDll,
                     (uint)moduleInfo.lpBaseOfDll + moduleInfo.SizeOfImage, pattern);
 
+                if (address == IntPtr.Zero)
+                {
+                    Log.Error("Patch Failed: No match for pattern.");
+                    return "Patch Failed: No match for pattern.";
+                }
+
                 _clientProfile.LastVersionForPatternSearch = _version;
                 _clientProfile.LastAddressForPatterSearch = address;
             }
-            
+
             Log.Info("Start Address: {0:x8} | Address of Pattern Match: {1:x8}", (int)moduleInfo.lpBaseOfDll, (int)address);
 
             memory.WriteProcMem(address + offset, edit);
@@ -97,6 +111,8 @@ namespace HyddwnLauncher.Core
             //        memory.WriteProcMem(address + patch.Offset, patch.Edit);
             //    }
             //}
+
+            return null;
         }
     }
 }
