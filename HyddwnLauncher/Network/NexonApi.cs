@@ -344,7 +344,8 @@ namespace HyddwnLauncher.Network
 
             try
             {
-                WebServer.Instance.Stop();
+                if (App.IsAdministrator() && LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.EnableCaptchaBypass)
+                    WebServer.Instance.Stop();
             }
             catch (Exception ex)
             {
