@@ -316,7 +316,8 @@ namespace HyddwnLauncher.Network
             if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == clientProfile.Guid)
                 return new GetAccessTokenResponse {Success = true};
 
-            _recaptchaToken = App.IsAdministrator() ? await WebServer.Instance.Run() ?? CreateString(128) : CreateString(128);
+            _recaptchaToken = App.IsAdministrator() && LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.EnableCaptchaBypass 
+                ? await WebServer.Instance.Run() ?? CreateString(256) : CreateString(256);
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 

@@ -354,6 +354,10 @@
                                             <CheckBox Content="Enable Device ID Tagging (Affects ALL Logins)"
                                                       IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.EnableDeviceIdTagging}"/>
                                         </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="Enable Captcha Bypass (Web) [Requires Admin]"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.EnableCaptchaBypass}"/>
+                                        </StackPanel>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5">

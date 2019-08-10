@@ -26,6 +26,7 @@ namespace HyddwnLauncher.Core
         private bool _disableLauncherUpdateCheck;
         private string _lastClientProfileSetupPath;
         private bool _enableDeviceIdTagging;
+        private bool _enableCaptchaBypass;
 
         public LauncherSettings()
         {
@@ -46,6 +47,7 @@ namespace HyddwnLauncher.Core
             DisableLauncherUpdateCheck = false;
             LastClientProfileSetupPath = "C:\\Nexon\\Library\\mabinogi\\appdata\\Client.exe";
             EnableDeviceIdTagging = false;
+            EnableCaptchaBypass = false;
         }
 
         public bool UsePackFiles
@@ -231,6 +233,17 @@ namespace HyddwnLauncher.Core
             {
                 if (value == _enableDeviceIdTagging) return;
                 _enableDeviceIdTagging = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool EnableCaptchaBypass
+        {
+            get => _enableCaptchaBypass;
+            set
+            {
+                if (value == _enableCaptchaBypass) return;
+                _enableCaptchaBypass = value;
                 OnPropertyChanged();
             }
         }
