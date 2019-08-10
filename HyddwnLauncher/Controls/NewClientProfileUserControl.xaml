@@ -100,7 +100,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox HorizontalAlignment="Left" VerticalAlignment="Top" Content="[EXPERIMENTAL] MultiClient Memory Edit" IsChecked="{Binding ElementName=This, Path=ClientProfile.EnableMultiClientMemoryEdit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <CheckBox HorizontalAlignment="Left" VerticalAlignment="Top" Content="[NA] MultiClient Memory Edit (Requires Admin)" IsChecked="{Binding ElementName=This, Path=ClientProfile.EnableMultiClientMemoryEdit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
             <StackPanel Margin="5 0 5 5" HorizontalAlignment="Stretch" ToolTip="{x:Static p:Resources.SavedCredentials}">
                 <GroupBox Header="{x:Static p:Resources.SavedCredentials}" Margin="5">

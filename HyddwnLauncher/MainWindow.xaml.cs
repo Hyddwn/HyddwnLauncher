@@ -1411,7 +1411,7 @@ namespace HyddwnLauncher
             {
                 var process = Process.Start(ActiveClientProfile.Location, arguments);
 
-                if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit)
+                if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                 {
                     EnableMultiClient(process);
                 }
@@ -1485,7 +1485,7 @@ namespace HyddwnLauncher
                     Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs);
                     var process = Process.Start(ActiveClientProfile.Location, launchArgs);
 
-                    if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit)
+                    if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                     {
                         EnableMultiClient(process);
                     }
