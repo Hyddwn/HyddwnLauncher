@@ -350,6 +350,10 @@
                                             <CheckBox Content="{x:Static p:Resources.CloseLauncherAfterLaunching}"
                                                       IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.CloseAfterLaunching}"/>
                                         </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <CheckBox Content="Enable Device ID Tagging (Affects ALL Logins)"
+                                                      IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.EnableDeviceIdTagging}"/>
+                                        </StackPanel>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                         <StackPanel Orientation="Horizontal" Margin="5">

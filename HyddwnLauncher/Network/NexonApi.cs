@@ -43,7 +43,7 @@ namespace HyddwnLauncher.Network
         private DispatcherTimer _idTokenExpiryTimer;
         private bool _idTokenIsExpired;
 
-
+        public string LastLoginUsername => _lastLoginUsername;
 
         private string _lastAuthenticationProfileGuid;
 
@@ -133,7 +133,7 @@ namespace HyddwnLauncher.Network
                    (_accessToken != NexonErrorCode.LoginFailed || _accessToken != NexonErrorCode.DevError) && guid == _lastAuthenticationProfileGuid;
         }
 
-        public async Task<string> GetNxAuthHash()
+        public async Task<string> GetNxAuthHash(string username)
         {
             if (!IsAccessTokenValid(_lastAuthenticationProfileGuid))
                 return _accessToken;
@@ -144,7 +144,7 @@ namespace HyddwnLauncher.Network
 
             var requestBody = new CheckPlayableV2Request
             {
-                DeviceId = GetDeviceUuid(),
+                DeviceId = GetDeviceUuid(username),
                 IdToken = _idToken,
                 ProductId = "10200"
             };
@@ -241,21 +241,21 @@ namespace HyddwnLauncher.Network
             return version;
         }
 
-        public async Task<GetAccessTokenResponse> GetAccessTokenWithIdTokenOrPassword(string username, string password, IClientProfile clientProfile, bool rememberMe)
+        public async Task<GetAccessTokenResponse> GetAccessTokenWithIdTokenOrPassword(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging)
         {
             var currentDate = DateTime.Now;
 
             if (string.IsNullOrWhiteSpace(clientProfile.LastIdToken) ||  currentDate.Subtract(clientProfile.LastRefreshTime) > TimeSpan.FromSeconds(clientProfile.TokenExpirationTimeFrame) || !rememberMe)
             {
                 Log.Info("Using username and password");
-                return await GetAccessToken(username, password, clientProfile, rememberMe);
+                return await GetAccessToken(username, password, clientProfile, rememberMe, enableTagging);
             }
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
             var request = _restClient.Create("/account-webapi/login/launcher");
 
-            var deviceId = GetDeviceUuid();
+            var deviceId = GetDeviceUuid(enableTagging ? username : "");
 
             var initialRequestBody = new IdTokenRefreshRequest
             {
@@ -277,7 +277,7 @@ namespace HyddwnLauncher.Network
                 data = await response.GetContent();
                 var error = JsonConvert.DeserializeObject<ErrorResponse>(data);
                 Log.Info("Refresh failed, using username and password: \r\nError: {0}\r\nMessage: {1}", error.Code, error.Message);
-                return await GetAccessToken(username, password, clientProfile, true);
+                return await GetAccessToken(username, password, clientProfile, true, enableTagging);
             }
 
             // dispose of password yo
@@ -305,10 +305,12 @@ namespace HyddwnLauncher.Network
             StartAccessTokenExpiryTimer(_accessTokenExpiration);
             StartIdTokenExpiryTimer(_idTokenExpiration);
 
+            _lastLoginUsername = username;
+
             return new GetAccessTokenResponse { Success = true };
         }
 
-        public async Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile, bool rememberMe)
+        public async Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging)
         {
             if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == clientProfile.Guid)
                 return new GetAccessTokenResponse {Success = true};
@@ -319,7 +321,7 @@ namespace HyddwnLauncher.Network
 
             var request = _restClient.Create("/account-webapi/login/launcher");
 
-            var deviceId = GetDeviceUuid();
+            var deviceId = GetDeviceUuid(enableTagging ? username : "");
 
             var initialRequestBody = new AccountLoginRequest
             {
@@ -412,6 +414,8 @@ namespace HyddwnLauncher.Network
             StartAccessTokenExpiryTimer(_accessTokenExpiration);
             StartIdTokenExpiryTimer(_idTokenExpiration);
 
+            _lastLoginUsername = username;
+
             return new GetAccessTokenResponse {Success = true};
         }
 
@@ -463,7 +467,7 @@ namespace HyddwnLauncher.Network
         ///     Gets Device ID
         /// </summary>
         /// <returns></returns>
-        public static string GetDeviceUuid()
+        public static string GetDeviceUuid(string tag = "")
         {
             var deviceId = "";
 
@@ -507,6 +511,7 @@ namespace HyddwnLauncher.Network
             }
 
             if (string.IsNullOrWhiteSpace(deviceId)) return null;
+            if (!string.IsNullOrWhiteSpace(tag)) deviceId += tag;
             deviceId = BitConverter.ToString(Sha256.ComputeHash(Encoding.UTF8.GetBytes(deviceId))).Replace("-", "")
                 .ToLower();
 

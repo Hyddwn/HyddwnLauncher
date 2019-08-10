@@ -333,7 +333,7 @@ namespace HyddwnLauncher
                             if (credentials != null)
                             {
                                 var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
-                                    credentials.Password, ActiveClientProfile, true);
+                                    credentials.Password, ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
 
                                 LastResponseObject = success;
 
@@ -621,7 +621,7 @@ namespace HyddwnLauncher
             if (RememberMeCheckBox.IsChecked != null && (bool) RememberMeCheckBox.IsChecked)
                 CredentialsStorage.Instance.Add(ActiveClientProfile.Guid, username, password);
 
-            var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, password, ActiveClientProfile, RememberMeCheckBox.IsChecked != null && (bool)RememberMeCheckBox.IsChecked);
+            var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, password, ActiveClientProfile, RememberMeCheckBox.IsChecked != null && (bool)RememberMeCheckBox.IsChecked, Settings.LauncherSettings.EnableDeviceIdTagging);
 
             if (!success.Success)
             {
@@ -705,7 +705,7 @@ namespace HyddwnLauncher
             var saveDevice = NxDeviceTrustRememberMe.IsChecked != null && (bool) NxDeviceTrustRememberMe.IsChecked;
 
             var success =
-                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(), saveDevice);
+                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice);
 
             if (!success)
             {
@@ -724,12 +724,12 @@ namespace HyddwnLauncher
             {
                 if (credentials != null)
                     loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username, credentials.Password,
-                        ActiveClientProfile, true);
+                        ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
             }
             else
             {
                 loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, NxAuthLoginPassword.Password,
-                    ActiveClientProfile, false);
+                    ActiveClientProfile, false, Settings.LauncherSettings.EnableDeviceIdTagging);
             }
 
             if (!loginSuccess.Success)
@@ -1184,7 +1184,7 @@ namespace HyddwnLauncher
                 {
                     var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
                         credentials.Password,
-                        ActiveClientProfile, true);
+                        ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
 
                     if (success.Success)
                     {
@@ -1312,7 +1312,7 @@ namespace HyddwnLauncher
                             {
                                 var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
                                     credentials.Password,
-                                    ActiveClientProfile, true);
+                                    ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
 
                                 if (success.Success)
                                 {
@@ -1471,7 +1471,7 @@ namespace HyddwnLauncher
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingPassport);
-            var passport = await NexonApi.Instance.GetNxAuthHash();
+            var passport = await NexonApi.Instance.GetNxAuthHash(Settings.LauncherSettings.EnableDeviceIdTagging ? NexonApi.Instance.LastLoginUsername : "");
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
             var launchArgs = await Patcher.GetLauncherArguments();
