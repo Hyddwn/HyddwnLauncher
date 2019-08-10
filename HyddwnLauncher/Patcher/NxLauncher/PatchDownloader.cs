@@ -299,7 +299,12 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 Populate(patches);
 
                 if (Directory.Exists(downloadDirectory))
-                    Directory.Delete(downloadDirectory, true);
+                    TryDeleteDirectory(downloadDirectory);
+
+                if (Directory.Exists(downloadDirectory))
+                {
+                    throw new InvalidOperationException("An issue occured while attempting to clear previous patch data! Patching will not continue.");
+                }
 
                 foreach (var downloadWrapper in _downloadWrappers.Values)
                 {
@@ -323,6 +328,18 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                     {
                         _fileParts.Enqueue(filePartInfo);
                     }
+                }
+            }
+
+            private void TryDeleteDirectory(string p)
+            {
+                try
+                {
+                    Directory.Delete(p, true);
+                }
+                catch (Exception ex)
+                {
+                    Log.Info(Properties.Resources.CouldNotDeleteFile, p, ex.Message);
                 }
             }
 

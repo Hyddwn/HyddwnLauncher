@@ -117,13 +117,27 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             PatcherContext.UpdateMainProgress(Properties.Resources.ApplyingUpdates, "", 0, true, true);
 
             var patchDownloader = new PatchDownloader(Patches, ClientProfile, PatcherContext);
-            await Task.Run(() => patchDownloader.Prepare());
-            var result = await Task.Run(() => patchDownloader.Patch());
-            await Task.Run(() => patchDownloader.Cleanup());
-            PatcherContext.UpdateMainProgress(result ? Properties.Resources.PatchComplete : Properties.Resources.PatchFailed);
 
-            PatcherContext.SetPatcherState(false);
-            PatcherContext.HideSession();
+            bool result = false;
+
+            try
+            {
+                await Task.Run(() => patchDownloader.Prepare());
+                result = await Task.Run(() => patchDownloader.Patch());
+                await Task.Run(() => patchDownloader.Cleanup());
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Failed to patch!");
+            }
+            finally
+            {
+                PatcherContext.UpdateMainProgress(result ? Properties.Resources.PatchComplete : Properties.Resources.PatchFailed);
+
+                PatcherContext.SetPatcherState(false);
+                PatcherContext.HideSession();
+            }
+
             return result;
         }
 
