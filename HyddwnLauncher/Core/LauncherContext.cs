@@ -8,6 +8,8 @@ namespace HyddwnLauncher.Core
 {
     public class LauncherContext
     {
+        public static readonly LauncherContext Instance = new LauncherContext();
+
         private readonly string[] _images =
         {
             "bangor.png",
@@ -19,7 +21,7 @@ namespace HyddwnLauncher.Core
             "vans.png"
         };
 
-        public LauncherContext(string logFileLocation, string version, string betaVersion)
+        public void Initialize(string logFileLocation, string version, string betaVersion)
         {
             LogFileLocation = logFileLocation;
             Version = version;

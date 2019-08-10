@@ -40,7 +40,7 @@ namespace HyddwnLauncher
             Log.Info(HyddwnLauncher.Properties.Resources.HyddwnLauncherVersion, launcherVersionString);
 
             Log.Info(HyddwnLauncher.Properties.Resources.InitializingLauncherContext);
-            var launcherContext = new LauncherContext(logFile, launcherVersionString, betaVersion);
+            LauncherContext.Instance.Initialize(logFile, launcherVersionString, betaVersion);
 
 #if DEBUG
             launcherContext.LauncherSettingsManager.Reset();
@@ -62,7 +62,7 @@ namespace HyddwnLauncher
 
                 if (e.Args[index].Contains("/noadmin"))
                 {
-                    launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin = false;
+                    LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.RequiresAdmin = false;
                     Log.Info(HyddwnLauncher.Properties.Resources.NoadminWasDeclared);
                 }
 
@@ -74,13 +74,13 @@ namespace HyddwnLauncher
 
                 if (e.Args[index].Contains("/noupdate"))
                 {
-                    launcherContext.LauncherSettingsManager.LauncherSettings.DisableLauncherUpdateCheck = true;
+                    LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.DisableLauncherUpdateCheck = true;
                     Log.Info("noupdate was declared, disabling the launcher's update check in settings.");
                 }
 
                 if (e.Args[index].Contains("/nopatch"))
                 {
-                    launcherContext.LauncherSettingsManager.LauncherSettings.AllowPatching = false;
+                    LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.AllowPatching = false;
                     Log.Info("nopatch was declared, disabling the launcher's patching system in settings.");
                 }
             }
@@ -95,15 +95,15 @@ namespace HyddwnLauncher
             launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin = false;
             launcherContext.LauncherSettingsManager.LauncherSettings.FirstRun = true;
 #endif
-            CheckForAdmin(launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin);
+            CheckForAdmin(LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.RequiresAdmin);
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.DefaultConnectionLimit =
-                launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit;
+                LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.ConnectionLimit;
             Log.Info(
                 string.Format(HyddwnLauncher.Properties.Resources.AppliedMaximumDownloadLimit,
-                    launcherContext.LauncherSettingsManager.LauncherSettings.ConnectionLimit));
+                    LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.ConnectionLimit));
             Log.Info(HyddwnLauncher.Properties.Resources.ApplicationInitialized);
-            var mainWindow = new MainWindow(launcherContext);
+            var mainWindow = new MainWindow(LauncherContext.Instance);
             Current.MainWindow = mainWindow;
             mainWindow.Show();
             base.OnStartup(e);
