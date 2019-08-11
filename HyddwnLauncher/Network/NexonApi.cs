@@ -448,7 +448,16 @@ namespace HyddwnLauncher.Network
 
             var response = await request.ExecutePut<string>();
 
-            return response.StatusCode != HttpStatusCode.BadRequest;
+            if (response.StatusCode != HttpStatusCode.BadRequest)
+                return true;
+
+            var data = await response.GetContent();
+            var responseObject = JsonConvert.DeserializeObject<ErrorResponse>(data);
+            Log.Info("Failed code verification. Code: {0} | Description: {1}", responseObject.Code,
+                responseObject.Description);
+
+
+            return false;
         }
 
         private void StartAccessTokenExpiryTimer(int timeout = 7200)
