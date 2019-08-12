@@ -296,8 +296,8 @@ namespace HyddwnLauncher.Util
                 return;
             }
 
-            // generate a temp filename
-            var tempPath = Path.GetTempFileName();
+            // use the same folder so that they are always on the same drive!
+            var tempPath = Path.Combine(Path.GetDirectoryName(path), Guid.NewGuid().ToString());
 
             // create the backup name
             var backup = path + ".backup";
