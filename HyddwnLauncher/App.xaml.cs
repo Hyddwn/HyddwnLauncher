@@ -43,7 +43,7 @@ namespace HyddwnLauncher
             LauncherContext.Instance.Initialize(logFile, launcherVersionString, betaVersion);
 
 #if DEBUG
-            launcherContext.LauncherSettingsManager.Reset();
+            LauncherContext.Instance.LauncherSettingsManager.Reset();
 #endif
 
             Log.Info(HyddwnLauncher.Properties.Resources.CheckingForLaunchArguments);
@@ -92,8 +92,8 @@ namespace HyddwnLauncher
             }
 
 #if DEBUG
-            launcherContext.LauncherSettingsManager.LauncherSettings.RequiresAdmin = false;
-            launcherContext.LauncherSettingsManager.LauncherSettings.FirstRun = true;
+            LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.RequiresAdmin = false;
+            LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.FirstRun = true;
 #endif
             CheckForAdmin(LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.RequiresAdmin);
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
