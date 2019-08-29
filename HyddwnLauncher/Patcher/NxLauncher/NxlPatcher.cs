@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
@@ -22,7 +23,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         internal PatchIgnore PatchIgnore { get; private set; }
         public List<Patch> Patches { get; private set; }
         private int _version;
-        private bool _possibleNewPack;
+        private int _latestVersion;
 
         public NxlPatcher(IClientProfile clientProfile, IServerProfile serverProfile, PatcherContext patcherContext)
             : base(clientProfile, serverProfile, patcherContext)
@@ -87,18 +88,16 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             PatchIgnore.Initialize(ClientProfile.Location);
 
-            var latestVersion = await NexonApi.Instance.GetLatestVersion();
+            _latestVersion = await NexonApi.Instance.GetLatestVersion();
 
-            _possibleNewPack = version < latestVersion;
-
-            _version = latestVersion;
+            _version = _latestVersion;
 
             await GetManifestJson(_version);
 
             FileDownloadInfos = await GetFileDownloadInfo();
 
-            if (version < latestVersion || overrideSettings ||
-                (version == latestVersion && PatchSettingsManager.Instance.PatcherSettings.ForceUpdateCheck))
+            if (version < _latestVersion || overrideSettings ||
+                (version == _latestVersion && PatchSettingsManager.Instance.PatcherSettings.ForceUpdateCheck))
             {
                 GetPatchList(overrideSettings);
 
@@ -325,7 +324,8 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 {
                     if (filePath.StartsWith("package\\")
                         && PatchSettingsManager.Instance.PatcherSettings.IgnorePackageFolder
-                        && (_possibleNewPack && !filePath.Contains(_version.ToString()) || !_possibleNewPack))
+                        && !
+                            GetIsNewPackFile(filePath))
                         continue;
 
                     if (PatchIgnore.IgnoredFiles.Contains(filePath))
@@ -394,6 +394,45 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                     Log.Info(Properties.Resources.PatchRequiredFor, filePath, patch.PatchReason.LocalizedPatchReason());
                 }
             }
+        }
+
+        public bool GetIsNewPackFile(string filePath)
+        {
+            return GetIsNewPackFile(filePath, _version, _latestVersion);
+        }
+
+        public bool GetIsNewPackFile(string filePath, int minimum, int maximum)
+        {
+            if (string.IsNullOrWhiteSpace(filePath) || minimum >= maximum)
+                return false;
+
+            var packName = Path.GetFileName(filePath);
+
+            string match;
+            var packVersion = -1;
+
+            if (packName.Contains("_to_"))
+            {
+                const string matchRegex = @"(_\d+)";
+                match = Regex.Match(packName, matchRegex).Value;
+                var toMatch = match.Replace("_", "");
+
+                int.TryParse(toMatch, out packVersion);
+            }
+
+            if (packName.Contains("full"))
+            {
+                const string matchRegex = @"(\d+_)";
+                match = Regex.Match(packName, matchRegex).Value;
+                var fromMatch = match.Replace("_", "");
+
+                int.TryParse(fromMatch, out packVersion);
+            }
+
+            if (packVersion != -1) return packVersion.IsWithin(minimum + 1, maximum);
+
+            Log.Warning("There was an issue with detecting the pack version using the pack naming scheme. Forcing the download of '{0}'", filePath);
+            return true;
         }
     }
 }

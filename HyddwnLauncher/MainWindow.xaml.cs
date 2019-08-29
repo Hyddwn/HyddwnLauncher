@@ -1411,7 +1411,7 @@ namespace HyddwnLauncher
                 {
                     var message = EnableMultiClient(process);
                     if (message != null)
-                        await this.ShowMessageAsync("Patch Failed!", message);
+                        await this.ShowMessageAsync("Failed to Enable MultiClient", message);
                 }
 
                 PluginHost.PostLaunch();
@@ -1487,7 +1487,7 @@ namespace HyddwnLauncher
                     {
                         var message = EnableMultiClient(process);
                         if (message != null)
-                            await this.ShowMessageAsync("Patch Failed!", message);
+                            await this.ShowMessageAsync("Failed to Enable MultiClient", message);
                     }
 
                     PluginHost.PostLaunch();

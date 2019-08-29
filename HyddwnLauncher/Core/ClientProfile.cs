@@ -28,6 +28,8 @@ namespace HyddwnLauncher.Core
         {
             Localization = "North America";
             EnableMultiClientMemoryEdit = false;
+            Name = "New Profile";
+            Location = "C:\\Nexon\\Library\\mabinogi\\appdata\\Client.exe";
         }
 
         public string Name

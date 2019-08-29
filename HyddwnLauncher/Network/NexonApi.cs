@@ -209,35 +209,13 @@ namespace HyddwnLauncher.Network
 
         public async Task<int> GetLatestVersion()
         {
-            if (_accessToken == null || _accessTokenIsExpired)
-                throw new Exception("Invalid or expired access token!");
-
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
-
-            var request = _restClient.Create("/products/10200");
-
-            var response = await request.ExecuteGet<string>();
-
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-                return -1;
-
-            //TODO: Detect responses for real.
-            var data = await response.GetContent();
-
-            if (string.IsNullOrWhiteSpace(data))
-                return -1;
-
-            var body = JsonConvert.DeserializeObject<dynamic>(data);
-
-            var manifestUrl = body["product_details"]["manifestUrl"].Value;
-
+            var details = await GetManifestUrl();
+            var manifestUrl = details.ManifestUrl.Replace("https://download2.nexon.net", "");
             var versionSearch = "([\\d]*R)";
-
             if (manifestUrl == null)
                 return -1;
 
             string match = Regex.Match(manifestUrl, versionSearch).Value;
-
             int.TryParse(match.Replace('R', ' '), out var version);
 
             return version;
