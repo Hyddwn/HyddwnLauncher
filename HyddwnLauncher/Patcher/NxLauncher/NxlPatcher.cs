@@ -143,7 +143,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         public override async Task<string> GetLauncherArguments()
         {
             var response = await NexonApi.Instance.GetLaunchConfig();
-            var args = response.LaunchConfig.Arguments;
+            var args = response.Arguments;
             var cla = new ClientLaunchArguments(args.ToArray());
 
             return cla.ToString();
