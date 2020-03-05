@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Management;
@@ -71,7 +71,9 @@ namespace HyddwnLauncher.Network
                 .AddQueryString("lang", "en")
                 .ExecuteGet<string>();
 
-            return restResponse.StatusCode != HttpStatusCode.OK;
+            var body = await restResponse.GetContent();
+
+            return !string.IsNullOrWhiteSpace(body);
         }
 
         public async Task<LauncherConfigResponse> GetLaunchConfig()
