@@ -128,11 +128,11 @@ namespace HyddwnLauncher
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingLauncherVersion);
             Log.Info(Properties.Resources.HyddwnLauncherVersion, LauncherContext.Version);
             LauncherVersion.SetRunSafe(LauncherContext.Version);
-            if (LauncherContext.BetaVersion != "0")
-            {
-                IsBeta = true;
-                BetaVersion.SetRunSafe(LauncherContext.BetaVersion);
-            }
+            //if (LauncherContext.BetaVersion != "0")
+            //{
+            //    IsBeta = true;
+            //    BetaVersion.SetRunSafe(LauncherContext.BetaVersion);
+            //}
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingMabinogiVersion);
             var mabiVers = Patcher?.ReadVersion() ?? ReadVersion();
@@ -1141,7 +1141,7 @@ namespace HyddwnLauncher
             });
         }
 
-        private void ConfigurePatcher()
+        private async void ConfigurePatcher()
         {
             if (ActiveServerProfile == null) return;
             if (ActiveClientProfile == null) return;
@@ -1236,6 +1236,8 @@ namespace HyddwnLauncher
             Patcher = ActiveClientProfile.Localization == ClientLocalization.NorthAmerica
                 ? new NxlPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext)
                 : (IPatcher)new LegacyPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext);
+
+            IsInMaintenance = await Patcher.GetMaintenanceStatus();
         }
 
         private async Task DeletePackFiles()
@@ -1409,7 +1411,7 @@ namespace HyddwnLauncher
 
                 if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                 {
-                    var message = EnableMultiClient(process);
+                    var message = await EnableMultiClient(process);
                     if (message != null)
                         await this.ShowMessageAsync("Failed to Enable MultiClient", message);
                 }
@@ -1485,7 +1487,7 @@ namespace HyddwnLauncher
 
                     if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                     {
-                        var message = EnableMultiClient(process);
+                        var message = await EnableMultiClient(process);
                         if (message != null)
                             await this.ShowMessageAsync("Failed to Enable MultiClient", message);
                     }
@@ -1529,13 +1531,13 @@ namespace HyddwnLauncher
             }
         }
 
-        public string EnableMultiClient(Process process)
+        public async Task<string> EnableMultiClient(Process process)
         {
             Log.Info("Attempting to enable multiclient");
             try
             {
                 var memoryEditor = new MemoryEditor(ActiveClientProfile, Patcher.ReadVersion());
-                var error = memoryEditor.ApplyPatchesToProcessById(process.Id);
+                var error = await memoryEditor.ApplyPatchesToProcessById(process.Id);
                 if (error == null)
                     Log.Info("Patched successfully!");
 

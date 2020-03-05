@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HyddwnLauncher.Extensibility</RootNamespace>
     <AssemblyName>HyddwnLauncher.Extensibility</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,8 +63,10 @@
     <Compile Include="Model\CheckPlayableV2Request.cs" />
     <Compile Include="Model\ErrorResponse.cs" />
     <Compile Include="Model\GetAccessTokenResponse.cs" />
+    <Compile Include="Model\GetMaintenanceStatusResponse.cs" />
     <Compile Include="Model\GetManifestResponse.cs" />
     <Compile Include="Model\IdTokenRefreshRequest.cs" />
+    <Compile Include="Model\LauncherConfigResponseV2.cs" />
     <Compile Include="Model\NexonErrorCode.cs" />
     <Compile Include="Model\PassportV1Response.cs" />
     <Compile Include="Model\PassportV1Request.cs" />
@@ -72,6 +75,7 @@
     <Compile Include="Model\NexonPassport.cs" />
     <Compile Include="Model\SupportedArch.cs" />
     <Compile Include="Model\SupportedOs.cs" />
+    <Compile Include="Model\SupportedOsV2.cs" />
     <Compile Include="Model\TrustDeviceRequest.cs" />
     <Compile Include="Model\UserAvatar.cs" />
     <Compile Include="Model\UserProfileResponse.cs" />

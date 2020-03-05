@@ -143,7 +143,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         public override async Task<string> GetLauncherArguments()
         {
             var response = await NexonApi.Instance.GetLaunchConfig();
-            var args = response.LaunchConfig.Arguments;
+            var args = response.Arguments;
             var cla = new ClientLaunchArguments(args.ToArray());
 
             return cla.ToString();
@@ -324,17 +324,15 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 {
                     if (filePath.StartsWith("package\\")
                         && PatchSettingsManager.Instance.PatcherSettings.IgnorePackageFolder
-                        && !
-                            GetIsNewPackFile(filePath))
+                        && !GetIsNewPackFile(filePath))
                         continue;
-
-                    if (PatchIgnore.IgnoredFiles.Contains(filePath))
-                    {
-                        Log.Info($"File: '{filePath}' in ignore list, file will not be patched!");
-                        continue;
-                    }
                 }
-                    
+
+                if (PatchIgnore.IgnoredFiles.Contains(filePath))
+                {
+                    Log.Info($"File: '{filePath}' in ignore list, file will not be patched!");
+                    continue;
+                }
 
                 if (fileDownloadInfo.FileInfoType == FileInfoType.Directory)
                 {

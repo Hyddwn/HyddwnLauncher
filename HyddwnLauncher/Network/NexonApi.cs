@@ -9,6 +9,7 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using System.Windows.Threading;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility.Interfaces;
@@ -71,22 +72,24 @@ namespace HyddwnLauncher.Network
                 .AddQueryString("lang", "en")
                 .ExecuteGet<string>();
 
-            return restResponse.StatusCode != HttpStatusCode.OK;
+            var body = await restResponse.GetContent();
+
+            return !string.IsNullOrWhiteSpace(body);
         }
 
-        public async Task<LauncherConfigResponse> GetLaunchConfig()
+        public async Task<LauncherConfigResponseV2> GetLaunchConfig()
         {
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
 
             _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
-            var restResponse = await _restClient.Create("/game-info/v1/games/10200").ExecuteGet<string>();
+            var restResponse = await _restClient.Create("/game-info/v2/games/10200").ExecuteGet<string>();
             if (restResponse.StatusCode == HttpStatusCode.BadRequest) return null;
             var body = await restResponse.GetContent();
 
             try
             {
-                var obj = JsonConvert.DeserializeObject<LauncherConfigResponse>(body);
+                var obj = JsonConvert.DeserializeObject<LauncherConfigResponseV2>(body);
                 return obj;
             }
             catch (Exception ex)
@@ -102,7 +105,7 @@ namespace HyddwnLauncher.Network
                 throw new Exception("Invalid or expired access token!");
 
             _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
-            var restResponse = await _restClient.Create("/game-info/v1/games/10200/branch/public").ExecuteGet<string>();
+            var restResponse = await _restClient.Create("/game-info/v2/games/10200/branch/public").ExecuteGet<string>();
             if (restResponse.StatusCode == HttpStatusCode.BadRequest) return null;
             var body = await restResponse.GetContent();
 

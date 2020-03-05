@@ -1,9 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
+using HyddwnLauncher.Core;
+using HyddwnLauncher.Extensibility.Model;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
+using Sentry;
+using Sentry.Protocol;
 
 namespace HyddwnLauncher
 {
@@ -12,46 +19,60 @@ namespace HyddwnLauncher
         [STAThread]
         public static void Main(string[] args)
         {
-            var assemblypath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             //Thread.CurrentThread.CurrentUICulture = new CultureInfo("ja-JP");
 
-            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+            var sentryOptions = new SentryOptions
+            {
+                BeforeSend = BeforeSend,
+                Dsn = new Dsn("https://62a499d239a54e118ea5770379c06b37@sentry.io/1795758"),
+            };
+
+            using (SentrySdk.Init(sentryOptions))
+            {
+                App.Main();
+            }
+        }
+
+        private static SentryEvent BeforeSend(SentryEvent arg)
+        {
+            var assemblypath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var send = true;
+            arg.SetTag("admin", App.IsAdministrator().ToString());
+            arg.SetTag("beta", (!string.IsNullOrWhiteSpace(LauncherContext.Instance.BetaVersion)).ToString());
+
+            try
             {
                 try
                 {
-                    try
-                    {
-                        if (!Directory.Exists($@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions"))
-                            Directory.CreateDirectory($@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions");
+                    if (!Directory.Exists($@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions"))
+                        Directory.CreateDirectory($@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions");
 
-                        File.WriteAllText(
-                            $@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions\Unhandled_Exception-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log",
-                            string.Format(Resources.HyddwnLauncherVersion, 1) +
-                            string.Format(Resources.UnhandledExceptionFileSegmentException, eventArgs.ExceptionObject));
-                    }
-                    catch
-                    {
-                        Clipboard.SetText(eventArgs.ExceptionObject.ToString());
-                        MessageBox.Show(
-                            string.Format(
-                                Resources.UnhandledExceptionFileError,
-                                eventArgs.ExceptionObject));
-                        Environment.Exit(1);
-                    }
-
-                    Log.Exception((Exception) eventArgs.ExceptionObject, Resources.UnhandledExceptionFatalError);
-                    new ExceptionReporter((Exception) eventArgs.ExceptionObject).ShowDialog();
+                    File.WriteAllText(
+                        $@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions\Unhandled_Exception-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log",
+                        string.Format(Resources.HyddwnLauncherVersion, 1) +
+                        string.Format(Resources.UnhandledExceptionFileSegmentException, arg.Exception));
                 }
                 catch
                 {
-                    Environment.Exit(1);
+                    Clipboard.SetText(arg.Exception.ToString());
+                    MessageBox.Show(
+                        string.Format(
+                            Resources.UnhandledExceptionFileError,
+                            arg.Exception));
+                    return arg;
                 }
-                finally
-                {
-                    Environment.Exit(1);
-                }
-            };
-            App.Main();
+
+                Log.Exception(arg.Exception, Resources.UnhandledExceptionFatalError);
+                var exceptionReporter = new ExceptionReporter(arg.Exception);
+                exceptionReporter.ShowDialog();
+                send = exceptionReporter.Result;
+            }
+            catch
+            {
+                return arg;
+            }
+
+            return send ? arg : null;
         }
     }
 }

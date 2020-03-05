@@ -1515,7 +1515,7 @@ namespace HyddwnLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Maintenance.
+        ///   Looks up a localized string similar to /!\ Maintenance.
         /// </summary>
         public static string Maintenance {
             get {

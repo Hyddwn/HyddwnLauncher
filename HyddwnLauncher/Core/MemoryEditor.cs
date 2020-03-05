@@ -34,10 +34,12 @@ namespace HyddwnLauncher.Core
             //});
         }
 
-        public string ApplyPatchesToProcessById(int processId)
+        public async Task<string> ApplyPatchesToProcessById(int processId)
         {
             Log.Info("Started patching process with ID: {0}", processId);
             var memory = new Memory(processId);
+
+            await Task.Delay(500);
 
             Log.Info("Attempting to get module handle.");
             var moduleHandle = memory.GetProcessModuleHandle("client.exe");
@@ -60,7 +62,7 @@ namespace HyddwnLauncher.Core
                 return string.Format("Patch Failed: Failed to get module info: {0}", error.Message);
             }
 
-            Log.Info("Attempting to applying patch: Enable MultiClient");
+            Log.Info("Attempting to apply patch: Enable MultiClient");
 
             var pattern = new short[]
             {
@@ -82,7 +84,7 @@ namespace HyddwnLauncher.Core
 
             if (address == IntPtr.Zero)
             {
-                address = memory.QuickSearch((uint)moduleInfo.lpBaseOfDll,
+                address = await memory.QuickSearch((uint)moduleInfo.lpBaseOfDll,
                     (uint)moduleInfo.lpBaseOfDll + moduleInfo.SizeOfImage, pattern);
 
                 if (address == IntPtr.Zero)

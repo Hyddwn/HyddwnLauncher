@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using HyddwnLauncher.Util;
 using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Network.Rest
@@ -152,9 +151,9 @@ namespace HyddwnLauncher.Network.Rest
         /// </exception>
         public void CheckResponse(HttpResponseMessage httpResponseMessage)
         {
-            if (httpResponseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                throw new UnauthorizedAccessException(
-                    Properties.Resources.NexonAPIUnauthorized);
+            // if (httpResponseMessage.StatusCode == HttpStatusCode.Unauthorized)
+            //     throw new UnauthorizedAccessException(
+            //         Properties.Resources.NexonAPIUnauthorized);
         }
 
         /// <exception cref="UnauthorizedAccessException">
@@ -165,7 +164,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Get).ConfigureAwait(false);
 
-            CheckResponse(httpResponseMessage);
+            // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
         }
@@ -178,7 +177,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
 
-            CheckResponse(httpResponseMessage);
+            // CheckResponse(httpResponseMessage);
 
             return new RestResponse(httpResponseMessage);
         }
@@ -191,7 +190,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
 
-            CheckResponse(httpResponseMessage);
+            // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
         }
@@ -204,7 +203,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
 
-            CheckResponse(httpResponseMessage);
+            // CheckResponse(httpResponseMessage);
 
             return new RestResponse(httpResponseMessage);
         }
@@ -217,7 +216,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
 
-            CheckResponse(httpResponseMessage);
+            // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
         }
@@ -230,7 +229,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
 
-            CheckResponse(httpResponseMessage);
+            // CheckResponse(httpResponseMessage);
 
             return new RestResponse(httpResponseMessage);
         }
@@ -243,7 +242,7 @@ namespace HyddwnLauncher.Network.Rest
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
 
-            CheckResponse(httpResponseMessage);
+            // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
         }
@@ -266,7 +265,7 @@ namespace HyddwnLauncher.Network.Rest
                 var httpRequest = PrepRequest(method);
                 httpResponseMessage = await new HttpClient().SendAsync(httpRequest).ConfigureAwait(false);
 
-                if (httpResponseMessage.StatusCode == (HttpStatusCode) 429)
+                if (httpResponseMessage.StatusCode == (HttpStatusCode)429)
                 {
                     // The previous result was a ratelimit, read the Retry-After header and wait the allotted time
                     if (httpResponseMessage.Headers.RetryAfter?.Delta != null)

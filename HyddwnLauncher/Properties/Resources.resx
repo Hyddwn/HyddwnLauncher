@@ -449,7 +449,7 @@ An error occurred which has caused this application to operate incorrectly. Copy
     <value>MabiMods Profile</value>
   </data>
   <data name="Maintenance" xml:space="preserve">
-    <value>Maintenance</value>
+    <value>/!\ Maintenance</value>
   </data>
   <data name="MaintenanceMessage" xml:space="preserve">
     <value>Mabinogi is currently in maintenance, would you like to continue?</value>
