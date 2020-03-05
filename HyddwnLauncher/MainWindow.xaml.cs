@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -128,11 +128,11 @@ namespace HyddwnLauncher
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingLauncherVersion);
             Log.Info(Properties.Resources.HyddwnLauncherVersion, LauncherContext.Version);
             LauncherVersion.SetRunSafe(LauncherContext.Version);
-            if (LauncherContext.BetaVersion != "0")
-            {
-                IsBeta = true;
-                BetaVersion.SetRunSafe(LauncherContext.BetaVersion);
-            }
+            //if (LauncherContext.BetaVersion != "0")
+            //{
+            //    IsBeta = true;
+            //    BetaVersion.SetRunSafe(LauncherContext.BetaVersion);
+            //}
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingMabinogiVersion);
             var mabiVers = Patcher?.ReadVersion() ?? ReadVersion();
@@ -1141,7 +1141,7 @@ namespace HyddwnLauncher
             });
         }
 
-        private void ConfigurePatcher()
+        private async void ConfigurePatcher()
         {
             if (ActiveServerProfile == null) return;
             if (ActiveClientProfile == null) return;
@@ -1236,6 +1236,8 @@ namespace HyddwnLauncher
             Patcher = ActiveClientProfile.Localization == ClientLocalization.NorthAmerica
                 ? new NxlPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext)
                 : (IPatcher)new LegacyPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext);
+
+            IsInMaintenance = await Patcher.GetMaintenanceStatus();
         }
 
         private async Task DeletePackFiles()

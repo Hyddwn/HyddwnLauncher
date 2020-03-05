@@ -539,10 +539,10 @@
                 <Run Text=": "/>
                 <Run x:Name="LauncherVersion" Text="0"/>
             </TextBlock>
-            <TextBlock Visibility="{Binding ElementName=This, Path=IsBeta, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5 0 0 0" FontWeight="ExtraBold">
+            <!--<TextBlock Visibility="{Binding ElementName=This, Path=IsBeta, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5 0 0 0" FontWeight="ExtraBold">
                 <Run Text="BETA"/>
                 <Run x:Name="BetaVersion"/>
-            </TextBlock>
+            </TextBlock>-->
         </StackPanel>
         <!-- 
             OLD CODE NOT TRANSLATION COMPLIANT
@@ -565,10 +565,10 @@
         <CheckBox x:Name="UsePackfilesCheckBox" Content="{x:Static p:Resources.UsePackFile}" HorizontalAlignment="Left" Margin="291,331,0,0"
                   VerticalAlignment="Top"
                   IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UsePackFiles}" Height="26" />
-        <TextBlock x:Name="IsInMaintenanceTextBlock" HorizontalAlignment="Left" Height="16" Margin="725,353,0,0"
+        <TextBlock x:Name="IsInMaintenanceTextBlock" HorizontalAlignment="Left" Height="16" Margin="704,353,0,0"
                    TextWrapping="Wrap" Text="{x:Static p:Resources.Maintenance}" Foreground="{DynamicResource AccentColorBrush}"
                    Visibility="{Binding ElementName=This, Path=IsInMaintenance, Converter={StaticResource BooleanToVisibilityConverter}}"
-                   FontWeight="Bold" VerticalAlignment="Top"/>
+                   FontWeight="Bold" VerticalAlignment="Top" Width="110"/>
         <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0"
                    TextWrapping="Wrap"
                    Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
