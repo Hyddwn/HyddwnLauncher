@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -328,13 +328,11 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                             GetIsNewPackFile(filePath))
                         continue;
 
-                    if (PatchIgnore.IgnoredFiles.Contains(filePath))
-                    {
-                        Log.Info($"File: '{filePath}' in ignore list, file will not be patched!");
-                        continue;
-                    }
+                if (PatchIgnore.IgnoredFiles.Contains(filePath))
+                {
+                    Log.Info($"File: '{filePath}' in ignore list, file will not be patched!");
+                    continue;
                 }
-                    
 
                 if (fileDownloadInfo.FileInfoType == FileInfoType.Directory)
                 {
