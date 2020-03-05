@@ -400,7 +400,8 @@ Role: {7}
     <value>マビノギバージョン{0}</value>
   </data>
   <data name="Maintenance" xml:space="preserve">
-    <value>メンテナンス</value>
+    <value>/!\ メンテナンス</value>
+    <comment> </comment>
   </data>
   <data name="MaintenanceMessage" xml:space="preserve">
     <value>マビノギは現在メンテナンス中です。続けますか？</value>
