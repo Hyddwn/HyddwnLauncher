@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using HyddwnLauncher.Controls;
-using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Network;
@@ -80,10 +78,25 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                         Log.Info(Properties.Resources.DownloadedPartNumberPartNameForFileNameSuccessfully,
                             filePart.Index, filePart.PartName, filePart.FileName);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        Log.Exception(ex, Properties.Resources.FailedToDownloadPartNumberPartNameForFileName,
-                            filePart.Index, filePart.PartName, filePart.FileName);
+                        try
+                        {
+                            var partFilename = Path.Combine(downloadDirectory, $"{filePart.FileName}.{filePart.Index:D3}");
+
+                            await DownloadPart(downloadUrl, partFilename);
+                            _queueManager.AddToFileTable(filePart.FileName, partFilename, filePart.Index);
+                            Log.Info(Properties.Resources.DownloadedPartNumberPartNameForFileNameSuccessfully,
+                                filePart.Index, filePart.PartName, filePart.FileName);
+                        }
+                        catch (Exception ex1)
+                        {
+                            Log.Exception(ex1, Properties.Resources.FailedToDownloadPartNumberPartNameForFileName,
+                                filePart.Index, filePart.PartName, filePart.FileName);
+
+                            Interlocked.Increment(ref failedCount);
+                            failed = true;
+                        }
 
                         Interlocked.Increment(ref failedCount);
                         failed = true;
@@ -124,7 +137,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                     progressReporter.SetLeftText(Path.GetFileName(filename));
                     progressReporter.SetRightText(s);
                     progressReporter.SetProgressBar(d);
-                });
+                }, true);
             }).Wait();
 
             progressReporter.SetIsIndeterminate(true);

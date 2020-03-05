@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,11 +11,18 @@ namespace HyddwnLauncher.Network
     public static class AsyncDownloader
     {
         public static async Task DownloadFileWithCallbackAsync(string url, string file,
-            Action<double, string> callback)
+            Action<double, string> callback, bool specialOperation = false)
         {
             await Task.Delay(1);
             var client = new WebClient();
             var sw = new Stopwatch();
+
+            if (specialOperation)
+            {
+                client.Proxy = new WebProxy();
+                client.Headers.Add("Accept-Encoding", "identity");
+                client.Headers.Add("Pragma", "akamai-x-cache-on");
+            }
 
             client.DownloadProgressChanged += (sender, args) =>
             {
