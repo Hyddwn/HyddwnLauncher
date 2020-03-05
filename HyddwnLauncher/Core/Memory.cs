@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace HyddwnLauncher.Core
 {
@@ -136,28 +137,31 @@ namespace HyddwnLauncher.Core
             return bufferWritten;
         }
 
-        public IntPtr QuickSearch(uint lowerAddress, uint upperAddress, short[] searchPattern)
+        public async Task<IntPtr> QuickSearch(uint lowerAddress, uint upperAddress, short[] searchPattern)
         {
             uint address = 0;
 
-            for (var i = lowerAddress; i < upperAddress; ++i)
+            await Task.Run(() =>
             {
-                var found = true;
-                for (var x = 0; x < searchPattern.Length; ++x)
+                for (var i = lowerAddress; i < upperAddress; ++i)
                 {
-                    var read = ReadProcMem((IntPtr)i + x, 1);
-                    if ((searchPattern[x] & 0xFF00) > 0)
-                        continue;
+                    var found = true;
+                    for (var x = 0; x < searchPattern.Length; ++x)
+                    {
+                        var read = ReadProcMem((IntPtr) i + x, 1);
+                        if ((searchPattern[x] & 0xFF00) > 0)
+                            continue;
 
-                    if (read[0] == (searchPattern[x] & 0x00FF)) continue;
-                    found = false;
+                        if (read[0] == (searchPattern[x] & 0x00FF)) continue;
+                        found = false;
+                        break;
+                    }
+
+                    if (!found) continue;
+                    address = i;
                     break;
                 }
-
-                if (!found) continue;
-                address = i;
-                break;
-            }
+            });
 
             return (IntPtr)address;
         }

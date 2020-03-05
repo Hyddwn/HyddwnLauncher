@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1409,7 +1409,7 @@ namespace HyddwnLauncher
 
                 if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                 {
-                    var message = EnableMultiClient(process);
+                    var message = await EnableMultiClient(process);
                     if (message != null)
                         await this.ShowMessageAsync("Failed to Enable MultiClient", message);
                 }
@@ -1485,7 +1485,7 @@ namespace HyddwnLauncher
 
                     if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                     {
-                        var message = EnableMultiClient(process);
+                        var message = await EnableMultiClient(process);
                         if (message != null)
                             await this.ShowMessageAsync("Failed to Enable MultiClient", message);
                     }
@@ -1529,13 +1529,13 @@ namespace HyddwnLauncher
             }
         }
 
-        public string EnableMultiClient(Process process)
+        public async Task<string> EnableMultiClient(Process process)
         {
             Log.Info("Attempting to enable multiclient");
             try
             {
                 var memoryEditor = new MemoryEditor(ActiveClientProfile, Patcher.ReadVersion());
-                var error = memoryEditor.ApplyPatchesToProcessById(process.Id);
+                var error = await memoryEditor.ApplyPatchesToProcessById(process.Id);
                 if (error == null)
                     Log.Info("Patched successfully!");
 
