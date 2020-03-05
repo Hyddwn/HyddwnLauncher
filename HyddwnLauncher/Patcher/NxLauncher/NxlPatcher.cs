@@ -324,9 +324,9 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 {
                     if (filePath.StartsWith("package\\")
                         && PatchSettingsManager.Instance.PatcherSettings.IgnorePackageFolder
-                        && !
-                            GetIsNewPackFile(filePath))
+                        && !GetIsNewPackFile(filePath))
                         continue;
+                }
 
                 if (PatchIgnore.IgnoredFiles.Contains(filePath))
                 {
