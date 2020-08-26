@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -258,7 +257,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 var fileDownloadInfo = new FileDownloadInfo(decodedFilename, file.Value["fsize"].Value,
                     isDirectory ? FileInfoType.Directory : FileInfoType.File);
 
-                fileDownloadInfo.SetModifiedTimeDateTime(file.Value["mtime"].Value);
+                fileDownloadInfo.SetModifiedTimeDateTimeUtc(file.Value["mtime"].Value);
 
                 if (isDirectory)
                     continue;
@@ -351,7 +350,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 if (File.Exists(filePath))
                 {
                     length = new FileInfo(filePath).Length;
-                    actualModified = File.GetLastWriteTime(filePath);
+                    actualModified = File.GetLastWriteTimeUtc(filePath);
                     if (actualModified != fileDownloadInfo.LastModifiedDateTime)
                         modified = true;
                     else if (length != fileDownloadInfo.FileSize)

@@ -272,8 +272,8 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
                 File.Move(_downloadFilename, _copyFilename);
 
-                File.SetLastWriteTime(_copyFilename, Patch.FileDownloadInfo.LastModifiedDateTime);
-                File.SetLastAccessTime(_copyFilename, Patch.FileDownloadInfo.LastModifiedDateTime);
+                File.SetLastWriteTimeUtc(_copyFilename, Patch.FileDownloadInfo.LastModifiedDateTime);
+                File.SetLastAccessTimeUtc(_copyFilename, Patch.FileDownloadInfo.LastModifiedDateTime);
 
                 _patcherContext.DestroyProgressIndicator(progressReporter);
             }
