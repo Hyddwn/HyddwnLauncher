@@ -481,7 +481,7 @@ namespace HyddwnLauncher.Network
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Failed to acquire data from WMIC");
+                Log.Exception(ex, Properties.Resources.FailedToAcquireWMIC);
             }
 
             try
@@ -501,7 +501,7 @@ namespace HyddwnLauncher.Network
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Failed to acquire data from Machine GUID");
+                Log.Exception(ex, Properties.Resources.FailedToAcquireMachineGUID);
             }
 
             if (string.IsNullOrWhiteSpace(deviceId)) return null;
