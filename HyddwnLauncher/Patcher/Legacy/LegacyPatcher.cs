@@ -52,7 +52,7 @@ namespace HyddwnLauncher.Patcher.Legacy
 
             PatcherContext.SetPatcherState(true);
 
-            PatcherContext.UpdateMainProgress("Checking for updates...", "", 0, true, true);
+            PatcherContext.UpdateMainProgress(Properties.Resources.CheckingForUpdates, "", 0, true, true);
 
             _officialPatchInfo = OfficialPatchInfo.Parse(MabiVersion.Versions
                 .Find(version => version.Name == ClientProfile.Localization).PatchUrl);

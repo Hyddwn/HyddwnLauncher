@@ -77,7 +77,7 @@ namespace HyddwnLauncher.Patcher.Legacy
 
         public override string ToString()
         {
-            return string.Format("{0}, {1} files, {2}", PatchName, Files.Count, ByteSizeHelper.ToString(PatchSize));
+            return string.Format(Properties.Resources.PatchInfoToStringFormat, PatchName, Files.Count, ByteSizeHelper.ToString(PatchSize));
         }
     }
 }

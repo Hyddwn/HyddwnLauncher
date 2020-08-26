@@ -307,13 +307,13 @@ namespace HyddwnLauncher.Patcher.Legacy
                 timer.Dispose();
             }
 
-            Log.Info($"Patch combine complete!");
-            _patcherContext.UpdateMainProgress("Patch combine complete!");
+            Log.Info(Properties.Resources.PatchCombineComplete);
+            _patcherContext.UpdateMainProgress(Properties.Resources.PatchCombineComplete);
         }
 
         private void Extract()
         {
-            Log.Info("Extracting patch zip to {0}", PatchInfo.ContentDirectory);
+            Log.Info(Properties.Resources.ExtractingZipTo, PatchInfo.ContentDirectory);
             Directory.CreateDirectory(PatchInfo.ContentDirectory);
             using (var zipFile = ZipFile.Read(PatchInfo.ZipFilePath))
             {
@@ -321,7 +321,7 @@ namespace HyddwnLauncher.Patcher.Legacy
                 zipFile.ExtractProgress += zipFile_ExtractProgress;
                 zipFile.ExtractAll(PatchInfo.ContentDirectory);
             }
-            Log.Info("Extract complete");
+            Log.Info(Properties.Resources.ExtractComplete);
         }
 
         private void zipFile_ExtractProgress(object sender, ExtractProgressEventArgs e)
@@ -339,15 +339,15 @@ namespace HyddwnLauncher.Patcher.Legacy
                     throw;
                 }
 
-                Log.Info("Extracting {0}", e.CurrentEntry.FileName);
-                _patcherContext.UpdateMainProgress(string.Format("Extracting {0}", e.CurrentEntry.FileName), isProgressbarVisible: true,
+                Log.Info(Properties.Resources.ExtractingFileName, e.CurrentEntry.FileName);
+                _patcherContext.UpdateMainProgress(string.Format(Properties.Resources.ExtractingFileName, e.CurrentEntry.FileName), isProgressbarVisible: true,
                     isIndeterminate: true);
             }
             else
             {
                 if (e.EventType != ZipProgressEventType.Extracting_AfterExtractEntry)
                     return;
-                _patcherContext.UpdateMainProgress(string.Format("Extracting {0}", e.CurrentEntry.FileName),
+                _patcherContext.UpdateMainProgress(string.Format(Properties.Resources.ExtractingFileName, e.CurrentEntry.FileName),
                     progress: e.EntriesExtracted / (double) e.EntriesTotal * 100.0, isProgressbarVisible: true,
                     isIndeterminate: true);
             }
@@ -355,8 +355,8 @@ namespace HyddwnLauncher.Patcher.Legacy
 
         private void Copy()
         {
-            Log.Info("Preparing file copy...");
-            _patcherContext.UpdateMainProgress("Preparing file copy...", isIndeterminate: true,
+            Log.Info(Properties.Resources.PreparingFileCopy);
+            _patcherContext.UpdateMainProgress(Properties.Resources.PreparingFileCopy, isIndeterminate: true,
                 isProgressbarVisible: true);
 
             var copyTasks = new List<Action>();
@@ -365,11 +365,11 @@ namespace HyddwnLauncher.Patcher.Legacy
             var source = PatchInfo.ContentDirectory;
             var files = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
 
-            Log.Info(string.Format("Files to copy: {0}", string.Join(", ", files.Select(Path.GetFileName))));
+            Log.Info(Properties.Resources.FilesToCopy, string.Join(", ", files.Select(Path.GetFileName)));
 
             var completed = 0;
 
-            _patcherContext.UpdateMainProgress("Copying patch files...",
+            _patcherContext.UpdateMainProgress(Properties.Resources.CopyingPatchFiles,
                 $"{completed}/{files.Length}", 0,
                 isProgressbarVisible: true);
 
@@ -382,7 +382,7 @@ namespace HyddwnLauncher.Patcher.Legacy
                         var progressReporter = _patcherContext.CreateProgressIndicator();
                         progressReporter.SetIsIndeterminate(true);
                         progressReporter.SetLeftText(Path.GetFileName(file));
-                        progressReporter.SetRightText("Copying...");
+                        progressReporter.SetRightText(Properties.Resources.Copying);
 
                         var destinationFileName = file.Replace(source, destination);
 
@@ -392,7 +392,7 @@ namespace HyddwnLauncher.Patcher.Legacy
                         // In case the target file is missing...
                         if (!File.Exists(file))
                         {
-                            Log.Info($"File '{file}' is missing, skipping.");
+                            Log.Info(Properties.Resources.FileFilenameIsMissing, file);
                             File.Move(destinationFileName + ".old", destinationFileName);
                         }
 
@@ -405,7 +405,7 @@ namespace HyddwnLauncher.Patcher.Legacy
 
                         Interlocked.Increment(ref completed);
 
-                        _patcherContext.UpdateMainProgress("Copying patch files...",
+                        _patcherContext.UpdateMainProgress(Properties.Resources.CopyingPatchFiles,
                             $"{completed}/{files.Length}", completed / (double)files.Length * 100.0,
                             isProgressbarVisible: true);
 
@@ -460,15 +460,15 @@ namespace HyddwnLauncher.Patcher.Legacy
             //        })).ToArray()
             //);
 
-            Log.Info("Copy complete");
+            Log.Info(Properties.Resources.CopyComplete);
 
-            _patcherContext.UpdateMainProgress("Copy complete!");
+            _patcherContext.UpdateMainProgress(Properties.Resources.CopyComplete);
         }
 
         private void CleanUp()
         {
             Log.Info("Beginning cleanup");
-            _patcherContext.UpdateMainProgress("Cleaning up...", isIndeterminate: true,
+            _patcherContext.UpdateMainProgress(Properties.Resources.CleaningUp, isIndeterminate: true,
                 isProgressbarVisible: true);
 
             // TODO: Setting for each part of the cleanup process

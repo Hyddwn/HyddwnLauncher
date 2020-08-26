@@ -28,7 +28,7 @@ namespace HyddwnLauncher.Patcher.Legacy
         public override string ToString()
         {
             return
-                string.Format("Sequence from {0} to {1}. {2} files. Total size: {3}", StartVersion, EndVersion,
+                string.Format(Properties.Resources.PatchSequenceToStringFormat, StartVersion, EndVersion,
                     Patches.Sum(p => p.Files.Count), ByteSizeHelper.ToString(Size));
         }
     }
