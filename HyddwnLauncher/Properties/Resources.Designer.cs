@@ -1677,6 +1677,15 @@ namespace HyddwnLauncher.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to nopatch was declared, disabling the launcher&apos;s patching system in settings..
+        /// </summary>
+        public static string NopatchWasDeclared {
+            get {
+                return ResourceManager.GetString("NopatchWasDeclared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Profile Selected.
         /// </summary>
         public static string NoProfileSelected {
@@ -1733,6 +1742,15 @@ namespace HyddwnLauncher.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to noupdate was declared, disabling the launcher&apos;s update check in settings..
+        /// </summary>
+        public static string NoupdateWasDeclared {
+            get {
+                return ResourceManager.GetString("NoupdateWasDeclared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Older.
         /// </summary>
         public static string Older {
@@ -1774,6 +1792,24 @@ namespace HyddwnLauncher.Properties {
         public static string OnStartupUsage3 {
             get {
                 return ResourceManager.GetString("OnStartupUsage3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /noupdate - Disable the launcher&apos;s update check in the settings..
+        /// </summary>
+        public static string OnStartupUsage4 {
+            get {
+                return ResourceManager.GetString("OnStartupUsage4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /nopatch - Disable the launcher&apos;s patching system in the settings..
+        /// </summary>
+        public static string OnStartupUsage5 {
+            get {
+                return ResourceManager.GetString("OnStartupUsage5", resourceCulture);
             }
         }
         
