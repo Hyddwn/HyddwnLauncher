@@ -1104,4 +1104,16 @@ New Version: {1}</value>
   <data name="WritingVersionToVersionDat" xml:space="preserve">
     <value>Writing {0} to version.dat</value>
   </data>
+  <data name="NopatchWasDeclared" xml:space="preserve">
+    <value>nopatch was declared, disabling the launcher's patching system in settings.</value>
+  </data>
+  <data name="NoupdateWasDeclared" xml:space="preserve">
+    <value>noupdate was declared, disabling the launcher's update check in settings.</value>
+  </data>
+  <data name="OnStartupUsage4" xml:space="preserve">
+    <value>/noupdate - Disable the launcher's update check in the settings.</value>
+  </data>
+  <data name="OnStartupUsage5" xml:space="preserve">
+    <value>/nopatch - Disable the launcher's patching system in the settings.</value>
+  </data>
 </root>
