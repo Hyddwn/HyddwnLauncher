@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -22,6 +22,9 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// </summary>
         IServerProfile ServerProfile { get; set; }
 
+        /// <summary>
+        ///     Determines the type of patcher. Not currently in use.
+        /// </summary>
         string PatcherType { get; set; }
 
         /// <summary>
