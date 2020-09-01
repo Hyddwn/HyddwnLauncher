@@ -43,12 +43,25 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// </summary>
         string ProfileImageUri { get; }
 
+        /// <summary>
+        ///     The last known id token which is used to refresh the access token
+        /// </summary>
         string LastIdToken { get; set; }
 
+        /// <summary>
+        ///     The last time the token was refreshed
+        /// </summary>
         DateTime LastRefreshTime { get; set; }
 
+        /// <summary>
+        ///     The time in seconds before the token is expired
+        /// </summary>
         int TokenExpirationTimeFrame { get; set; }
 
+        /// <summary>
+        ///     Determines if the token sure be kept in order to
+        ///     refresh logins instead of requiring the username or password
+        /// </summary>
         bool AutoLogin { get; set; }
     }
 }
