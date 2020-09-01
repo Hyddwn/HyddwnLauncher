@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace HyddwnLauncher.Extensibility.Interfaces
@@ -28,23 +28,11 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// </summary>
         PatcherContext PatcherContext { get; set; }
 
-        /// <summary>
+        /// <summary>3.
         ///     Performs an update check
         /// </summary>
         /// <returns>A boolean representing whether an update is available</returns>
-        Task<bool> CheckForUpdates();
-
-        /// <summary>
-        ///     Instructs the patcher to patch the client
-        /// </summary>
-        /// <returns>A boolean representing of the patch was successful</returns>
-        Task<bool> ApplyUpdates();
-
-        /// <summary>
-        ///     Performs an update check
-        /// </summary>
-        /// <returns>A boolean representing whether an update is available</returns>
-        Task<bool> RepairInstall();
+        Task<bool> RepairInstallAsync();
 
         /// <summary>
         ///     Instructs the patcher to read the version
@@ -62,13 +50,13 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         ///     Instructs the patcher to acquire and return the proper launch arguments
         /// </summary>
         /// <returns>A string representing the launch arguments</returns>
-        Task<string> GetLauncherArguments();
+        Task<string> GetLauncherArgumentsAsync();
 
         /// <summary>
         ///     Get the maintenance status. 
         ///     If an error occurs, it will return false.
         /// </summary>
         /// <returns>A boolean representing whether the game is in maintenance</returns>
-        Task<bool> GetMaintenanceStatus();
+        Task<bool> GetMaintenanceStatusAsync();
     }
 }
