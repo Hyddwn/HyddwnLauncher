@@ -34,14 +34,12 @@ namespace HyddwnLauncher.Patcher.Legacy
                 while (stringReader.Peek() != -1)
                 {
                     var str = stringReader.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(str))
+                    if (string.IsNullOrWhiteSpace(str)) continue;
+                    var strArray = str.Split(new string[1]
                     {
-                        var strArray = str.Split(new string[1]
-                        {
-                            ", "
-                        }, StringSplitOptions.None);
-                        Files.Add(new PatchFileInfo(strArray[0], int.Parse(strArray[1]), strArray[2]));
-                    }
+                        ", "
+                    }, StringSplitOptions.None);
+                    Files.Add(new PatchFileInfo(strArray[0], int.Parse(strArray[1]), strArray[2]));
                 }
             }
         }
