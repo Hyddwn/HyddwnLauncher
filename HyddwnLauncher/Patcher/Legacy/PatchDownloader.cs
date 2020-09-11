@@ -552,8 +552,8 @@ namespace HyddwnLauncher.Patcher.Legacy
         private readonly OfficialPatchInfo _officialPatchInfo;
         private readonly List<PatchInfo> _patchInfos;
         private List<PatchTask> _patchTasks;
-        private PatcherContext _patcherContext;
-        private IClientProfile _clientProfile;
+        private readonly PatcherContext _patcherContext;
+        private readonly IClientProfile _clientProfile;
 
         /// <summary>
         ///     Creates a download queue but does not initialize it
