@@ -59,6 +59,8 @@
     <Compile Include="Interfaces\ISettingsManager.cs" />
     <Compile Include="Model\AccountLoginResponse.cs" />
     <Compile Include="Model\AccountLoginRequest.cs" />
+    <Compile Include="Model\AccountLoginV4Request.cs" />
+    <Compile Include="Model\AccountLoginV4Response.cs" />
     <Compile Include="Model\CheckPlayableV2Response.cs" />
     <Compile Include="Model\CheckPlayableV2Request.cs" />
     <Compile Include="Model\ErrorResponse.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Model\TrustDeviceRequest.cs" />
     <Compile Include="Model\UserAvatar.cs" />
     <Compile Include="Model\UserProfileResponse.cs" />
+    <Compile Include="Model\NexonUserTagV1Response.cs" />
     <Compile Include="PatcherContext.cs" />
     <Compile Include="PatcherType.cs" />
     <Compile Include="PluginBase.cs" />

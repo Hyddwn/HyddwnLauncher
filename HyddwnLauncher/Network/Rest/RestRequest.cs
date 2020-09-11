@@ -117,14 +117,16 @@ namespace HyddwnLauncher.Network.Rest
 
                 var httpRequestMessage = new HttpRequestMessage(httpMethod, uriBuilder.Uri);
 
-                //httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                httpRequestMessage.Headers.UserAgent.ParseAdd("NexonLauncher.nxl-18.12.02-407-773e6dd");
+                httpRequestMessage.Headers.UserAgent.ParseAdd("NexonLauncher.nxl-release-18.14.10-220-fc7480c-coreapp-3.3.0");
                 if (!string.IsNullOrWhiteSpace(_restClient.AccessToken))
                 {
-                    httpRequestMessage.Headers.Add("Cookie",
-                        $"nxtk={_restClient.AccessToken};domain=.nexon.net;path=/;");
                     httpRequestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse(
                         $"Bearer {(_restClient.RequiresBase64Encode ? Convert.ToBase64String(Encoding.UTF8.GetBytes(_restClient.AccessToken)) : _restClient.AccessToken)}");
+                }
+
+                if (!string.IsNullOrWhiteSpace(_restClient.SessionId))
+                {
+                    httpRequestMessage.Headers.Add("X-Amzn-Trace-Id", $"{_restClient.SessionId}.{_restClient.ApiTraceRequestSequence}");
                 }
 
                 if ((httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put) && _bodyObj != null)

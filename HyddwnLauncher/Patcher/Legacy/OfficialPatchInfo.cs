@@ -20,12 +20,7 @@ namespace HyddwnLauncher.Patcher.Legacy
 
         public string this[string index]
         {
-            get
-            {
-                if (!_info.ContainsKey(index))
-                    return null;
-                return _info[index];
-            }
+            get => !_info.ContainsKey(index) ? null : _info[index];
             protected set => _info[index] = value;
         }
 
@@ -98,14 +93,12 @@ namespace HyddwnLauncher.Patcher.Legacy
                     while (stringReader.Peek() != -1)
                     {
                         var str = stringReader.ReadLine();
-                        if (!string.IsNullOrWhiteSpace(str) && str.Contains('='))
+                        if (string.IsNullOrWhiteSpace(str) || !str.Contains('=')) continue;
+                        var strArray = str.Split(new char[1]
                         {
-                            var strArray = str.Split(new char[1]
-                            {
-                                '='
-                            }, 2);
-                            opi._info[strArray[0]] = strArray[1];
-                        }
+                            '='
+                        }, 2);
+                        opi._info[strArray[0]] = strArray[1];
                     }
                 }
             }

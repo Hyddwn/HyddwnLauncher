@@ -56,6 +56,12 @@
             </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+            <Button Content="Discord"/>
+            <Button Content="Github"/>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
     <Grid>
         <simpleChildWindow:ChildWindow x:Name="ProfileEditor"
                                        TitleBarBackground="{DynamicResource WindowBackgroundBrush}"

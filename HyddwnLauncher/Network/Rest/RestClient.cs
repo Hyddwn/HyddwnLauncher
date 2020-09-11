@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.SessionState;
 
 namespace HyddwnLauncher.Network.Rest
 {
@@ -7,13 +8,17 @@ namespace HyddwnLauncher.Network.Rest
     {
         private int _maxRetryCount;
         public bool RequiresBase64Encode { get; protected set; }
+        public string SessionId { get; protected set; }
+        public int ApiTraceRequestSequence { get; protected set; }
 
-        public RestClient(Uri baseUrl, string accessToken, bool requiresBase64Encode = false)
+        public RestClient(Uri baseUrl, string accessToken, bool requiresBase64Encode = false, string sessionId = null, int apiTraceRequestSequence = -1)
         {
             BaseUrl = baseUrl;
             AccessToken = accessToken;
             DefaultQueryString = new List<KeyValuePair<string, string>>();
             RequiresBase64Encode = requiresBase64Encode;
+            SessionId = sessionId;
+            ApiTraceRequestSequence = apiTraceRequestSequence;
 
             MaxRetryCount = 0;
         }

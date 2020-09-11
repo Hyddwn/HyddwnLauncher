@@ -31,18 +31,18 @@ namespace HyddwnLauncher.Extensibility
 
         /// <summary>
         ///     Exception: the exception to log
-        ///     bool: show a messagebox with the exception
+        ///     bool: show a message box with the exception
         /// </summary>
         internal Action<Exception, bool> LogExceptionInternal;
 
         /// <summary>
         ///     string: the message to log
-        ///     bool: show a messagebox with the message
+        ///     bool: show a message box with the message
         /// </summary>
         internal Action<string, bool> LogStringInternal;
 
         /// <summary>
-        ///     Updares the main progress reporter
+        ///     Updates the main progress reporter
         ///     string: left reporter text
         ///     string: right reporter text
         ///     double: progress bar value
@@ -65,7 +65,7 @@ namespace HyddwnLauncher.Extensibility
         internal Action<Guid> SetActiveTabInternal;
 
         /// <summary>
-        ///     Sets wether the launcher should behaive as if it is patching
+        ///     Sets whether the launcher should behave as if it is patching
         /// </summary>
         internal Action<bool> SetPatcherStateInternal;
 
@@ -79,7 +79,7 @@ namespace HyddwnLauncher.Extensibility
         /// <summary>
         ///     Get the current patching state of the launcher
         /// </summary>
-        /// <returns>Wether the patching state is active</returns>
+        /// <returns>Whether the patching state is active</returns>
         public bool GetPatcherState()
         {
             if (GetPatcherStateInternal != null)
@@ -103,7 +103,7 @@ namespace HyddwnLauncher.Extensibility
         }
 
         /// <summary>
-        ///     Creates an instnace of IPackEngine for use
+        ///     Creates an instance of IPackEngine for use
         /// </summary>
         /// <returns></returns>
         public IPackEngine CreatePackEngine()
@@ -122,7 +122,7 @@ namespace HyddwnLauncher.Extensibility
         /// </summary>
         /// <param name="title">Title of the dialog</param>
         /// <param name="message">Dialog message</param>
-        /// <returns>Wether the user clicked affirmative</returns>
+        /// <returns>Whether the user clicked affirmative</returns>
         public bool ShowDialog(string title, string message)
         {
             if (ShowDialogInternal != null)
@@ -152,12 +152,12 @@ namespace HyddwnLauncher.Extensibility
         ///     Logs a string to the global log file
         /// </summary>
         /// <param name="entry">The text to log</param>
-        /// <param name="showMessagebox">Show a messagebox with the logged text</param>
-        public void LogString(string entry, bool showMessagebox = false)
+        /// <param name="showMessageBox">Show a message box with the logged text</param>
+        public void LogString(string entry, bool showMessageBox = false)
         {
             if (LogStringInternal != null)
             {
-                LogStringInternal.Invoke(entry, showMessagebox);
+                LogStringInternal.Invoke(entry, showMessageBox);
                 return;
             }
 
@@ -230,6 +230,7 @@ namespace HyddwnLauncher.Extensibility
         /// <param name="guid">The GUID of the plugin tab to activate</param>
         public void SetActiveTab(Guid guid)
         {
+
             if (SetActiveTabInternal != null)
             {
                 SetActiveTabInternal.Invoke(guid);
@@ -241,7 +242,7 @@ namespace HyddwnLauncher.Extensibility
 
         private void ThrowExceptionForUninitializedApiCall([CallerMemberName] string methodName = null)
         {
-            throw new ApplicationException($"{methodName ?? "??"} is not initialized for this plugin!");
+            throw new Exception($"{methodName ?? "??"} is not initialized for this plugin!");
         }
     }
 }

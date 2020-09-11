@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Util;
@@ -10,10 +12,54 @@ namespace HyddwnLauncher.Patcher
 {
     public class DefaultPatcher : IPatcher
     {
-        public IClientProfile ClientProfile { get; set; }
-        public IServerProfile ServerProfile { get; set; }
-        public string PatcherType { get; set; } 
-        public PatcherContext PatcherContext { get; set; }
+        private IClientProfile _clientProfile;
+        private IServerProfile _serverProfile;
+        private string _patcherType;
+        private PatcherContext _patcherContext;
+
+        public IClientProfile ClientProfile
+        {
+            get => _clientProfile;
+            set
+            {
+                if (Equals(value, _clientProfile)) return;
+                _clientProfile = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IServerProfile ServerProfile
+        {
+            get => _serverProfile;
+            set
+            {
+                if (Equals(value, _serverProfile)) return;
+                _serverProfile = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string PatcherType
+        {
+            get => _patcherType;
+            set
+            {
+                if (value == _patcherType) return;
+                _patcherType = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public PatcherContext PatcherContext
+        {
+            get => _patcherContext;
+            set
+            {
+                if (Equals(value, _patcherContext)) return;
+                _patcherContext = value;
+                OnPropertyChanged();
+            }
+        }
 
         public DefaultPatcher(IClientProfile clientProfile, IServerProfile serverProfile, PatcherContext patcherContext)
         {
@@ -23,19 +69,19 @@ namespace HyddwnLauncher.Patcher
             PatcherType = DefaultPatcherTypes.Default;
         }
 
-        public virtual async Task<bool> CheckForUpdates()
+        public virtual Task<bool> CheckForUpdatesAsync()
         {
-            return false;
+            return Task.Run(() => false);
         }
 
-        public virtual async Task<bool> ApplyUpdates()
+        public virtual Task<bool> ApplyUpdatesAsync()
         {
-            return true;
+            return Task.Run(() => true);
         }
 
-        public virtual async Task<bool> RepairInstall()
+        public virtual Task<bool> RepairInstallAsync()
         {
-            return true;
+            return Task.Run(() => true);
         }
 
         public virtual int ReadVersion()
@@ -55,16 +101,22 @@ namespace HyddwnLauncher.Patcher
             File.WriteAllBytes("version.dat", BitConverter.GetBytes(version));
         }
 
-        public virtual async Task<string> GetLauncherArguments()
+        public virtual Task<string> GetLauncherArgumentsAsync()
         {
-            return $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ServerProfile.LoginIp} logport:{ServerProfile.LoginPort} chatip:{ServerProfile.ChatIp} chatport:{ServerProfile.ChatPort} {ClientProfile.Localization.ToExtendedLaunchArguments()} {ClientProfile.Arguments}";
+            return Task.Run(() => $"code:1622 verstr:{ReadVersion()} ver:{ReadVersion()} logip:{ServerProfile.LoginIp} logport:{ServerProfile.LoginPort} chatip:{ServerProfile.ChatIp} chatport:{ServerProfile.ChatPort} {ClientProfile.Localization.ToExtendedLaunchArguments()} {ClientProfile.Arguments}");
         }
 
-        public virtual async Task<bool> GetMaintenanceStatus()
+        public virtual Task<bool> GetMaintenanceStatusAsync()
         {
-            return false;
+            return Task.Run(() => false);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
