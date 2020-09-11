@@ -38,6 +38,10 @@ namespace HyddwnLauncher.Network
         private string _recaptchaToken;
         private string _lastLoginUsername;
 
+        // Session id
+        private string _sessionId;
+        private int _apiCallTraceSequence;
+
         //Token Expiry Timer
         private int _accessTokenExpiration;
         private DispatcherTimer _accessTokenExpiryTimer;
@@ -52,11 +56,21 @@ namespace HyddwnLauncher.Network
 
         private RestClient _restClient;
 
+        public void InitializeApiSession()
+        {
+            _apiCallTraceSequence = 0;
+            _sessionId = Guid.NewGuid().ToString().ToLower().Replace("-", "");
+        }
+
         public async Task<dynamic> GetMabinogiMetadata()
         {
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+
+            var sessionMetadata = GetSessionMetadata();
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, 
+                sessionId: sessionMetadata.sessionId, apiTraceRequestSequence: sessionMetadata.apiCallTraceSequence);
             var restResponse = await _restClient.Create("/products/10200").ExecuteGet<string>();
             if (restResponse.StatusCode == HttpStatusCode.BadRequest) return default(dynamic);
             var body = await restResponse.GetContent();
@@ -66,7 +80,9 @@ namespace HyddwnLauncher.Network
 
         public async Task<bool> GetMaintenanceStatus()
         {
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), null);
+            var sessionMetadata = GetSessionMetadata();
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), null, sessionId: sessionMetadata.sessionId, apiTraceRequestSequence: sessionMetadata.apiCallTraceSequence);
             var restResponse = await _restClient.Create("/maintenance")
                 .AddQueryString("product_id", "10200")
                 .AddQueryString("lang", "en")
@@ -82,7 +98,9 @@ namespace HyddwnLauncher.Network
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
 
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+            var sessionMetadata = GetSessionMetadata();
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, sessionId: sessionMetadata.sessionId, apiTraceRequestSequence: sessionMetadata.apiCallTraceSequence);
             var restResponse = await _restClient.Create("/game-info/v2/games/10200").ExecuteGet<string>();
             if (restResponse.StatusCode == HttpStatusCode.BadRequest) return null;
             var body = await restResponse.GetContent();
@@ -104,7 +122,9 @@ namespace HyddwnLauncher.Network
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
 
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+            var sessionMetadata = GetSessionMetadata();
+
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, sessionId: sessionMetadata.sessionId, apiTraceRequestSequence: sessionMetadata.apiCallTraceSequence);
             var restResponse = await _restClient.Create("/game-info/v2/games/10200/branch/public").ExecuteGet<string>();
             if (restResponse.StatusCode == HttpStatusCode.BadRequest) return null;
             var body = await restResponse.GetContent();
@@ -143,7 +163,8 @@ namespace HyddwnLauncher.Network
             if (!IsAccessTokenValid(_lastAuthenticationProfileGuid))
                 return _accessToken;
 
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), null);
+            var sessionMetadata = GetSessionMetadata();
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), null, sessionId: sessionMetadata.sessionId, apiTraceRequestSequence: sessionMetadata.apiCallTraceSequence);
 
             var request = _restClient.Create("/game-auth/v2/check-playable");
 
@@ -161,7 +182,7 @@ namespace HyddwnLauncher.Network
             if (response.StatusCode == HttpStatusCode.BadRequest)
                 return NexonErrorCode.DevError;
 
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, false);
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, sessionId: sessionMetadata.sessionId, apiTraceRequestSequence: sessionMetadata.apiCallTraceSequence);
 
             request = _restClient.Create("/passport/v1/passport");
 
@@ -187,7 +208,8 @@ namespace HyddwnLauncher.Network
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
 
-            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken);
+            var sessionMetadata = GetSessionMetadata();
+            _restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, sessionId: sessionMetadata.sessionId, apiTraceRequestSequence: sessionMetadata.apiCallTraceSequence);
 
             var request = _restClient.Create("/users/me/profile");
 
@@ -303,11 +325,14 @@ namespace HyddwnLauncher.Network
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
-            var request = _restClient.Create("/account-webapi/login/launcher");
+            var request = _restClient.Create("/account-webapi/v4/login/launcher");
 
             var deviceId = GetDeviceUuid(enableTagging ? username : "");
 
-            var initialRequestBody = new AccountLoginRequest
+            var utcDateTime = DateTime.UtcNow;
+            var offset = TimeZone.CurrentTimeZone.GetUtcOffset(utcDateTime).TotalMinutes;
+
+            var initialRequestBody = new AccountLoginV4Request
             {
                 AutoLogin = rememberMe,
                 CaptchaToken = _recaptchaToken,
@@ -316,7 +341,9 @@ namespace HyddwnLauncher.Network
                 DeviceId = deviceId,
                 Id = username,
                 Password = password,
-                Scope = BodyScope
+                Scope = BodyScope,
+                LocalTime = DateTime.UtcNow.Ticks,
+                TimeOffset = (int)offset
             };
 
             request.SetBody(initialRequestBody);
@@ -337,7 +364,7 @@ namespace HyddwnLauncher.Network
 
             // dispose of password yo
             password = null;
-            initialRequestBody = new AccountLoginRequest();
+            initialRequestBody = new AccountLoginV4Request();
             // Compiler tricks to ensure it isn't optimized away
             var ps = password;
 
@@ -481,7 +508,7 @@ namespace HyddwnLauncher.Network
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Failed to acquire data from WMIC");
+                Log.Exception(ex, Properties.Resources.FailedToAcquireWMIC);
             }
 
             try
@@ -501,7 +528,7 @@ namespace HyddwnLauncher.Network
             }
             catch (Exception ex)
             {
-                Log.Exception(ex, "Failed to acquire data from Machine GUID");
+                Log.Exception(ex, Properties.Resources.FailedToAcquireMachineGUID);
             }
 
             if (string.IsNullOrWhiteSpace(deviceId)) return null;
@@ -510,6 +537,15 @@ namespace HyddwnLauncher.Network
                 .ToLower();
 
             return deviceId;
+        }
+
+        public (string sessionId, int apiCallTraceSequence) GetSessionMetadata()
+        {
+            // Just in case...
+            if (_sessionId == null)
+                InitializeApiSession();
+
+            return (_sessionId, ++_apiCallTraceSequence);
         }
 
         

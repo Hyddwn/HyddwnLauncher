@@ -285,16 +285,16 @@ namespace HyddwnLauncher
         {
             if (!Settings.LauncherSettings.AllowPatching) return;
             if (Patcher == null) return;
-            var updateRequired = await Patcher.CheckForUpdates();
+            var updateRequired = await Patcher.CheckForUpdatesAsync();
             if (updateRequired)
-                await Patcher.ApplyUpdates();
+                await Patcher.ApplyUpdatesAsync();
         }
 
         public async void AttemptClientRepair(object sender = null, RoutedEventArgs e = null)
         {
             if (!Settings.LauncherSettings.AllowPatching) return;
             if (Patcher == null) return;
-            var updateRequired = await Patcher.RepairInstall();
+            var updateRequired = await Patcher.RepairInstallAsync();
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -381,7 +381,7 @@ namespace HyddwnLauncher
                     if (ActiveClientProfile.Localization == ClientLocalization.Japan ||
                         ActiveClientProfile.Localization == ClientLocalization.JapanHangame)
                     {
-                        var response = await Patcher.GetMaintenanceStatus();
+                        var response = await Patcher.GetMaintenanceStatusAsync();
                         if (response)
                         {
                             var result = await this.ShowMessageAsync(Properties.Resources.Maintenance,
@@ -406,7 +406,7 @@ namespace HyddwnLauncher
                         MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
                         MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
-                        var launchArgs = await Patcher.GetLauncherArguments();
+                        var launchArgs = await Patcher.GetLauncherArgumentsAsync();
 
                         try
                         {
@@ -1085,6 +1085,7 @@ namespace HyddwnLauncher
         {
             if (_settingUpProfile || ActiveClientProfile == null) return;
 
+            NexonApi.Instance.InitializeApiSession();
             var newWorkingDir = Path.GetDirectoryName(ActiveClientProfile.Location);
 
             try
@@ -1237,7 +1238,7 @@ namespace HyddwnLauncher
                 ? new NxlPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext)
                 : (IPatcher)new LegacyPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext);
 
-            IsInMaintenance = await Patcher.GetMaintenanceStatus();
+            IsInMaintenance = await Patcher.GetMaintenanceStatusAsync();
         }
 
         private async Task DeletePackFiles()
@@ -1446,7 +1447,7 @@ namespace HyddwnLauncher
             IsPatching = true;
 
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.CheckForMaintenance);
-            var response = await Patcher.GetMaintenanceStatus();
+            var response = await Patcher.GetMaintenanceStatusAsync();
             if (response)
             {
                 var result = await this.ShowMessageAsync(Properties.Resources.Maintenance,
@@ -1474,7 +1475,7 @@ namespace HyddwnLauncher
             var passport = await NexonApi.Instance.GetNxAuthHash(Settings.LauncherSettings.EnableDeviceIdTagging ? NexonApi.Instance.LastLoginUsername : "");
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
-            var launchArgs = await Patcher.GetLauncherArguments();
+            var launchArgs = await Patcher.GetLauncherArgumentsAsync();
             launchArgs = launchArgs.Replace("${passport}", passport);
             launchArgs += $" {ActiveClientProfile.Arguments}";
 

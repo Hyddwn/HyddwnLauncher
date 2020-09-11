@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using HyddwnLauncher.Core;
-using HyddwnLauncher.Extensibility.Model;
 using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 using Sentry;
-using Sentry.Protocol;
 
 namespace HyddwnLauncher
 {
@@ -19,12 +14,10 @@ namespace HyddwnLauncher
         [STAThread]
         public static void Main(string[] args)
         {
-            //Thread.CurrentThread.CurrentUICulture = new CultureInfo("ja-JP");
-
             var sentryOptions = new SentryOptions
             {
                 BeforeSend = BeforeSend,
-                Dsn = new Dsn("https://62a499d239a54e118ea5770379c06b37@sentry.io/1795758"),
+                Dsn = new Dsn("https://62a499d239a54e118ea5770379c06b37@sentry.io/1795758")
             };
 
             using (SentrySdk.Init(sentryOptions))
@@ -35,8 +28,8 @@ namespace HyddwnLauncher
 
         private static SentryEvent BeforeSend(SentryEvent arg)
         {
-            var assemblypath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var send = true;
+            var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            bool send;
             arg.SetTag("admin", App.IsAdministrator().ToString());
             arg.SetTag("beta", (!string.IsNullOrWhiteSpace(LauncherContext.Instance.BetaVersion)).ToString());
 
@@ -44,11 +37,11 @@ namespace HyddwnLauncher
             {
                 try
                 {
-                    if (!Directory.Exists($@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions"))
-                        Directory.CreateDirectory($@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions");
+                    if (!Directory.Exists($@"{assemblyPath}\Logs\Hyddwn Launcher\Exceptions"))
+                        Directory.CreateDirectory($@"{assemblyPath}\Logs\Hyddwn Launcher\Exceptions");
 
                     File.WriteAllText(
-                        $@"{assemblypath}\Logs\Hyddwn Launcher\Exceptions\Unhandled_Exception-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log",
+                        $@"{assemblyPath}\Logs\Hyddwn Launcher\Exceptions\Unhandled_Exception-{DateTime.Now:yyyy-MM-dd_hh-mm.fff}.log",
                         string.Format(Resources.HyddwnLauncherVersion, 1) +
                         string.Format(Resources.UnhandledExceptionFileSegmentException, arg.Exception));
                 }

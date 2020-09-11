@@ -7,15 +7,27 @@ using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Extensibility.Model
 {
-    public struct GetMaintenanceStatusResponse
+    /// <summary>
+    ///     Represents a response from the maintenance endpoint
+    /// </summary>
+    public readonly struct GetMaintenanceStatusResponse
     {
-        [JsonProperty(PropertyName = "maintenanceNo")]
+        /// <summary>
+        ///     The identification number for this maintenance
+        /// </summary>
+        [JsonProperty("maintenanceNo")]
         public int MaintenanceNumber { get; }
 
-        [JsonProperty(PropertyName = "maintenanceMode")]
+        /// <summary>
+        ///     The type of maintenance for the requested game
+        /// </summary>
+        [JsonProperty("maintenanceMode")]
         public string MaintenanceMode { get; }
 
-        [JsonProperty(PropertyName = "message")]
+        /// <summary>
+        ///     The message to display to the user
+        /// </summary>
+        [JsonProperty("message")]
         public string Message { get; }
     }
 }

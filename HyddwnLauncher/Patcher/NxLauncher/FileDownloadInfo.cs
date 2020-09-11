@@ -17,10 +17,10 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             get { return FileParts.Sum(filePartInfo => filePartInfo.FileSize); }
         }
 
-        public void SetModifiedTimeDateTime(long timeInSeconds)
+        public void SetModifiedTimeDateTimeUtc(long timeInSeconds)
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            LastModifiedDateTime = epoch.AddSeconds(timeInSeconds).ToLocalTime();
+            LastModifiedDateTime = epoch.AddSeconds(timeInSeconds);
         }
 
         public FileDownloadInfo(string fileName, long fileSize = 0, FileInfoType fileInfoType = FileInfoType.File)

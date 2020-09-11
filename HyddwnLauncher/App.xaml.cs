@@ -34,7 +34,7 @@ namespace HyddwnLauncher
             Log.LogFile = logFile;
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             var launcherVersionString = $"{version.Major}.{version.Minor}.{version.Build}{(version.Revision > 0 ? $" Beta {version.Revision}" : "")}";
-            var betaVersion = $"{version.Revision}";
+            var betaVersion = $"{(version.Revision == 0 ? "" : version.Revision.ToString())}";
 
             Log.Info(HyddwnLauncher.Properties.Resources.AppStartup);
             Log.Info(HyddwnLauncher.Properties.Resources.HyddwnLauncherVersion, launcherVersionString);
@@ -55,8 +55,8 @@ namespace HyddwnLauncher
                     Console.WriteLine(HyddwnLauncher.Properties.Resources.OnStartupUsage1);
                     Console.WriteLine(HyddwnLauncher.Properties.Resources.OnStartupUsage2);
                     Console.WriteLine(HyddwnLauncher.Properties.Resources.OnStartupUsage3);
-                    Console.WriteLine("/noupdate - Disable the launcher's update check in the settings.");
-                    Console.WriteLine("/nopatch - Disable the launcher's patching system in the settings.");
+                    Console.WriteLine(HyddwnLauncher.Properties.Resources.OnStartupUsage4);
+                    Console.WriteLine(HyddwnLauncher.Properties.Resources.OnStartupUsage5);
                     Environment.Exit(0);
                 }
 
@@ -75,13 +75,13 @@ namespace HyddwnLauncher
                 if (e.Args[index].Contains("/noupdate"))
                 {
                     LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.DisableLauncherUpdateCheck = true;
-                    Log.Info("noupdate was declared, disabling the launcher's update check in settings.");
+                    Log.Info(HyddwnLauncher.Properties.Resources.NoupdateWasDeclared);
                 }
 
                 if (e.Args[index].Contains("/nopatch"))
                 {
                     LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.AllowPatching = false;
-                    Log.Info("nopatch was declared, disabling the launcher's patching system in settings.");
+                    Log.Info(HyddwnLauncher.Properties.Resources.NopatchWasDeclared);
                 }
             }
 
