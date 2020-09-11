@@ -28,7 +28,19 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// </summary>
         PatcherContext PatcherContext { get; set; }
 
-        /// <summary>3.
+        /// <summary>
+        ///     Performs an update check
+        /// </summary>
+        /// <returns>A boolean representing whether an update is available</returns>
+        Task<bool> CheckForUpdatesAsync();
+
+        /// <summary>
+        ///     Instructs the patcher to patch the client
+        /// </summary>
+        /// <returns>A boolean representing of the patch was successful</returns>
+        Task<bool> ApplyUpdatesAsync();
+
+        /// <summary>
         ///     Performs an update check
         /// </summary>
         /// <returns>A boolean representing whether an update is available</returns>

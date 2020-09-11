@@ -22,23 +22,23 @@ namespace HyddwnLauncher.Patcher.Legacy
             _currentVersion = ReadVersion();
         }
 
-        public override async Task<bool> GetMaintenanceStatus()
+        public override async Task<bool> GetMaintenanceStatusAsync()
         {
             if (_officialPatchInfo == null)
-                await CheckForUpdates();
+                await CheckForUpdatesAsync();
 
             return !_officialPatchInfo.PatchAccept;
         }
 
-        public override async Task<string> GetLauncherArguments()
+        public override async Task<string> GetLauncherArgumentsAsync()
         {
             if (_officialPatchInfo == null)
-                await CheckForUpdates();
+                await CheckForUpdatesAsync();
 
             return $"code:1622 ver:{ReadVersion()} logip:{_officialPatchInfo["login"]} logport:11000 {_officialPatchInfo["arg"]}";
         }
 
-        public override async Task<bool> CheckForUpdates()
+        public override async Task<bool> CheckForUpdatesAsync()
         {
             if (ClientProfile == null) return false;
             if (ServerProfile == null) return false;
@@ -84,7 +84,7 @@ namespace HyddwnLauncher.Patcher.Legacy
             return true;
         }
 
-        public override async Task<bool> ApplyUpdates()
+        public override async Task<bool> ApplyUpdatesAsync()
         {
             PatcherContext.SetPatcherState(true);
             PatcherContext.ShowSession();

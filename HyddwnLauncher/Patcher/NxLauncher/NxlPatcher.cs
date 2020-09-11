@@ -32,7 +32,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             PatchIgnore = new PatchIgnore(PatcherContext);
         }
 
-        public override async Task<bool> CheckForUpdates()
+        public override async Task<bool> CheckForUpdatesAsync()
         {
             if (ValidateAction(true)) return false;
 
@@ -70,10 +70,10 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             return result;
         }
 
-        public override async Task<bool> RepairInstall()
+        public override async Task<bool> RepairInstallAsync()
         {
             var shouldUpdate = await CheckForUpdatesInternal(-1, true);
-            if (shouldUpdate) return await ApplyUpdates();
+            if (shouldUpdate) return await ApplyUpdatesAsync();
             PatcherContext.SetPatcherState(false);
             PatcherContext.UpdateMainProgress("", "", 0, false, false);
             return true;
@@ -106,7 +106,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             return false;
         }
 
-        public override async Task<bool> ApplyUpdates()
+        public override async Task<bool> ApplyUpdatesAsync()
         {
             if (ValidateAction()) return false;
 
@@ -139,7 +139,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             return result;
         }
 
-        public override async Task<string> GetLauncherArguments()
+        public override async Task<string> GetLauncherArgumentsAsync()
         {
             var response = await NexonApi.Instance.GetLaunchConfig();
             var args = response.Arguments;
@@ -148,7 +148,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             return cla.ToString();
         }
 
-        public override async Task<bool> GetMaintenanceStatus()
+        public override async Task<bool> GetMaintenanceStatusAsync()
         {
             return await NexonApi.Instance.GetMaintenanceStatus();
         }
