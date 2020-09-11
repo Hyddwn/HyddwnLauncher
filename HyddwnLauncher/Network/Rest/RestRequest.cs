@@ -126,7 +126,7 @@ namespace HyddwnLauncher.Network.Rest
 
                 if (!string.IsNullOrWhiteSpace(_restClient.SessionId))
                 {
-                    httpRequestMessage.Headers.Add("X-Amzn-Trace-Id", $"{_restClient.SessionId}.{_restClient.ApiTraceRequestSequence}");
+                    httpRequestMessage.Headers.Add("X-Amzn-Trace-Id", $"NxL={_restClient.SessionId}.{_restClient.ApiTraceRequestSequence}");
                 }
 
                 if ((httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put) && _bodyObj != null)
