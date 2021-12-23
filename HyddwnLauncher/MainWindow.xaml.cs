@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -611,7 +611,8 @@ namespace HyddwnLauncher
 
             NxAuthLoginPassword.Password = "";
 
-            NexonApi.Instance.HashPassword(ref password);
+            // Nexon disabled password hashing
+            // NexonApi.Instance.HashPassword(ref password);
 
             // Store username and Hash
             if (RememberMeCheckBox.IsChecked != null && (bool) RememberMeCheckBox.IsChecked)
@@ -624,6 +625,8 @@ namespace HyddwnLauncher
                 // TODO: Release+: Add proper support for detection of response codes
                 if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                 {
+                    await NexonApi.Instance.PostRequestEmailCode(username);
+
                     NxAuthLogin.IsOpen = false;
 
                     NxAuthLoginPassword.Password = password;
@@ -699,12 +702,14 @@ namespace HyddwnLauncher
             var username = UsingCredentials ? credentials.Username : NxAuthLoginUsername.Text;
             var verification = NxDeviceTrustVerificationCode.Text;
             var saveDevice = NxDeviceTrustRememberMe.IsChecked != null && (bool) NxDeviceTrustRememberMe.IsChecked;
+            var name = saveDevice ? NxDeviceTrustDeviceName.Text : string.Empty;
 
             var success =
-                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice);
+                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.TrustDevice);
 
             if (!success)
             {
+                await NexonApi.Instance.PostRequestEmailCode(username);
                 ToggleDeviceControls();
 
                 NxDeviceTrustNotice.Text = Properties.Resources.VerificationCodeError;
@@ -790,9 +795,10 @@ namespace HyddwnLauncher
             var username = UsingCredentials ? credentials.Username : NxAuthLoginUsername.Text;
             var verification = NxAuthenticatorCode.Text;
             var saveDevice = NxAuthenticatorRememberMe.IsChecked != null && (bool)NxAuthenticatorRememberMe.IsChecked;
+            var name = saveDevice ? NxDeviceTrustDeviceName.Text : string.Empty;
 
             var success =
-                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice);
+                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.Authenticator);
 
             if (!success)
             {
@@ -1194,6 +1200,8 @@ namespace HyddwnLauncher
 
                     if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                     {
+                        await NexonApi.Instance.PostRequestEmailCode(credentials.Username);
+
                         NxDeviceTrust.IsOpen = true;
                         UsingCredentials = true;
                         return;
@@ -1238,7 +1246,7 @@ namespace HyddwnLauncher
                 ? new NxlPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext)
                 : (IPatcher)new LegacyPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext);
 
-            IsInMaintenance = await Patcher.GetMaintenanceStatusAsync();
+            //IsInMaintenance = await Patcher.GetMaintenanceStatusAsync();
         }
 
         private async Task DeletePackFiles()

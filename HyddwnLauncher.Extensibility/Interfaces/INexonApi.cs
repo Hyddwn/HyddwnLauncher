@@ -17,7 +17,7 @@ namespace HyddwnLauncher.Extensibility.Interfaces
         /// <param name="rememberMe">Whether to remember and as a result enable auto-login</param>
         /// <param name="enableTagging">Whether the device id should ne tagged.</param>
         /// <returns></returns>
-        Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging);
+        Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging, bool isFirstLogin);
 
         /// <summary>
         ///     Attempts to identify the newest version of the Mabinogi client

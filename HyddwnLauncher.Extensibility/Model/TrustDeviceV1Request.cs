@@ -7,9 +7,12 @@ using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Extensibility.Model
 {
-    public class GetManifestResponse
+    public struct TrustDeviceV1Request
     {
-        [JsonProperty("manifestUrl")]
-        public string ManifestUrl { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("deviceId")]
+        public string DeviceId { get; set; }
     }
 }
