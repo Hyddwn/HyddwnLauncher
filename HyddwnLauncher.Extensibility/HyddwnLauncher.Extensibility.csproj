@@ -70,12 +70,15 @@
     <Compile Include="Model\ErrorResponse.cs" />
     <Compile Include="Model\GameAuth2AccessV1Request.cs" />
     <Compile Include="Model\GameAuth2AccessV1Response.cs" />
+    <Compile Include="Model\GameAuth2CheckPlayableV1Response.cs" />
+    <Compile Include="Model\GameAuth2CheckPlayableV1Request.cs" />
     <Compile Include="Model\GameBuildConfigurationV1Response.cs" />
     <Compile Include="Model\GetAccessTokenResponse.cs" />
     <Compile Include="Model\GetMaintenanceStatusResponse.cs" />
     <Compile Include="Model\GetManifestResponse.cs" />
     <Compile Include="Model\IdTokenRefreshRequest.cs" />
     <Compile Include="Model\LauncherConfigResponseV2.cs" />
+    <Compile Include="Model\PassportV2Request.cs" />
     <Compile Include="Model\RegionalAccountLoginNoAuthV1Request.cs" />
     <Compile Include="Model\RegionalLoginValidateV1Request.cs" />
     <Compile Include="Model\NexonErrorCode.cs" />
