@@ -16,6 +16,7 @@ namespace HyddwnLauncher.Extensibility.Model
         public const string AutoLoginUnauthorized = "10001";
         public const string InvalidLoginSession = "20001";
         public const string UserDoesNotExist = "20002";
+        public const string DevieNameIsInvalid = "20203";
         public const string VerificationCodeInvalid = "20013";
         public const string TrustedDeviceRequired = "20027";
         public const string InvalidPassword = "20055";

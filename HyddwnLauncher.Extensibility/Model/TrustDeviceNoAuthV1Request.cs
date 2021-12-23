@@ -43,5 +43,11 @@ namespace HyddwnLauncher.Extensibility.Model
         /// </summary>
         [JsonProperty("rememberMe")]
         public bool RememberMe { get; set; }
+
+        /// <summary>
+        /// The name of the device
+        /// </summary>
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 }

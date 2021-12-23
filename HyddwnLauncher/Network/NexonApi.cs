@@ -132,7 +132,6 @@ namespace HyddwnLauncher.Network
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
 
-            // https://www.nexon.com/api/game-build/v1/branch/games/10200/public
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
             var request = _restClient.Create("/api/game-build/v1/branch/games/10200/public");
             request.AddCookie("AToken", _accessToken);
@@ -178,25 +177,34 @@ namespace HyddwnLauncher.Network
             if (!IsAccessTokenValid(_lastAuthenticationProfileGuid))
                 return _accessToken;
 
-            //_restClient = new RestClient(new Uri("https://api.nexon.io"), _accessToken, sessionId: sessionMetadata.sessionId, apiTraceRequestSequence: sessionMetadata.apiCallTraceSequence);
+            var success = await CheckPlayable();
+            if (!success)
+                return NexonErrorCode.DevError;
 
-            //var request = _restClient.Create("/passport/v1/passport");
+            _restClient = new RestClient(new Uri("https://www.nexon.com"), _accessToken);
 
-            //var requestBody2 = new PassportV1Request
-            //{
-            //    ProductId = "10200"
-            //};
+            var request = _restClient.Create("/api/passport/v2/passport");
 
-            //request.SetBody(requestBody2);
+            request.AddCookie("AToken", _accessToken);
+            request.AddCookie("g_AToken", _gaccessToken);
+            request.AddCookie("NxLSession", _idToken);
+            request.AddCookie("NexonUserID", _hashedUserId);
 
-            //var response2 = await request.ExecutePost<GetPassportV1Response>();
+            var requestBody2 = new PassportV2Request
+            {
+                ProductId = "10200"
+            };
 
-            //if (response2.StatusCode == HttpStatusCode.BadRequest)
-            //    return NexonErrorCode.DevError;
+            request.SetBody(requestBody2);
 
-            //var obj = await response2.GetDataObjectAsync();
+            var response2 = await request.ExecutePost<GetPassportV1Response>();
 
-            return "";
+            if (response2.StatusCode == HttpStatusCode.BadRequest)
+                return NexonErrorCode.DevError;
+
+            var obj = await response2.GetDataObjectAsync();
+
+            return obj.Passport;
         }
 
         public async Task<UserProfileResponse> GetUserProfile()
@@ -230,7 +238,6 @@ namespace HyddwnLauncher.Network
 
         public async Task<int> GetLatestVersion()
         {
-            var sessionMetadata = GetSessionMetadata();
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
             var request = _restClient.Create("/api/game-auth2/v1/access");
@@ -262,6 +269,32 @@ namespace HyddwnLauncher.Network
             int.TryParse(match.Replace('R', ' '), out var version);
 
             return version;
+        }
+
+        public async Task<bool> CheckPlayable()
+        {
+            _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
+
+            var request = _restClient.Create("/api/game-auth2/v1/playable");
+
+            var requestBody = new GameAuth2CheckPlayableV1Request
+            {
+                ProductId = "10200"
+            };
+
+            request.SetBody(requestBody);
+
+            request.AddCookie("AToken", _accessToken);
+            request.AddCookie("g_AToken", _gaccessToken);
+            request.AddCookie("NxLSession", _idToken);
+            request.AddCookie("NexonUserID", _hashedUserId);
+
+            var response = await request.ExecutePost<GameAuth2CheckPlayableV1Response>();
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+                return false;
+
+            return true;
         }
 
         public async Task<GetAccessTokenResponse> GetAccessTokenWithIdTokenOrPassword(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging)
@@ -522,7 +555,8 @@ namespace HyddwnLauncher.Network
                 Email = email,
                 VerificationCode = code,
                 DeviceId = deviceId,
-                RememberMe = rememberDevice
+                RememberMe = rememberDevice,
+                Name = name
             };
 
             request.SetBody(requestBody);
@@ -531,8 +565,8 @@ namespace HyddwnLauncher.Network
 
             if (response.StatusCode != HttpStatusCode.BadRequest)
             {
-                if (rememberDevice)
-                    await PutAuthTrustDevice(name, deviceId);
+                //if (rememberDevice)
+                //    await PutAuthTrustDevice(name, deviceId);
 
                 return true;
             }
