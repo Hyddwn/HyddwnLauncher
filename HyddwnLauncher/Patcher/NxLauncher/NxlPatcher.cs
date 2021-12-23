@@ -293,7 +293,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         private static byte[] DownloadManifestBuffer(string manifestHashString)
         {
             using (var client = new WebClient())
-            using (var stream = client.OpenRead($"https://download2.nexon.net/Game/nxl/games/10200/{manifestHashString}"))
+            using (var stream = client.OpenRead($"http://download2.nexon.net/Game/nxl/games/10200/{manifestHashString}"))
             using (var ms = new MemoryStream())
             {
                 stream?.CopyTo(ms);

@@ -24,34 +24,53 @@ namespace HyddwnLauncher.Extensibility.Model
         /// <summary>
         ///     Creates an <see cref="GetAccessTokenResponse"/> which accepts a <see cref="ErrorResponse"/>
         /// </summary>
-        public GetAccessTokenResponse(ErrorResponse errorResponse)
+        public GetAccessTokenResponse(ErrorResponse errorResponse, string code = "0")
         {
-            Code = errorResponse.Code;
+            Code = code;
             Description = errorResponse.Description;
             Message = errorResponse.Message;
+
+            MapErrorMessage();
         }
 
         /// <summary>
-        /// The response code
+        ///     The response code
         /// </summary>
         [JsonProperty("code")]
         public string Code { get; set;  }
 
         /// <summary>
-        /// The description (useless to us)
+        ///     The description (useless to us)
         /// </summary>
         [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
-        /// The message
+        ///     The message
         /// </summary>
         [JsonProperty("message")]
         public string Message { get; set; }
 
         /// <summary>
-        /// If login was successful
+        ///     If login was successful
         /// </summary>
         public bool Success { get; set; }
+
+        private void MapErrorMessage()
+        {
+            switch (Code)
+            {
+                case NexonErrorCode.UserDoesNotExist:
+                    Message = "Username does not exist!";
+                    break;
+                case NexonErrorCode.InvalidPassword:
+                    Message = "The password is incorrect.";
+                    break;
+                case NexonErrorCode.InvalidParameter:
+                    if (Message.Contains("error.email")) 
+                        Message = "Malformed email!";
+                    break;
+            }
+        }
     }
 }

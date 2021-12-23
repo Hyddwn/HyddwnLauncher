@@ -193,6 +193,9 @@
                 <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
                     <TextBox x:Name="NxDeviceTrustVerificationCode" controls:TextBoxHelper.UseFloatingWatermark="True"
                              Margin="0 15 0 0" controls:TextBoxHelper.Watermark="{x:Static p:Resources.VerificationCode}" />
+                    <TextBox x:Name="NxDeviceTrustDeviceName" controls:TextBoxHelper.UseFloatingWatermark="True"
+                             IsEnabled="{Binding ElementName=NxDeviceTrustRememberMe, Path=IsChecked}"
+                             Margin="0 5 0 0" controls:TextBoxHelper.Watermark="Device Name" />
                     <CheckBox x:Name="NxDeviceTrustRememberMe" Content="{x:Static p:Resources.RememberThisDevice}" Margin="75 5 75 2" />
                     <TextBlock x:Name="NxDeviceTrustNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
@@ -226,6 +229,9 @@
                 <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">
                     <TextBox x:Name="NxAuthenticatorCode" controls:TextBoxHelper.UseFloatingWatermark="True"
                              Margin="0 15 0 0" controls:TextBoxHelper.Watermark="Code" />
+                    <TextBox x:Name="NxAuthenticatorDeviceName" controls:TextBoxHelper.UseFloatingWatermark="True"
+                             IsEnabled="{Binding ElementName=NxAuthenticatorRememberMe, Path=IsChecked}"
+                             Margin="0 5 0 0" controls:TextBoxHelper.Watermark="Device Name" />
                     <TextBlock x:Name="NxAuthenticatorNotice" VerticalAlignment="Center" Visibility="Collapsed"
                                TextAlignment="Center" FontWeight="Bold" Foreground="Red" />
                 </StackPanel>

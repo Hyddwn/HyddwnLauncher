@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Network.Rest
@@ -22,12 +23,29 @@ namespace HyddwnLauncher.Network.Rest
 
         private List<KeyValuePair<string, string>> _queryString;
         private List<KeyValuePair<string, string>> _urlSegment;
+        private List<KeyValuePair<string, string>> _cookies;
+        private List<KeyValuePair<string, string>> _headers;
 
         public RestRequest(RestClient restClient, string endpoint, string accessToken)
         {
             _restClient = restClient;
             _endpoint = endpoint;
             _accessToken = accessToken;
+        }
+
+        private void AppendCookie(StringBuilder stringBuilder, string name, string value)
+        {
+            if (stringBuilder.Length > 0)
+                stringBuilder.Append("; ");
+
+            stringBuilder.Append(WebUtility.UrlEncode(name));
+            stringBuilder.Append("=");
+            stringBuilder.Append(WebUtility.UrlEncode(value));
+        }
+
+        private void AppendCookie(StringBuilder stringBuilder, KeyValuePair<string, string> value)
+        {
+            AppendCookie(stringBuilder, value.Key, value.Value);
         }
 
         private void AppendQueryString(StringBuilder stringBuilder, string key, string value)
@@ -87,6 +105,26 @@ namespace HyddwnLauncher.Network.Rest
             return this;
         }
 
+        public RestRequest AddCookie(string name, string value)
+        {
+            if (_cookies == null)
+                _cookies = new List<KeyValuePair<string, string>>();
+
+            _cookies.Add(new KeyValuePair<string, string>(name, value));
+
+            return this;
+        }
+
+        public RestRequest AddHeader(string name, string value)
+        {
+            if (_headers == null)
+                _headers = new List<KeyValuePair<string, string>>();
+
+            _headers.Add(new KeyValuePair<string, string>(name, value));
+
+            return this;
+        }
+
         public RestRequest SetBody(object obj)
         {
             _bodyObj = obj;
@@ -118,15 +156,25 @@ namespace HyddwnLauncher.Network.Rest
                 var httpRequestMessage = new HttpRequestMessage(httpMethod, uriBuilder.Uri);
 
                 httpRequestMessage.Headers.UserAgent.ParseAdd("NexonLauncher.nxl-release-18.14.10-220-fc7480c-coreapp-3.3.0");
-                if (!string.IsNullOrWhiteSpace(_restClient.AccessToken))
+                if (!string.IsNullOrWhiteSpace(_accessToken))
                 {
                     httpRequestMessage.Headers.Authorization = AuthenticationHeaderValue.Parse(
-                        $"Bearer {(_restClient.RequiresBase64Encode ? Convert.ToBase64String(Encoding.UTF8.GetBytes(_restClient.AccessToken)) : _restClient.AccessToken)}");
+                        $"Bearer {(_restClient.RequiresBase64Encode ? Convert.ToBase64String(Encoding.UTF8.GetBytes(_accessToken)) : _accessToken)}");
                 }
 
-                if (!string.IsNullOrWhiteSpace(_restClient.SessionId))
+                if (!string.IsNullOrWhiteSpace(_accessToken))
                 {
                     httpRequestMessage.Headers.Add("X-Amzn-Trace-Id", $"NxL={_restClient.SessionId}.{_restClient.ApiTraceRequestSequence}");
+                }
+
+                if (_cookies != null)
+                {
+                    var cookieStringBuilder = new StringBuilder();
+
+                    foreach (var keyValuePair in _cookies)
+                        AppendCookie(cookieStringBuilder, keyValuePair);
+
+                    httpRequestMessage.Headers.Add("Cookie", cookieStringBuilder.ToString());
                 }
 
                 if ((httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put) && _bodyObj != null)
@@ -171,6 +219,15 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse<T>(httpResponseMessage);
         }
 
+        public async Task<RestResponse<TData, TError>> ExecuteGet<TData, TError>()
+        {
+            var httpResponseMessage = await SendInternal(HttpMethod.Get).ConfigureAwait(false);
+
+            // CheckResponse(httpResponseMessage);
+
+            return new RestResponse<TData, TError>(httpResponseMessage);
+        }
+
         /// <exception cref="UnauthorizedAccessException">
         ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
         ///     is invalid.
@@ -197,6 +254,15 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse<T>(httpResponseMessage);
         }
 
+        public async Task<RestResponse<TData, TError>> ExecutePost<TData, TError>()
+        {
+            var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
+
+            // CheckResponse(httpResponseMessage);
+
+            return new RestResponse<TData, TError>(httpResponseMessage);
+        }
+
         /// <exception cref="UnauthorizedAccessException">
         ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
         ///     is invalid.
@@ -213,7 +279,7 @@ namespace HyddwnLauncher.Network.Rest
         /// <exception cref="UnauthorizedAccessException">
         ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
         ///     is invalid.
-        /// </exception>
+        /// </exception> // TData, TError
         public async Task<RestResponse<T>> ExecuteDelete<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
@@ -221,6 +287,15 @@ namespace HyddwnLauncher.Network.Rest
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
+        }
+
+        public async Task<RestResponse<TData, TError>> ExecuteDelete<TData, TError>()
+        {
+            var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
+
+            // CheckResponse(httpResponseMessage);
+
+            return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
         /// <exception cref="UnauthorizedAccessException">
@@ -239,7 +314,7 @@ namespace HyddwnLauncher.Network.Rest
         /// <exception cref="UnauthorizedAccessException">
         ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
         ///     is invalid.
-        /// </exception>
+        /// </exception> //TData, TError
         public async Task<RestResponse<T>> ExecutePut<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
@@ -247,6 +322,15 @@ namespace HyddwnLauncher.Network.Rest
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
+        }
+
+        public async Task<RestResponse<TData, TError>> ExecutePut<TData, TError>()
+        {
+            var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
+
+            // CheckResponse(httpResponseMessage);
+
+            return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
         private async Task<HttpResponseMessage> SendInternal(HttpMethod method)
@@ -265,7 +349,7 @@ namespace HyddwnLauncher.Network.Rest
             do
             {
                 var httpRequest = PrepRequest(method);
-                httpResponseMessage = await new HttpClient().SendAsync(httpRequest).ConfigureAwait(false);
+                httpResponseMessage = await new HttpClient(new HttpClientHandler { UseCookies = false }).SendAsync(httpRequest).ConfigureAwait(false);
 
                 if (httpResponseMessage.StatusCode == (HttpStatusCode)429)
                 {
