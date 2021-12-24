@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using HyddwnLauncher.Util;
 using HyddwnLauncher.Util.Helpers;
@@ -83,7 +80,7 @@ namespace HyddwnLauncher.Core
 
             if (address == IntPtr.Zero)
             {
-                address = await memory.QuickSearch((uint)moduleInfo.lpBaseOfDll,
+                address = await memory.QuickSearchUnprotected((uint)moduleInfo.lpBaseOfDll,
                     (uint)moduleInfo.lpBaseOfDll + moduleInfo.SizeOfImage, pattern);
 
                 if (address == IntPtr.Zero)

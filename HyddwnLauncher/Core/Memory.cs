@@ -88,7 +88,6 @@ namespace HyddwnLauncher.Core
                 var error = new Win32Exception(Marshal.GetLastWin32Error());
                 throw new Exception(string.Format("ERROR: ReadProcMem ReadProcessMemory error {0}", error.Message));
             }
-            
 
             if (!Unmanaged.VirtualProtectEx(Proc, addressToRead, (UIntPtr)lengthToRead, oldProtect, out newProtect))
             {
@@ -96,8 +95,28 @@ namespace HyddwnLauncher.Core
                 throw new Exception(string.Format("ERROR: ReadProcMem unset VirtualProtectEx error {0}", error.Message));
             }
             
-
             Unmanaged.FlushInstructionCache(Proc, addressToRead, (UIntPtr)lengthToRead);
+
+            return buffer;
+        }
+
+        public byte[] ReadProcMemUnProtected(int procId, IntPtr addressToRead, int lengthToRead)
+        {
+            if (Proc == IntPtr.Zero)
+                Proc = Unmanaged.OpenProcess(ProcessAccessRights.PROCESS_ALL_ACCESS, false, procId);
+
+            return ReadProcMemUnProtected(addressToRead, lengthToRead);
+        }
+
+        public byte[] ReadProcMemUnProtected(IntPtr addressToRead, int lengthToRead)
+        {
+            var buffer = new byte[lengthToRead];
+
+            if (!Unmanaged.ReadProcessMemory(Proc, addressToRead, buffer, lengthToRead, out IntPtr bufferRead))
+            {
+                var error = new Win32Exception(Marshal.GetLastWin32Error());
+                throw new Exception(string.Format("ERROR: ReadProcMem ReadProcessMemory error {0}", error.Message));
+            }
 
             return buffer;
         }
@@ -149,6 +168,35 @@ namespace HyddwnLauncher.Core
                     for (var x = 0; x < searchPattern.Length; ++x)
                     {
                         var read = ReadProcMem((IntPtr) i + x, 1);
+                        if ((searchPattern[x] & 0xFF00) > 0)
+                            continue;
+
+                        if (read[0] == (searchPattern[x] & 0x00FF)) continue;
+                        found = false;
+                        break;
+                    }
+
+                    if (!found) continue;
+                    address = i;
+                    break;
+                }
+            });
+
+            return (IntPtr)address;
+        }
+
+        public async Task<IntPtr> QuickSearchUnprotected(uint lowerAddress, uint upperAddress, short[] searchPattern)
+        {
+            uint address = 0;
+
+            await Task.Run(() =>
+            {
+                for (var i = lowerAddress; i < upperAddress; ++i)
+                {
+                    var found = true;
+                    for (var x = 0; x < searchPattern.Length; ++x)
+                    {
+                        var read = ReadProcMemUnProtected((IntPtr)i + x, 1);
                         if ((searchPattern[x] & 0xFF00) > 0)
                             continue;
 
