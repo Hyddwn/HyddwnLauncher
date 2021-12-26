@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Windows;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Util;
+using Sentry;
 
 namespace HyddwnLauncher
 {
@@ -19,6 +20,14 @@ namespace HyddwnLauncher
         private static readonly string AssemblyFilePath = Assembly.GetExecutingAssembly().Location;
         private static readonly string AssemblyDirectory = Path.GetDirectoryName(AssemblyFilePath);
         public static string[] CmdArgs;
+
+        public App()
+        {
+            DispatcherUnhandledException += (sender, args) =>
+            {
+                SentrySdk.CaptureException(args.Exception);
+            };
+        }
 
         protected override void OnStartup(StartupEventArgs e)
         {
