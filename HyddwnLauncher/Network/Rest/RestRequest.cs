@@ -195,10 +195,6 @@ namespace HyddwnLauncher.Network.Rest
             }
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public void CheckResponse(HttpResponseMessage httpResponseMessage)
         {
             // if (httpResponseMessage.StatusCode == HttpStatusCode.Unauthorized)
@@ -206,10 +202,6 @@ namespace HyddwnLauncher.Network.Rest
             //         Properties.Resources.NexonAPIUnauthorized);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse<T>> ExecuteGet<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Get).ConfigureAwait(false);
@@ -228,10 +220,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse> ExecutePost()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
@@ -241,10 +229,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse<T>> ExecutePost<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
@@ -263,10 +247,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse> ExecuteDelete()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
@@ -276,10 +256,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception> // TData, TError
         public async Task<RestResponse<T>> ExecuteDelete<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
@@ -298,10 +274,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse> ExecutePut()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
@@ -311,10 +283,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception> //TData, TError
         public async Task<RestResponse<T>> ExecutePut<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
@@ -367,11 +335,7 @@ namespace HyddwnLauncher.Network.Rest
                     continue;
                 }
 
-                if (httpResponseMessage.IsSuccessStatusCode)
-                    return httpResponseMessage;
-
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    return httpResponseMessage;
+                return httpResponseMessage;
             } while (timesToTry-- > 0);
 
             return httpResponseMessage;
