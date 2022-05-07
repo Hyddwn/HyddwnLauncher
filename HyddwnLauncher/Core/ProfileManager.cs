@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -81,6 +82,9 @@ namespace HyddwnLauncher.Core
         {
             ClientProfiles = LoadClientProfiles();
             ServerProfiles = LoadServerProfiles();
+
+            ClientProfiles.CollectionChanged += ClientProfilesOnCollectionChanged;
+            ServerProfiles.CollectionChanged += ServerProfilesOnCollectionChanged;
 
             // Attempt to correct existing profiles with no localization set
             foreach (var clientProfile in ClientProfiles.Where(x => string.IsNullOrWhiteSpace(x.Localization)))
@@ -188,6 +192,16 @@ namespace HyddwnLauncher.Core
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void ClientProfilesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            SaveClientProfiles();
+        }
+
+        private void ServerProfilesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            SaveClientProfiles();
         }
     }
 }
