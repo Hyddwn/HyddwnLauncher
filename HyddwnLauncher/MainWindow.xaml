@@ -470,13 +470,14 @@
                                     <StackPanel Margin="5">
                                         <TextBlock Margin="5 2.5" Text="Advanced Settings" FontWeight="Bold" />
                                         <StackPanel Margin="5 2.5">
-                                            <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                            <!--<StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                 <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                     <CheckBox Content="Ignore Package Folder" VerticalAlignment="Center"
-                                                  ToolTip="Forces the patcher to skip updating files in the package folder."
+                                                              IsEnabled="False"
+                                                  ToolTip="[Deprecated] Forces the patcher to skip updating files in the package folder."
                                                   IsChecked="{Binding ElementName=This, Path=PatcherSettings.IgnorePackageFolder}"/>
                                                 </StackPanel>
-                                            </StackPanel>
+                                            </StackPanel>-->
                                             <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                 <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                     <CheckBox Content="Force Automatic Updates" VerticalAlignment="Center"
