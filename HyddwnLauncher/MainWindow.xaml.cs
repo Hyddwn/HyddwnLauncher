@@ -1514,6 +1514,7 @@ namespace HyddwnLauncher
 
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Launching);
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingPassport);
@@ -1521,7 +1522,6 @@ namespace HyddwnLauncher
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
             var launchArgs = await Patcher.GetLauncherArgumentsAsync();
-            launchArgs = launchArgs.Replace("${passport}", passport);
             launchArgs += $" {ActiveClientProfile.Arguments}";
 
             try
@@ -1529,7 +1529,7 @@ namespace HyddwnLauncher
                 try
                 {
                     Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs);
-                    var process = Process.Start(ActiveClientProfile.Location, launchArgs);
+                    var process = Process.Start(ActiveClientProfile.Location, launchArgs.Replace("${passport}", passport));
 
                     if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                     {
