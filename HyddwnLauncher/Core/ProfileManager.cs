@@ -1,21 +1,27 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Util;
 using Newtonsoft.Json;
 
 namespace HyddwnLauncher.Core
 {
-    public class ProfileManager
+    public class ProfileManager : INotifyPropertyChanged
     {
         private readonly string _clientProfileJson =
             $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\clientprofiles.json";
 
         private readonly string _serverProfileJson =
             $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\serverprofiles.json";
+
+        private ObservableCollection<ClientProfile> _clientProfiles;
+        private ObservableCollection<ServerProfile> _serverProfiles;
 
         public ProfileManager()
         {
@@ -28,8 +34,27 @@ namespace HyddwnLauncher.Core
             Load();
         }
 
-        public ObservableCollection<ClientProfile> ClientProfiles { get; private set; }
-        public ObservableCollection<ServerProfile> ServerProfiles { get; private set; }
+        public ObservableCollection<ClientProfile> ClientProfiles
+        {
+            get => _clientProfiles;
+            private set
+            {
+                if (Equals(value, _clientProfiles)) return;
+                _clientProfiles = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<ServerProfile> ServerProfiles
+        {
+            get => _serverProfiles;
+            private set
+            {
+                if (Equals(value, _serverProfiles)) return;
+                _serverProfiles = value;
+                OnPropertyChanged();
+            }
+        }
 
         public async Task UpdateProfiles()
         {
@@ -141,6 +166,14 @@ namespace HyddwnLauncher.Core
             ServerProfiles.Clear();
             ServerProfiles.Add(ServerProfile.OfficialProfile);
             SaveServerProfiles();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
