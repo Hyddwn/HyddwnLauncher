@@ -269,8 +269,6 @@ namespace HyddwnLauncher
 
         private static readonly string AssemblyLocation = Assembly.GetExecutingAssembly().Location;
         private static readonly string Assemblypath = Path.GetDirectoryName(AssemblyLocation);
-        private readonly BackgroundWorker _backgroundWorker = new BackgroundWorker();
-        private readonly BackgroundWorker _backgroundWorker2 = new BackgroundWorker();
         private readonly Control[] _disableWhilePatching;
         private readonly Dictionary<string, string> _updateInfo = new Dictionary<string, string>();
         private volatile bool _patching;
@@ -572,7 +570,7 @@ namespace HyddwnLauncher
         //    OnKeyUp(e);
         //}
 
-        private async void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private async Task PerformLauncherUpdate()
         {
             MainProgressReporter.SetProgressBar(0.0);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
@@ -1700,26 +1698,6 @@ namespace HyddwnLauncher
             }
         }
 
-        private async Task<bool> SelfUpdate()
-        {
-            IsPatching = true;
-            Closing += Updater_Closing;
-            ImporterTextBlock.SetTextBlockSafe(Properties.Resources.SelfUpdateCheck);
-            ImportWindow.IsOpen = true;
-            if (await CheckForUpdates())
-            {
-                IsPatching = false;
-                ImportWindow.IsOpen = false;
-                _backgroundWorker.DoWork += _backgroundWorker_DoWork;
-                _backgroundWorker.RunWorkerAsync();
-                return true;
-            }
-
-            IsPatching = false;
-            Closing -= Updater_Closing;
-            return false;
-        }
-
         private void ToggleLoginControls()
         {
             NxAuthLoginUsername.IsEnabled = !NxAuthLoginUsername.IsEnabled;
@@ -1760,9 +1738,9 @@ namespace HyddwnLauncher
 
             if (response != MessageDialogResult.Affirmative) return;
 
-            _backgroundWorker.DoWork += _backgroundWorker_DoWork;
+            UpdateAvailableTextBlock.IsEnabled = false;
 
-            _backgroundWorker.RunWorkerAsync();
+            await Task.Run(() => PerformLauncherUpdate());
         }
 
         private async Task UpdaterUpdate()
