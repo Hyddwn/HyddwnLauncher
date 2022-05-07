@@ -233,6 +233,7 @@
     <Compile Include="Util\FileReader.cs" />
     <Compile Include="Util\Helpers\Mathhelper.cs" />
     <Compile Include="Util\Helpers\PatternHelper.cs" />
+    <Compile Include="Util\Helpers\TaskQueueHelper.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Util\LogLevel.cs" />
     <Compile Include="Util\MoreEnumerable.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Network;
 using HyddwnLauncher.Util;
+using HyddwnLauncher.Util.Helpers;
 using Ionic.Zlib;
 
 namespace HyddwnLauncher.Patcher.NxLauncher
@@ -70,7 +72,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 downloadTasks.Add(() => DownloadPartTaskAsync(downloadDirectory, filePart, downloadUrl, files));
             }
 
-            await PerformTaskQueueAsync(downloadTasks);
+            await TaskQueueHelper.PerformTaskQueueAsync(downloadTasks);
 
             _patcherContext.UpdateMainProgress(Properties.Resources.DownloadComplete, $"{_completed}/{files}", 0, false, false);
             Log.Info(Properties.Resources.DownloadComplete);
@@ -122,18 +124,6 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 _patcherContext.UpdateMainProgress(Properties.Resources.DownloadingParts,
                     $"{_completed}/{files}", _completed / files * 100,
                     false, true);
-            }
-        }
-
-        private async Task PerformTaskQueueAsync(List<Func<Task>> tasks)
-        {
-            var taskQueueSemaphore = new SemaphoreSlim(10);
-
-            foreach (var task in tasks)
-            {
-                await taskQueueSemaphore.WaitAsync();
-                task.Invoke()
-                    .ContinueWith(_ => taskQueueSemaphore.Release());
             }
         }
 
@@ -404,7 +394,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                     });
                 }
 
-                await PerformTaskQueueAsync(finishTasks);
+                await TaskQueueHelper.PerformTaskQueueAsync(finishTasks);
 
                 _downloadWrappers.Clear();
             }
@@ -415,18 +405,6 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 if (!_downloadWrappers.TryGetValue(filename, out downloadWrapper))
                     throw new KeyNotFoundException(nameof(filename));
                 downloadWrapper.AddToTable(partFileName, index);
-            }
-
-            private async Task PerformTaskQueueAsync(List<Func<Task>> tasks)
-            {
-                var taskQueueSemaphore = new SemaphoreSlim(10);
-
-                foreach (var task in tasks)
-                {
-                    await taskQueueSemaphore.WaitAsync();
-                    task.Invoke()
-                        .ContinueWith(_ => taskQueueSemaphore.Release());
-                }
             }
         }
     }

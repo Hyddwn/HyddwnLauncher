@@ -123,6 +123,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 await Task.Run(() => patchDownloader.Prepare());
                 result = await Task.Run(() => patchDownloader.Patch());
                 await Task.Run(() => patchDownloader.Cleanup());
+                if (result) WriteVersion(_latestVersion);
             }
             catch (Exception ex)
             {
