@@ -56,6 +56,11 @@ namespace HyddwnLauncher
 #if DEBUG
            launcherContext.LauncherSettingsManager.Reset();
 #endif
+            ProgressIndicatorObjectPool = new ObjectPool<ProgressIndicator>(() =>
+            {
+                return Dispatcher.Invoke(() => new ProgressIndicator());
+            });
+
             Reporters = new ObservableCollection<ProgressIndicator>();
             LauncherContext = launcherContext;
             Settings = launcherContext.LauncherSettingsManager;
@@ -163,8 +168,7 @@ namespace HyddwnLauncher
 
         #region Properties
 
-        public string Theme { get; set; }
-        public string Accent { get; set; }
+        private ObjectPool<ProgressIndicator> ProgressIndicatorObjectPool { get; set; }
         private PluginHost PluginHost { get; set; }
         public ProfileManager ProfileManager { get; private set; }
         public ServerProfile ActiveServerProfile { get; set; }
@@ -1132,7 +1136,7 @@ namespace HyddwnLauncher
 
             Dispatcher.Invoke(() =>
             {
-                progressReporter = new ProgressIndicator();
+                progressReporter = ProgressIndicatorObjectPool.Get();
                 Reporters.Add(progressReporter);
             });
 
@@ -1145,6 +1149,7 @@ namespace HyddwnLauncher
             {
                 var concrete = progressReporter as ProgressIndicator;
                 Reporters.Remove(concrete);
+                ProgressIndicatorObjectPool.Return(concrete);
             });
         }
 
