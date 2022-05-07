@@ -1,13 +1,15 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Shell;
 using System.Windows.Threading;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Patcher.NxLauncher;
+using HyddwnLauncher.Util.Helpers;
 
 namespace HyddwnLauncher.Util
 {
@@ -21,6 +23,16 @@ namespace HyddwnLauncher.Util
         public static void SetMetroProgressSafe(this ProgressBar progressBar, double value)
         {
             Application.Current.Dispatcher.Invoke((Action) (() => progressBar.Value = value), DispatcherPriority.Send);
+        }
+
+        public static void SetProgressValueSafe(this TaskbarItemInfo taskbarItemInfo, double value)
+        {
+            Application.Current.Dispatcher.Invoke((Action)(() => taskbarItemInfo.ProgressValue = MathHelper.Normalize(value)));
+        }
+
+        public static void SetProgressStateSafe(this TaskbarItemInfo taskbarItemInfo, TaskbarItemProgressState value)
+        {
+            Application.Current.Dispatcher.Invoke((Action)(() => taskbarItemInfo.ProgressState = value));
         }
 
         public static void SetCheckBoxIsCheckedSafe(this CheckBox checkBox, bool isChecked)

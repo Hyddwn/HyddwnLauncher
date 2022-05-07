@@ -56,6 +56,9 @@
             </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo Description="A fun alternative launcher for Mabinogi."/>
+    </Window.TaskbarItemInfo>
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
             <Button Content="Discord"/>
