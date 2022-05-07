@@ -32,6 +32,20 @@ namespace HyddwnLauncher.Core
                 Directory.CreateDirectory(Path.GetDirectoryName(_serverProfileJson));
 
             Load();
+            PropertyChanged += OnPropertyChanged;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ClientProfiles):
+                    SaveClientProfiles();
+                    break;
+                case nameof(ServerProfiles):
+                    SaveServerProfiles();
+                    break;
+            }
         }
 
         public ObservableCollection<ClientProfile> ClientProfiles
