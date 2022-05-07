@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web.UI;
 using HyddwnLauncher.Util;
 using HyddwnLauncher.Util.Helpers;
 
@@ -32,7 +33,18 @@ namespace HyddwnLauncher.Network
                     $"{ByteSizeHelper.ToString(args.BytesReceived)}/{ByteSizeHelper.ToString(args.TotalBytesToReceive)} @ {ByteSizeHelper.ToString(bytesPerSecond, mode: ByteSizeMode.Network)}/s");
             };
             sw.Start();
-            client.DownloadFileTaskAsync(url, file).Wait();
+            try
+            {
+                await client.DownloadFileTaskAsync(url, file);
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex);
+            }
+            finally
+            {
+                sw.Stop();
+            }
         }
     }
 }
