@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -155,6 +155,12 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 fs.Flush();
             }
 
+            // clean up the reporter for reuse
+            progressReporter.SetProgressBar(0);
+            progressReporter.SetLeftText(string.Empty);
+            progressReporter.SetRightText(string.Empty);
+            progressReporter.SetIsIndeterminate(false);
+
             _patcherContext.DestroyProgressIndicator(progressReporter);
         }
 
@@ -274,6 +280,12 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
                 File.SetLastWriteTimeUtc(_copyFilename, Patch.FileDownloadInfo.LastModifiedDateTime);
                 File.SetLastAccessTimeUtc(_copyFilename, Patch.FileDownloadInfo.LastModifiedDateTime);
+
+                // clean up the reporter for reuse
+                progressReporter.SetProgressBar(0);
+                progressReporter.SetLeftText(string.Empty);
+                progressReporter.SetRightText(string.Empty);
+                progressReporter.SetIsIndeterminate(false);
 
                 _patcherContext.DestroyProgressIndicator(progressReporter);
             }
