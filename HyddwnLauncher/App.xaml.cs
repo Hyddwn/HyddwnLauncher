@@ -182,7 +182,7 @@ namespace HyddwnLauncher
             Log.Info(HyddwnLauncher.Properties.Resources.AppShutdown);
             base.OnExit(e);
 
-            SentrySdk.FlushAsync(TimeSpan.FromSeconds(2)).RunSynchronously();
+            SentrySdk.FlushAsync(TimeSpan.FromSeconds(2)).Wait();
 
             Environment.Exit(0);
         }
