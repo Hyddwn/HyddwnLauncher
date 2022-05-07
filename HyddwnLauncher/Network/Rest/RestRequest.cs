@@ -25,6 +25,7 @@ namespace HyddwnLauncher.Network.Rest
         private List<KeyValuePair<string, string>> _urlSegment;
         private List<KeyValuePair<string, string>> _cookies;
         private List<KeyValuePair<string, string>> _headers;
+        private List<KeyValuePair<string, string>> _formData;
 
         public RestRequest(RestClient restClient, string endpoint, string accessToken)
         {
@@ -125,6 +126,16 @@ namespace HyddwnLauncher.Network.Rest
             return this;
         }
 
+        public RestRequest AddForm(string name, string value)
+        {
+            if (_formData == null)
+                _formData = new List<KeyValuePair<string, string>>();
+
+            _formData.Add(new KeyValuePair<string, string>(name, value));
+
+            return this;
+        }
+
         public RestRequest SetBody(object obj)
         {
             _bodyObj = obj;
@@ -177,13 +188,22 @@ namespace HyddwnLauncher.Network.Rest
                     httpRequestMessage.Headers.Add("Cookie", cookieStringBuilder.ToString());
                 }
 
-                if ((httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put) && _bodyObj != null)
+                if (httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put)
                 {
-                    var json = JsonConvert.SerializeObject(_bodyObj);
+                    if (_bodyObj != null)
+                    {
+                        var json = JsonConvert.SerializeObject(_bodyObj);
 
-                    httpRequestMessage.Content = new StringContent(json);
-                    httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    httpRequestMessage.Headers.Add("Accept", "*/*");
+                        httpRequestMessage.Content = new StringContent(json);
+                        httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                        httpRequestMessage.Headers.Add("Accept", "*/*");
+                    }
+                    else if (_formData != null)
+                    {
+                        httpRequestMessage.Content = new FormUrlEncodedContent(_formData);
+                        httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                        httpRequestMessage.Headers.Add("Accept", "*/*");
+                    }
                 }
 
                 return httpRequestMessage;
