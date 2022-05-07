@@ -118,6 +118,18 @@ namespace HyddwnLauncher.Network
             try
             {
                 var obj = JsonConvert.DeserializeObject<GameBuildConfigurationV1Response>(body);
+
+                // Override Nexon provided game config with community provided config 
+                var newLogIp = "logip:54.214.43.237";
+                var logIpIndex = obj.Arguments.IndexOf(obj.Arguments.FirstOrDefault(a => a.StartsWith("logip:")));
+                obj.Arguments.RemoveAt(logIpIndex);
+                obj.Arguments.Insert(logIpIndex, newLogIp);
+
+                var newLogPort = "logport:11002";
+                var lopPortIndex = obj.Arguments.IndexOf(obj.Arguments.FirstOrDefault(a => a.StartsWith("logport:")));
+                obj.Arguments.RemoveAt(lopPortIndex);
+                obj.Arguments.Insert(lopPortIndex, newLogPort);
+
                 return obj;
             }
             catch (Exception ex)
@@ -326,7 +338,7 @@ namespace HyddwnLauncher.Network
 
             var data = "";
 
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (response.HasErrorWithData)
             {
                 data = await response.GetContentAsync();
                 var error = JsonConvert.DeserializeObject<ErrorResponse>(data);
@@ -343,6 +355,9 @@ namespace HyddwnLauncher.Network
             data = await response.GetContentAsync();
             var cookies = response.GetCookies();
             var body = JsonConvert.DeserializeObject<AccountLoginNoAuthV1Response>(data);
+
+            Log.Info("GetAccessTokenResponseResponseBody: {0}", data);
+
             _accessToken = cookies.FirstOrDefault(x => x.Key == "AToken").Value;
             _gaccessToken = cookies.FirstOrDefault(x => x.Key == "g_AToken").Value;
             _idToken = cookies.FirstOrDefault(x => x.Key == "NxLSession").Value;
@@ -421,7 +436,7 @@ namespace HyddwnLauncher.Network
 
             var data = "";
 
-            if (response.StatusCode == HttpStatusCode.BadRequest)
+            if (response.HasErrorWithData)
             {
                 data = await response.GetContentAsync();
                 var responseObject = JsonConvert.DeserializeObject<ErrorResponse>(data);
@@ -436,7 +451,11 @@ namespace HyddwnLauncher.Network
 
             data = await response.GetContentAsync();
             var cookies = response.GetCookies();
+
             var body = JsonConvert.DeserializeObject<AccountLoginNoAuthV1Response>(data);
+
+            Log.Info("GetAccessToken Response: {0}", data);
+
             _accessToken = cookies.FirstOrDefault(x => x.Key == "AToken").Value;
             _gaccessToken = cookies.FirstOrDefault(x => x.Key == "g_AToken").Value;
             _idToken = cookies.FirstOrDefault(x => x.Key == "NxLSession").Value;
