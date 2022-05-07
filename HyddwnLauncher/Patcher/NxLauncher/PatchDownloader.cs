@@ -125,6 +125,8 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         {
             var progressReporter = _patcherContext.CreateProgressIndicator();
 
+            progressReporter.SetLeftText(Path.GetFileName(filename));
+
             var fileDirectory = Path.GetDirectoryName(filename);
 
             if (!Directory.Exists(fileDirectory))
@@ -134,7 +136,6 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             {
                 await AsyncDownloader.DownloadFileWithCallbackAsync(uri, filename, (d, s) =>
                 {
-                    progressReporter.SetLeftText(Path.GetFileName(filename));
                     progressReporter.SetRightText(s);
                     progressReporter.SetProgressBar(d);
                 }, true);
@@ -218,6 +219,9 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             public void Finish()
             {
+                var progressReporter = _patcherContext.CreateProgressIndicator();
+                progressReporter.SetLeftText($"{Patch.FileDownloadInfo.FileName}");
+
                 if (!Directory.Exists(Path.GetDirectoryName(_downloadFilename)))
                     Directory.CreateDirectory(Path.GetDirectoryName(_downloadFilename));
 
@@ -226,9 +230,6 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
                 double parts = _fileTable.Count;
                 int completed = 0;
-
-                var progressReporter = _patcherContext.CreateProgressIndicator();
-                progressReporter.SetLeftText($"{Patch.FileDownloadInfo.FileName}");
 
                 foreach (var file in _fileTable.Values)
                 {
