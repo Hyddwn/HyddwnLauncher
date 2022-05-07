@@ -33,8 +33,10 @@ namespace HyddwnLauncher
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         #region DependancyProperties
 
         public static readonly DependencyProperty IsUpdateAvailableProperty = DependencyProperty.Register(
@@ -171,8 +173,33 @@ namespace HyddwnLauncher
         private ObjectPool<ProgressIndicator> ProgressIndicatorObjectPool { get; set; }
         private PluginHost PluginHost { get; set; }
         public ProfileManager ProfileManager { get; private set; }
-        public ServerProfile ActiveServerProfile { get; set; }
-        public ClientProfile ActiveClientProfile { get; set; }
+
+        public ServerProfile ActiveServerProfile
+        {
+            get => _activeServerProfile;
+            set
+            {
+                if (Equals(value, _activeServerProfile)) return;
+                _activeServerProfile = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsLaunchAvailable));
+            }
+        }
+
+        public ClientProfile ActiveClientProfile
+        {
+            get => _activeClientProfile;
+            set
+            {
+                if (Equals(value, _activeClientProfile)) return;
+                _activeClientProfile = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsLaunchAvailable));
+            }
+        }
+
+        public bool IsLaunchAvailable => ActiveServerProfile != null && ActiveClientProfile != null;
+
         public ObservableCollection<ProgressIndicator> Reporters { get; protected set; }
 
         public LauncherContext LauncherContext { get; private set; }
@@ -244,6 +271,9 @@ namespace HyddwnLauncher
         private bool _updateClose;
         private bool _settingUpProfile;
         private Dictionary<string, MetroTabItem> _pluginTabs;
+        private ServerProfile _activeServerProfile;
+        private ClientProfile _activeClientProfile;
+        private bool _isLaunchAvailable;
 
         public event Action LoginSuccess;
         public event Action LoginCancel;
@@ -1780,5 +1810,11 @@ namespace HyddwnLauncher
         }
 
         #endregion
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
