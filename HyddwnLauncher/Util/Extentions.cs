@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -15,12 +15,12 @@ namespace HyddwnLauncher.Util
     {
         public static void SetVisibilitySafe(this UIElement uiElement, Visibility visibility)
         {
-            Application.Current.Dispatcher.Invoke((Action) (() => uiElement.Visibility = visibility));
+            Application.Current.Dispatcher.Invoke((Action) (() => uiElement.Visibility = visibility), DispatcherPriority.Send);
         }
 
         public static void SetMetroProgressSafe(this ProgressBar progressBar, double value)
         {
-            Application.Current.Dispatcher.Invoke((Action) (() => progressBar.Value = value));
+            Application.Current.Dispatcher.Invoke((Action) (() => progressBar.Value = value), DispatcherPriority.Send);
         }
 
         public static void SetCheckBoxIsCheckedSafe(this CheckBox checkBox, bool isChecked)
