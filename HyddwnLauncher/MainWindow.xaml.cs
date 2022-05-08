@@ -1197,7 +1197,7 @@ namespace HyddwnLauncher
             });
         }
 
-        private async void ConfigurePatcher()
+        private void ConfigurePatcher()
         {
             if (ActiveServerProfile == null) return;
             if (ActiveClientProfile == null) return;
@@ -1284,6 +1284,7 @@ namespace HyddwnLauncher
             };
             patcherContext.CreateProgressIndicatorInternal += CreateProgressIndicator;
             patcherContext.DestroyProgressIndicatorInternal += DestroyProgressIndicator;
+            patcherContext.GetMaxDownloadWorkersInternal += GetMaxDownloadWorkers;
 
             if (!ActiveServerProfile.IsOfficial)
             {
@@ -1296,6 +1297,11 @@ namespace HyddwnLauncher
                 : (IPatcher)new LegacyPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext);
 
             //IsInMaintenance = await Patcher.GetMaintenanceStatusAsync();
+        }
+
+        private int GetMaxDownloadWorkers()
+        {
+            return this.Settings.LauncherSettings.ConnectionLimit;
         }
 
         private async Task DeletePackFiles()

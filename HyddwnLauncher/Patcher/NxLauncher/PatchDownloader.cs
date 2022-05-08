@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -46,9 +46,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             _prepared = true;
         }
 
-#pragma warning disable 1998
         public async Task<bool> Patch()
-#pragma warning restore 1998
         {
             if (!_prepared)
                 throw new InvalidOperationException(Properties.Resources.PatchDownloaderNotInitializedMessage);
@@ -72,7 +70,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 downloadTasks.Add(() => DownloadPartTaskAsync(downloadDirectory, filePart, downloadUrl, files));
             }
 
-            await TaskQueueHelper.PerformTaskQueueAsync(downloadTasks);
+            await TaskQueueHelper.PerformTaskQueueAsync(downloadTasks, _patcherContext.GetMaxDownloadWorkers());
 
             _patcherContext.UpdateMainProgress(Properties.Resources.DownloadComplete, $"{_completed}/{files}", 0, false, false);
             Log.Info(Properties.Resources.DownloadComplete);
