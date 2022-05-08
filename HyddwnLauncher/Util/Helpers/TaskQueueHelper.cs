@@ -7,10 +7,10 @@ namespace HyddwnLauncher.Util.Helpers
 {
     public static class TaskQueueHelper
     {
-        public static async Task PerformTaskQueueAsync(List<Func<Task>> tasks)
+        public static async Task PerformTaskQueueAsync(List<Func<Task>> tasks, int workerCount = 10)
         {
             var concurrentQueue = new ConcurrentQueue<Func<Task>>();
-            var taskProcessorSize = 10;
+            var taskProcessorSize = workerCount;
 
             foreach (var task in tasks)
             {
