@@ -331,6 +331,44 @@ namespace HyddwnLauncher.Util
             File.Replace(tempPath, path, backup);
         }
 
+        /// <summary>
+        ///     StackOverflow
+        ///     https://stackoverflow.com/questions/25366534/file-writealltext-not-flushing-data-to-disk
+        ///     When saving the configuration, it ti first written to a temp file.
+        ///     If something happens to cause the write to the temp file to fail, the save is lost
+        ///     however the original data is untouched. This should reduce loss of configuration data
+        ///     due to write failure significantly
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="contents"></param>
+        public static void WriteAllBytesWithBackup(this byte[] contents, string path)
+        {
+            if (!File.Exists(path))
+            {
+                File.WriteAllBytes(path, contents);
+                return;
+            }
+
+            // use the same folder so that they are always on the same drive!
+            var tempPath = Path.Combine(Path.GetDirectoryName(path), Guid.NewGuid().ToString());
+
+            // create the backup name
+            var backup = path + ".backup";
+
+            // delete any existing backups
+            if (File.Exists(backup))
+                File.Delete(backup);
+
+            // write the data to a temp file
+            using (var tempFile = File.Create(tempPath, 4096, FileOptions.WriteThrough))
+            {
+                tempFile.Write(contents, 0, contents.Length);
+            }
+
+            // replace the contents
+            File.Replace(tempPath, path, backup);
+        }
+
         public static bool IsWithin(this int value, int minimum, int maximum)
         {
             return value >= minimum && value <= maximum;
