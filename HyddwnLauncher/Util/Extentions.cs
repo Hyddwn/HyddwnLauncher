@@ -67,7 +67,7 @@ namespace HyddwnLauncher.Util
 
         public static void SetTextBlockSafe(this TextBlock textBlock, string text)
         {
-            Application.Current.Dispatcher.Invoke((Action) (() => textBlock.Text = text), DispatcherPriority.Send);
+            Application.Current.Dispatcher.Invoke((Action) (() => textBlock.Text = text));
         }
 
         public static void SetTextBlockSafe(this TextBlock textBlock, string format, params object[] args)
@@ -77,7 +77,7 @@ namespace HyddwnLauncher.Util
 
         public static void SetRunSafe(this Run run, string text)
         {
-            Application.Current.Dispatcher.Invoke((Action)(() => run.Text = text), DispatcherPriority.Send);
+            Application.Current.Dispatcher.Invoke((Action)(() => run.Text = text));
         }
 
         public static void SetRunSafe(this Run run, string format, params object[] args)
