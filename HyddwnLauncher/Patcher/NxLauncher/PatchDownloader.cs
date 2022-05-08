@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -143,7 +143,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             {
                 progressReporter.SetRightText(s);
                 progressReporter.SetProgressBar(d);
-            }, true);
+            }, true, 10);
 
             progressReporter.SetIsIndeterminate(true);
             progressReporter.SetRightText(Properties.Resources.Decompressing);
