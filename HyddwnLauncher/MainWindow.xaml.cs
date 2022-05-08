@@ -323,9 +323,9 @@ namespace HyddwnLauncher
         {
             if (!Settings.LauncherSettings.AllowPatching) return;
             if (Patcher == null) return;
-            var updateRequired = await Patcher.CheckForUpdatesAsync();
+            var updateRequired = await Task.Run(() => Patcher.CheckForUpdatesAsync());
             if (updateRequired)
-                await Patcher.ApplyUpdatesAsync();
+                await Task.Run(() => Patcher.ApplyUpdatesAsync());
         }
 
         public async void AttemptClientRepair(object sender = null, RoutedEventArgs e = null)
