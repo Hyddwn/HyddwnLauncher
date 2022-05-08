@@ -25,6 +25,7 @@ namespace HyddwnLauncher.Network.Rest
         private List<KeyValuePair<string, string>> _urlSegment;
         private List<KeyValuePair<string, string>> _cookies;
         private List<KeyValuePair<string, string>> _headers;
+        private List<KeyValuePair<string, string>> _formData;
 
         public RestRequest(RestClient restClient, string endpoint, string accessToken)
         {
@@ -125,6 +126,16 @@ namespace HyddwnLauncher.Network.Rest
             return this;
         }
 
+        public RestRequest AddForm(string name, string value)
+        {
+            if (_formData == null)
+                _formData = new List<KeyValuePair<string, string>>();
+
+            _formData.Add(new KeyValuePair<string, string>(name, value));
+
+            return this;
+        }
+
         public RestRequest SetBody(object obj)
         {
             _bodyObj = obj;
@@ -177,13 +188,22 @@ namespace HyddwnLauncher.Network.Rest
                     httpRequestMessage.Headers.Add("Cookie", cookieStringBuilder.ToString());
                 }
 
-                if ((httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put) && _bodyObj != null)
+                if (httpMethod == HttpMethod.Post || httpMethod == HttpMethod.Put)
                 {
-                    var json = JsonConvert.SerializeObject(_bodyObj);
+                    if (_bodyObj != null)
+                    {
+                        var json = JsonConvert.SerializeObject(_bodyObj);
 
-                    httpRequestMessage.Content = new StringContent(json);
-                    httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    httpRequestMessage.Headers.Add("Accept", "*/*");
+                        httpRequestMessage.Content = new StringContent(json);
+                        httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                        httpRequestMessage.Headers.Add("Accept", "*/*");
+                    }
+                    else if (_formData != null)
+                    {
+                        httpRequestMessage.Content = new FormUrlEncodedContent(_formData);
+                        httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                        httpRequestMessage.Headers.Add("Accept", "*/*");
+                    }
                 }
 
                 return httpRequestMessage;
@@ -195,10 +215,6 @@ namespace HyddwnLauncher.Network.Rest
             }
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public void CheckResponse(HttpResponseMessage httpResponseMessage)
         {
             // if (httpResponseMessage.StatusCode == HttpStatusCode.Unauthorized)
@@ -206,10 +222,6 @@ namespace HyddwnLauncher.Network.Rest
             //         Properties.Resources.NexonAPIUnauthorized);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse<T>> ExecuteGet<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Get).ConfigureAwait(false);
@@ -228,10 +240,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse> ExecutePost()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
@@ -241,10 +249,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse<T>> ExecutePost<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
@@ -263,10 +267,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse> ExecuteDelete()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
@@ -276,10 +276,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception> // TData, TError
         public async Task<RestResponse<T>> ExecuteDelete<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
@@ -298,10 +294,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception>
         public async Task<RestResponse> ExecutePut()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
@@ -311,10 +303,6 @@ namespace HyddwnLauncher.Network.Rest
             return new RestResponse(httpResponseMessage);
         }
 
-        /// <exception cref="UnauthorizedAccessException">
-        ///     Call to Sqaure Connect API returned unauthorized. Most likely the API key
-        ///     is invalid.
-        /// </exception> //TData, TError
         public async Task<RestResponse<T>> ExecutePut<T>()
         {
             var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
@@ -367,11 +355,7 @@ namespace HyddwnLauncher.Network.Rest
                     continue;
                 }
 
-                if (httpResponseMessage.IsSuccessStatusCode)
-                    return httpResponseMessage;
-
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    return httpResponseMessage;
+                return httpResponseMessage;
             } while (timesToTry-- > 0);
 
             return httpResponseMessage;

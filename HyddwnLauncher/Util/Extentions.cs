@@ -5,9 +5,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Shell;
 using System.Windows.Threading;
 using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Patcher.NxLauncher;
+using HyddwnLauncher.Util.Helpers;
 
 namespace HyddwnLauncher.Util
 {
@@ -15,12 +17,22 @@ namespace HyddwnLauncher.Util
     {
         public static void SetVisibilitySafe(this UIElement uiElement, Visibility visibility)
         {
-            Application.Current.Dispatcher.Invoke((Action) (() => uiElement.Visibility = visibility));
+            Application.Current.Dispatcher.Invoke((Action) (() => uiElement.Visibility = visibility), DispatcherPriority.Send);
         }
 
         public static void SetMetroProgressSafe(this ProgressBar progressBar, double value)
         {
-            Application.Current.Dispatcher.Invoke((Action) (() => progressBar.Value = value));
+            Application.Current.Dispatcher.Invoke((Action) (() => progressBar.Value = value), DispatcherPriority.Send);
+        }
+
+        public static void SetProgressValueSafe(this TaskbarItemInfo taskbarItemInfo, double value)
+        {
+            Application.Current.Dispatcher.Invoke((Action)(() => taskbarItemInfo.ProgressValue = MathHelper.Normalize(value)));
+        }
+
+        public static void SetProgressStateSafe(this TaskbarItemInfo taskbarItemInfo, TaskbarItemProgressState value)
+        {
+            Application.Current.Dispatcher.Invoke((Action)(() => taskbarItemInfo.ProgressState = value));
         }
 
         public static void SetCheckBoxIsCheckedSafe(this CheckBox checkBox, bool isChecked)
@@ -55,7 +67,7 @@ namespace HyddwnLauncher.Util
 
         public static void SetTextBlockSafe(this TextBlock textBlock, string text)
         {
-            Application.Current.Dispatcher.Invoke((Action) (() => textBlock.Text = text), DispatcherPriority.Send);
+            Application.Current.Dispatcher.Invoke((Action) (() => textBlock.Text = text));
         }
 
         public static void SetTextBlockSafe(this TextBlock textBlock, string format, params object[] args)
@@ -65,7 +77,7 @@ namespace HyddwnLauncher.Util
 
         public static void SetRunSafe(this Run run, string text)
         {
-            Application.Current.Dispatcher.Invoke((Action)(() => run.Text = text), DispatcherPriority.Send);
+            Application.Current.Dispatcher.Invoke((Action)(() => run.Text = text));
         }
 
         public static void SetRunSafe(this Run run, string format, params object[] args)
@@ -313,6 +325,44 @@ namespace HyddwnLauncher.Util
             using (var tempFile = File.Create(tempPath, 4096, FileOptions.WriteThrough))
             {
                 tempFile.Write(data, 0, data.Length);
+            }
+
+            // replace the contents
+            File.Replace(tempPath, path, backup);
+        }
+
+        /// <summary>
+        ///     StackOverflow
+        ///     https://stackoverflow.com/questions/25366534/file-writealltext-not-flushing-data-to-disk
+        ///     When saving the configuration, it ti first written to a temp file.
+        ///     If something happens to cause the write to the temp file to fail, the save is lost
+        ///     however the original data is untouched. This should reduce loss of configuration data
+        ///     due to write failure significantly
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="contents"></param>
+        public static void WriteAllBytesWithBackup(this byte[] contents, string path)
+        {
+            if (!File.Exists(path))
+            {
+                File.WriteAllBytes(path, contents);
+                return;
+            }
+
+            // use the same folder so that they are always on the same drive!
+            var tempPath = Path.Combine(Path.GetDirectoryName(path), Guid.NewGuid().ToString());
+
+            // create the backup name
+            var backup = path + ".backup";
+
+            // delete any existing backups
+            if (File.Exists(backup))
+                File.Delete(backup);
+
+            // write the data to a temp file
+            using (var tempFile = File.Create(tempPath, 4096, FileOptions.WriteThrough))
+            {
+                tempFile.Write(contents, 0, contents.Length);
             }
 
             // replace the contents

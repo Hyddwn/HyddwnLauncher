@@ -84,12 +84,7 @@ namespace HyddwnLauncher.Controls
 
         private void BrowseButtonOnClick(object sender, RoutedEventArgs e)
         {
-            if (ClientProfile == null)
-            {
-                ErrorWindow.IsOpen = true;
-                return;
-
-            }
+            if (ClientProfileIsInvalid()) return;
 
             var openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = Properties.Resources.ProfileOpenFileDialogFilter;
@@ -103,13 +98,34 @@ namespace HyddwnLauncher.Controls
 
         }
 
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ClientProfileIsInvalid()) return;
+        }
+
+        private void LocationTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ClientProfileIsInvalid()) return;
+        }
+
+        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
+        {
+            if (ClientProfileIsInvalid()) return;
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ClientProfileIsInvalid()) return;
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (ClientProfileIsInvalid()) return;
+        }
+
         private void ClientProfileSavedCredentialsRemoveButtonOnClick(object sender, RoutedEventArgs e)
         {
-            if (ClientProfile == null)
-            {
-                ErrorWindow.IsOpen = true;
-                return;
-            }
+            if (ClientProfileIsInvalid()) return;
 
             CredentialsStorage.Instance.Remove(ClientProfile.Guid);
             CredentialUsername = "";
@@ -117,49 +133,17 @@ namespace HyddwnLauncher.Controls
             UserAvatarSource = "";
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private bool ClientProfileIsInvalid()
         {
             if (ClientProfile == null)
             {
                 ErrorWindow.IsOpen = true;
-                return;
+                return true;
             }
-        }
 
-        private void LocationTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (ClientProfile == null)
-            {
-                ErrorWindow.IsOpen = true;
-                return;
-            }
-        }
-
-        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
-        {
-            if (ClientProfile == null)
-            {
-                ErrorWindow.IsOpen = true;
-                return;
-            }
-        }
-
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ClientProfile == null)
-            {
-                ErrorWindow.IsOpen = true;
-                return;
-            }
-        }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            if (ClientProfile == null)
-            {
-                ErrorWindow.IsOpen = true;
-                return;
-            }
+            if (ClientProfile != null && ErrorWindow.IsOpen)
+                ErrorWindow.Close();
+            return false;
         }
     }
 }

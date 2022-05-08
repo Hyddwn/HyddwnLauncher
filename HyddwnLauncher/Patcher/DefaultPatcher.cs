@@ -88,13 +88,20 @@ namespace HyddwnLauncher.Patcher
         {
             try
             {
-                return File.Exists("version.dat") ? BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0) : 0;
+                if (File.Exists("version.dat"))
+                {
+                    return BitConverter.ToInt32(File.ReadAllBytes("version.dat"), 0);
+                }
+
+                WriteVersion(0);
+                return 0;
             }
             catch
             {
                 return 0;
             }
         }
+
         public virtual void WriteVersion(int version)
         {
             Log.Info(Properties.Resources.WritingVersionToVersionDat, version);

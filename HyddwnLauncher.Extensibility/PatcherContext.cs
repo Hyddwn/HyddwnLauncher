@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using HyddwnLauncher.Extensibility.Interfaces;
 
 namespace HyddwnLauncher.Extensibility
@@ -56,6 +52,8 @@ namespace HyddwnLauncher.Extensibility
         internal Func<IProgressIndicator> CreateProgressIndicatorInternal;
 
         internal Action<IProgressIndicator> DestroyProgressIndicatorInternal;
+
+        internal Func<int> GetMaxDownloadWorkersInternal;
 
         /// <summary>
         ///     Updates the main progress reporter
@@ -167,7 +165,7 @@ namespace HyddwnLauncher.Extensibility
         /// <summary>
         ///     Creates a ProgressIndicator on the UI thread
         /// </summary>
-        /// <returns>WTHe instance of the created ProgressIndicator</returns>
+        /// <returns>The instance of the created ProgressIndicator</returns>
         public void DestroyProgressIndicator(IProgressIndicator progressIndicator)
         {
             if (DestroyProgressIndicatorInternal != null)
@@ -177,6 +175,19 @@ namespace HyddwnLauncher.Extensibility
             }
 
             ThrowExceptionForUninitializedApiCall();
+        }
+
+        /// <summary>
+        ///     Get the max download worker count corresponding to LauncherSettings.ConnectionLimit />
+        /// </summary>
+        /// <returns>The max worker count</returns>
+        public int GetMaxDownloadWorkers()
+        {
+            if (GetMaxDownloadWorkersInternal != null)
+                return GetMaxDownloadWorkersInternal.Invoke();
+
+            ThrowExceptionForUninitializedApiCall();
+            return 10;
         }
 
         private void ThrowExceptionForUninitializedApiCall([CallerMemberName] string methodName = null)

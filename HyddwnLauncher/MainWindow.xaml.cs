@@ -7,12 +7,15 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shell;
+using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Controls;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility;
@@ -33,8 +36,10 @@ namespace HyddwnLauncher
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         #region DependancyProperties
 
         public static readonly DependencyProperty IsUpdateAvailableProperty = DependencyProperty.Register(
@@ -56,6 +61,11 @@ namespace HyddwnLauncher
 #if DEBUG
            launcherContext.LauncherSettingsManager.Reset();
 #endif
+            ProgressIndicatorObjectPool = new ObjectPool<ProgressIndicator>(() =>
+            {
+                return Dispatcher.Invoke(() => new ProgressIndicator());
+            });
+
             Reporters = new ObservableCollection<ProgressIndicator>();
             LauncherContext = launcherContext;
             Settings = launcherContext.LauncherSettingsManager;
@@ -97,6 +107,7 @@ namespace HyddwnLauncher
             };
             IsPatching = true;
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
             _updateClose = false;
         }
 
@@ -104,6 +115,7 @@ namespace HyddwnLauncher
         {
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Starting);
 
             if (Settings.LauncherSettings.DisableLauncherUpdateCheck)
@@ -147,6 +159,7 @@ namespace HyddwnLauncher
 
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
             MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
 
@@ -163,12 +176,36 @@ namespace HyddwnLauncher
 
         #region Properties
 
-        public string Theme { get; set; }
-        public string Accent { get; set; }
+        private ObjectPool<ProgressIndicator> ProgressIndicatorObjectPool { get; set; }
         private PluginHost PluginHost { get; set; }
         public ProfileManager ProfileManager { get; private set; }
-        public ServerProfile ActiveServerProfile { get; set; }
-        public ClientProfile ActiveClientProfile { get; set; }
+
+        public ServerProfile ActiveServerProfile
+        {
+            get => _activeServerProfile;
+            set
+            {
+                if (Equals(value, _activeServerProfile)) return;
+                _activeServerProfile = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsLaunchAvailable));
+            }
+        }
+
+        public ClientProfile ActiveClientProfile
+        {
+            get => _activeClientProfile;
+            set
+            {
+                if (Equals(value, _activeClientProfile)) return;
+                _activeClientProfile = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsLaunchAvailable));
+            }
+        }
+
+        public bool IsLaunchAvailable => ActiveServerProfile != null && ActiveClientProfile != null;
+
         public ObservableCollection<ProgressIndicator> Reporters { get; protected set; }
 
         public LauncherContext LauncherContext { get; private set; }
@@ -232,14 +269,15 @@ namespace HyddwnLauncher
 
         private static readonly string AssemblyLocation = Assembly.GetExecutingAssembly().Location;
         private static readonly string Assemblypath = Path.GetDirectoryName(AssemblyLocation);
-        private readonly BackgroundWorker _backgroundWorker = new BackgroundWorker();
-        private readonly BackgroundWorker _backgroundWorker2 = new BackgroundWorker();
         private readonly Control[] _disableWhilePatching;
         private readonly Dictionary<string, string> _updateInfo = new Dictionary<string, string>();
         private volatile bool _patching;
         private bool _updateClose;
         private bool _settingUpProfile;
         private Dictionary<string, MetroTabItem> _pluginTabs;
+        private ServerProfile _activeServerProfile;
+        private ClientProfile _activeClientProfile;
+        private bool _isLaunchAvailable;
 
         public event Action LoginSuccess;
         public event Action LoginCancel;
@@ -285,9 +323,9 @@ namespace HyddwnLauncher
         {
             if (!Settings.LauncherSettings.AllowPatching) return;
             if (Patcher == null) return;
-            var updateRequired = await Patcher.CheckForUpdatesAsync();
+            var updateRequired = await Task.Run(() => Patcher.CheckForUpdatesAsync());
             if (updateRequired)
-                await Patcher.ApplyUpdatesAsync();
+                await Task.Run(() => Patcher.ApplyUpdatesAsync());
         }
 
         public async void AttemptClientRepair(object sender = null, RoutedEventArgs e = null)
@@ -403,6 +441,7 @@ namespace HyddwnLauncher
 
                         MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Launching);
                         MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
                         MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
                         MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
@@ -431,6 +470,7 @@ namespace HyddwnLauncher
                                 MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
                                 MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
                                 MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                                 IsPatching = false;
 
@@ -445,6 +485,7 @@ namespace HyddwnLauncher
                             MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
                             MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
                             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                             IsPatching = false;
                             await this.ShowMessageAsync(Properties.Resources.LaunchFailed, string.Format(Properties.Resources.CannotStartMabinogi, ex.Message));
@@ -529,16 +570,18 @@ namespace HyddwnLauncher
         //    OnKeyUp(e);
         //}
 
-        private async void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private async Task PerformLauncherUpdate()
         {
             MainProgressReporter.SetProgressBar(0.0);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
             Application.Current.Dispatcher.Invoke(() => { IsPatching = true; });
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingUpdate);
             try
             {
                 await UpdaterUpdate();
                 MainProgressReporter.SetProgressBar(0.0);
+                this.TaskbarItemInfo.SetProgressValueSafe(0.0);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
                 await AsyncDownloader.DownloadFileWithCallbackAsync(
@@ -547,11 +590,13 @@ namespace HyddwnLauncher
                     (d, s) =>
                     {
                         MainProgressReporter.SetProgressBar(d);
+                        this.TaskbarItemInfo.SetProgressValueSafe(d);
                         MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
                     }
                 );
 
                 MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadSuccessfulLaunchingUpdater);
+                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                 Closing -= Updater_Closing;
                 _updateClose = true;
@@ -562,6 +607,7 @@ namespace HyddwnLauncher
                 Log.Exception(ex, Properties.Resources.ErrorOccurredDuringUpdate);
                 MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.FailedToDownloadUpdateCont);
                 MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                 IsPatching = false;
             }
@@ -1006,6 +1052,7 @@ namespace HyddwnLauncher
             if (ActiveServerProfile.IsOfficial) return;
 
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.BuildingServerPackFile);
 
@@ -1027,6 +1074,7 @@ namespace HyddwnLauncher
             }
 
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
         }
@@ -1132,7 +1180,7 @@ namespace HyddwnLauncher
 
             Dispatcher.Invoke(() =>
             {
-                progressReporter = new ProgressIndicator();
+                progressReporter = ProgressIndicatorObjectPool.Get();
                 Reporters.Add(progressReporter);
             });
 
@@ -1145,10 +1193,11 @@ namespace HyddwnLauncher
             {
                 var concrete = progressReporter as ProgressIndicator;
                 Reporters.Remove(concrete);
+                ProgressIndicatorObjectPool.Return(concrete);
             });
         }
 
-        private async void ConfigurePatcher()
+        private void ConfigurePatcher()
         {
             if (ActiveServerProfile == null) return;
             if (ActiveClientProfile == null) return;
@@ -1235,6 +1284,7 @@ namespace HyddwnLauncher
             };
             patcherContext.CreateProgressIndicatorInternal += CreateProgressIndicator;
             patcherContext.DestroyProgressIndicatorInternal += DestroyProgressIndicator;
+            patcherContext.GetMaxDownloadWorkersInternal += GetMaxDownloadWorkers;
 
             if (!ActiveServerProfile.IsOfficial)
             {
@@ -1247,6 +1297,11 @@ namespace HyddwnLauncher
                 : (IPatcher)new LegacyPatcher(ActiveClientProfile, ActiveServerProfile, patcherContext);
 
             //IsInMaintenance = await Patcher.GetMaintenanceStatusAsync();
+        }
+
+        private int GetMaxDownloadWorkers()
+        {
+            return this.Settings.LauncherSettings.ConnectionLimit;
         }
 
         private async Task DeletePackFiles()
@@ -1477,6 +1532,7 @@ namespace HyddwnLauncher
 
             MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Launching);
             MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingPassport);
@@ -1484,7 +1540,6 @@ namespace HyddwnLauncher
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
             var launchArgs = await Patcher.GetLauncherArgumentsAsync();
-            launchArgs = launchArgs.Replace("${passport}", passport);
             launchArgs += $" {ActiveClientProfile.Arguments}";
 
             try
@@ -1492,7 +1547,7 @@ namespace HyddwnLauncher
                 try
                 {
                     Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs);
-                    var process = Process.Start(ActiveClientProfile.Location, launchArgs);
+                    var process = Process.Start(ActiveClientProfile.Location, launchArgs.Replace("${passport}", passport));
 
                     if (process != null && ActiveClientProfile.EnableMultiClientMemoryEdit && App.IsAdministrator())
                     {
@@ -1518,6 +1573,7 @@ namespace HyddwnLauncher
                     MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
                     MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
                     MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                     MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                     IsPatching = false;
 
@@ -1533,6 +1589,7 @@ namespace HyddwnLauncher
                 MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
                 MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
                 MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                 IsPatching = false;
                 await this.ShowMessageAsync(Properties.Resources.LaunchFailed, string.Format(Properties.Resources.CannotStartMabinogi, ex.Message));
@@ -1613,11 +1670,25 @@ namespace HyddwnLauncher
             {
                 MainProgressReporter.LeftTextBlock.SetTextBlockSafe(leftText);
                 MainProgressReporter.RighTextBlock.SetTextBlockSafe(rightText);
-                MainProgressReporter.ReporterProgressBar.SetMetroProgressSafe(value);
+                MainProgressReporter.ReporterProgressBar.SetMetroProgressSafe(value);//isIntermediate
+                this.TaskbarItemInfo.SetProgressValueSafe(value);
                 MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(isIntermediate);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(isVisible
                     ? Visibility.Visible
                     : Visibility.Hidden);
+
+                switch (isIntermediate)
+                {
+                    case true when isVisible:
+                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
+                        break;
+                    case false when isVisible:
+                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
+                        break;
+                    default:
+                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
+                        break;
+                }
             });
         }
 
@@ -1631,26 +1702,6 @@ namespace HyddwnLauncher
             {
                 return 0;
             }
-        }
-
-        private async Task<bool> SelfUpdate()
-        {
-            IsPatching = true;
-            Closing += Updater_Closing;
-            ImporterTextBlock.SetTextBlockSafe(Properties.Resources.SelfUpdateCheck);
-            ImportWindow.IsOpen = true;
-            if (await CheckForUpdates())
-            {
-                IsPatching = false;
-                ImportWindow.IsOpen = false;
-                _backgroundWorker.DoWork += _backgroundWorker_DoWork;
-                _backgroundWorker.RunWorkerAsync();
-                return true;
-            }
-
-            IsPatching = false;
-            Closing -= Updater_Closing;
-            return false;
         }
 
         private void ToggleLoginControls()
@@ -1693,9 +1744,9 @@ namespace HyddwnLauncher
 
             if (response != MessageDialogResult.Affirmative) return;
 
-            _backgroundWorker.DoWork += _backgroundWorker_DoWork;
+            UpdateAvailableTextBlock.IsEnabled = false;
 
-            _backgroundWorker.RunWorkerAsync();
+            await Task.Run(() => PerformLauncherUpdate());
         }
 
         private async Task UpdaterUpdate()
@@ -1730,13 +1781,17 @@ namespace HyddwnLauncher
             if (current < version2)
             {
                 MainProgressReporter.SetProgressBar(0.0);
+                this.TaskbarItemInfo.SetProgressValueSafe(0.0);
                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
                 Application.Current.Dispatcher.Invoke(() => { IsPatching = true; });
                 MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingAppUpdater);
                 try
                 {
                     MainProgressReporter.SetProgressBar(0.0);
+                    this.TaskbarItemInfo.SetProgressValueSafe(0.0);
                     MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
 
                     await AsyncDownloader.DownloadFileWithCallbackAsync(
                         _updateInfo["UpdateLink"],
@@ -1744,11 +1799,13 @@ namespace HyddwnLauncher
                         (d, s) =>
                         {
                             MainProgressReporter.SetProgressBar(d);
+                            this.TaskbarItemInfo.SetProgressValueSafe(d);
                             MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
                         }
                     );
 
                     MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
                     MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.ExtractingUpdater);
                     MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
                     using (var zipFile = ZipFile.Read(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))))
@@ -1760,6 +1817,7 @@ namespace HyddwnLauncher
                     MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CleaningUp);
                     File.Delete(Path.Combine(Assemblypath, "Updater.zip"));
                     MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                     MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
                     IsPatching = false;
                 }
@@ -1769,11 +1827,18 @@ namespace HyddwnLauncher
                     MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.FailedToDownloadUpdateCont);
                     MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
                     MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                     IsPatching = false;
                 }
             }
         }
 
         #endregion
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

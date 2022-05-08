@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using HyddwnLauncher.Extensibility;
 using HyddwnLauncher.Extensibility.Interfaces;
 using HyddwnLauncher.Network;
 using HyddwnLauncher.Util;
+using HyddwnLauncher.Util.Helpers;
 using Ionic.Zlib;
 
 namespace HyddwnLauncher.Patcher.NxLauncher
@@ -21,6 +23,9 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         private string _downloadDirectory;
         private const string DownloadBaseUrl = "https://download2.nexon.net/Game/nxl/games/10200/10200/";
         private PatcherContext _patcherContext;
+        private int _completed = 0;
+        private bool _failed = false;
+        private int _failedCount = 0;
 
         public PatchDownloader(List<Patch> patches, IClientProfile clientProfile,
             PatcherContext patcherContext)
@@ -41,22 +46,17 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             _prepared = true;
         }
 
-#pragma warning disable 1998
         public async Task<bool> Patch()
-#pragma warning restore 1998
         {
             if (!_prepared)
                 throw new InvalidOperationException(Properties.Resources.PatchDownloaderNotInitializedMessage);
 
             Log.Info(Properties.Resources.BeginObjectDownload, false);
 
-            var downloadTasks = new List<Action>();
+            var downloadTasks = new List<Func<Task>>();
             double files = _queueManager.Count;
-            int completed = 0;
-            bool failed = false;
-            int failedCount = 0;
 
-            _patcherContext.UpdateMainProgress(Properties.Resources.DownloadingParts, $"{completed}/{files}", 0, false, true);
+            _patcherContext.UpdateMainProgress("Preparing tasks...", isProgressbarVisible: true, isIndeterminate: true);
 
             while (_queueManager.Count != 0)
             {
@@ -67,78 +67,83 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 var downloadUrl = DownloadBaseUrl + $"{filePart.PartName.Substring(0, 2)}/{filePart.PartName}";
                 var downloadDirectory = Path.Combine(_downloadDirectory, "_parts");
 
-                downloadTasks.Add(async () =>
-                {
-                    try
-                    {
-                        var partFilename = Path.Combine(downloadDirectory, $"{filePart.FileName}.{filePart.Index:D3}");
-
-                        await DownloadPart(downloadUrl, partFilename);
-                        _queueManager.AddToFileTable(filePart.FileName, partFilename, filePart.Index);
-                        Log.Info(Properties.Resources.DownloadedPartNumberPartNameForFileNameSuccessfully,
-                            filePart.Index, filePart.PartName, filePart.FileName);
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            var partFilename = Path.Combine(downloadDirectory, $"{filePart.FileName}.{filePart.Index:D3}");
-
-                            await DownloadPart(downloadUrl, partFilename);
-                            _queueManager.AddToFileTable(filePart.FileName, partFilename, filePart.Index);
-                            Log.Info(Properties.Resources.DownloadedPartNumberPartNameForFileNameSuccessfully,
-                                filePart.Index, filePart.PartName, filePart.FileName);
-                        }
-                        catch (Exception ex1)
-                        {
-                            Log.Exception(ex1, Properties.Resources.FailedToDownloadPartNumberPartNameForFileName,
-                                filePart.Index, filePart.PartName, filePart.FileName);
-
-                            Interlocked.Increment(ref failedCount);
-                            failed = true;
-                        }
-
-                        Interlocked.Increment(ref failedCount);
-                        failed = true;
-                    }
-                    finally
-                    {
-                        Interlocked.Increment(ref completed);
-                        _patcherContext.UpdateMainProgress(Properties.Resources.DownloadingParts,
-                            $"{completed}/{files}", completed / files * 100,
-                            false, true);
-                    }
-                });
+                downloadTasks.Add(() => DownloadPartTaskAsync(downloadDirectory, filePart, downloadUrl, files));
             }
 
-            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 10 }, downloadTasks.ToArray());
+            _patcherContext.UpdateMainProgress(Properties.Resources.DownloadingParts, $"{_completed}/{files}", 0, false, true);
+            _patcherContext.ShowSession();
 
-            _patcherContext.UpdateMainProgress(Properties.Resources.DownloadComplete, $"{completed}/{files}", 0, false, false);
+            await TaskQueueHelper.PerformTaskQueueAsync(downloadTasks, _patcherContext.GetMaxDownloadWorkers());
+
+            _patcherContext.UpdateMainProgress(Properties.Resources.DownloadComplete, $"{_completed}/{files}", 0, false, false);
             Log.Info(Properties.Resources.DownloadComplete);
 
-            _queueManager.Finish();
+            await _queueManager.FinishAsync();
 
-            return !failed;
+            return !_failed;
+        }
+
+        private async Task DownloadPartTaskAsync(string downloadDirectory, FilePartInfo filePart, string downloadUrl, double files)
+        {
+            try
+            {
+                var partFilename = Path.Combine(downloadDirectory,
+                    $"{filePart.FileName}.{filePart.Index:D3}");
+
+                await DownloadPart(downloadUrl, partFilename);
+                _queueManager.AddToFileTable(filePart.FileName, partFilename, filePart.Index);
+                Log.Info(Properties.Resources.DownloadedPartNumberPartNameForFileNameSuccessfully,
+                    filePart.Index, filePart.PartName, filePart.FileName);
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    var partFilename = Path.Combine(downloadDirectory,
+                        $"{filePart.FileName}.{filePart.Index:D3}");
+
+                    await DownloadPart(downloadUrl, partFilename);
+                    _queueManager.AddToFileTable(filePart.FileName, partFilename, filePart.Index);
+                    Log.Info(Properties.Resources.DownloadedPartNumberPartNameForFileNameSuccessfully,
+                        filePart.Index, filePart.PartName, filePart.FileName);
+                }
+                catch (Exception ex1)
+                {
+                    Log.Exception(ex1, Properties.Resources.FailedToDownloadPartNumberPartNameForFileName,
+                        filePart.Index, filePart.PartName, filePart.FileName);
+
+                    Interlocked.Increment(ref _failedCount);
+                    _failed = true;
+                }
+
+                Interlocked.Increment(ref _failedCount);
+                _failed = true;
+            }
+            finally
+            {
+                Interlocked.Increment(ref _completed);
+                _patcherContext.UpdateMainProgress(Properties.Resources.DownloadingParts,
+                    $"{_completed}/{files}", _completed / files * 100,
+                    false, true);
+            }
         }
 
         public async Task DownloadPart(string uri, string filename)
         {
             var progressReporter = _patcherContext.CreateProgressIndicator();
 
+            progressReporter.SetLeftText(Path.GetFileName(filename));
+
             var fileDirectory = Path.GetDirectoryName(filename);
 
             if (!Directory.Exists(fileDirectory))
                 Directory.CreateDirectory(fileDirectory);
 
-            Task.Run(async () =>
+            await AsyncDownloader.DownloadFileWithCallbackAsync(uri, filename, (d, s) =>
             {
-                await AsyncDownloader.DownloadFileWithCallbackAsync(uri, filename, (d, s) =>
-                {
-                    progressReporter.SetLeftText(Path.GetFileName(filename));
-                    progressReporter.SetRightText(s);
-                    progressReporter.SetProgressBar(d);
-                }, true);
-            }).Wait();
+                progressReporter.SetRightText(s);
+                progressReporter.SetProgressBar(d);
+            }, true, 10);
 
             progressReporter.SetIsIndeterminate(true);
             progressReporter.SetRightText(Properties.Resources.Decompressing);
@@ -154,6 +159,12 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 fs.Write(buffer, 0, buffer.Length);
                 fs.Flush();
             }
+
+            // clean up the reporter for reuse
+            progressReporter.SetProgressBar(0);
+            progressReporter.SetLeftText(string.Empty);
+            progressReporter.SetRightText(string.Empty);
+            progressReporter.SetIsIndeterminate(false);
 
             _patcherContext.DestroyProgressIndicator(progressReporter);
         }
@@ -212,6 +223,9 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             public void Finish()
             {
+                var progressReporter = _patcherContext.CreateProgressIndicator();
+                progressReporter.SetLeftText($"{Patch.FileDownloadInfo.FileName}");
+
                 if (!Directory.Exists(Path.GetDirectoryName(_downloadFilename)))
                     Directory.CreateDirectory(Path.GetDirectoryName(_downloadFilename));
 
@@ -220,9 +234,6 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
                 double parts = _fileTable.Count;
                 int completed = 0;
-
-                var progressReporter = _patcherContext.CreateProgressIndicator();
-                progressReporter.SetLeftText($"{Patch.FileDownloadInfo.FileName}");
 
                 foreach (var file in _fileTable.Values)
                 {
@@ -274,6 +285,12 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
                 File.SetLastWriteTimeUtc(_copyFilename, Patch.FileDownloadInfo.LastModifiedDateTime);
                 File.SetLastAccessTimeUtc(_copyFilename, Patch.FileDownloadInfo.LastModifiedDateTime);
+
+                // clean up the reporter for reuse
+                progressReporter.SetProgressBar(0);
+                progressReporter.SetLeftText(string.Empty);
+                progressReporter.SetRightText(string.Empty);
+                progressReporter.SetIsIndeterminate(false);
 
                 _patcherContext.DestroyProgressIndicator(progressReporter);
             }
@@ -356,24 +373,31 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 }
             }
 
-            public void Finish()
+            public async Task FinishAsync()
             {
                 double count = _downloadWrappers.Count;
                 int completed = 0;
 
                 _patcherContext.UpdateMainProgress(Properties.Resources.FinalizingFiles, $"{completed}/{count}", 0, false, true);
 
-                var actions = _downloadWrappers.Values.Select(downloadWrapper => (Action) (() =>
+                var finishTasks = new List<Func<Task>>();
+
+                foreach (var downloadWrapper in _downloadWrappers.Values)
+                {
+                    finishTasks.Add(() =>
                     {
-                        downloadWrapper.Finish();
-                        Interlocked.Increment(ref completed);
-                        _patcherContext.UpdateMainProgress(Properties.Resources.FinalizingFiles, $"{completed}/{count}", completed / count * 100, false, true);
-                    }))
-                    .ToList();
+                        return Task.Run(() =>
+                        {
+                            downloadWrapper.Finish();
+                            Interlocked.Increment(ref completed);
+                            _patcherContext.UpdateMainProgress(Properties.Resources.FinalizingFiles, $"{completed}/{count}", completed / count * 100, false, true);
+                        });
+                    });
+                }
+
+                await TaskQueueHelper.PerformTaskQueueAsync(finishTasks);
 
                 _downloadWrappers.Clear();
-
-                Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 10 }, actions.ToArray());
             }
 
             public void AddToFileTable(string filename, string partFileName, int index)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -78,6 +78,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GongSolutions.WPF.DragDrop, Version=2.0.0.0, Culture=neutral, PublicKeyToken=91f1945125b7a587, processorArchitecture=MSIL">
+      <HintPath>..\packages\gong-wpf-dragdrop.2.4.3\lib\net46\GongSolutions.WPF.DragDrop.dll</HintPath>
+    </Reference>
     <Reference Include="ImaBrokeDude.Controls">
       <HintPath>D:\Pictures\ImaBrokeDude.Controls.dll</HintPath>
       <Private>True</Private>
@@ -128,6 +131,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -231,10 +235,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Util\Extentions.cs" />
     <Compile Include="Util\FileReader.cs" />
+    <Compile Include="Util\Helpers\Mathhelper.cs" />
     <Compile Include="Util\Helpers\PatternHelper.cs" />
+    <Compile Include="Util\Helpers\TaskQueueHelper.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Util\LogLevel.cs" />
     <Compile Include="Util\MoreEnumerable.cs" />
+    <Compile Include="Util\ObjectPool.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
     <Compile Include="Util\RequestLimitExceededException.cs" />
     <Compile Include="Util\ThemeUtil.cs" />

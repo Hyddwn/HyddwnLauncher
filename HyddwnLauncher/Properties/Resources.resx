@@ -671,7 +671,7 @@ Current Version: {0}
 New Version: {1}</value>
   </data>
   <data name="Username" xml:space="preserve">
-    <value>Username</value>
+    <value>Nexon ID</value>
   </data>
   <data name="UsernameOrPasswordIncorrect" xml:space="preserve">
     <value>Username or Password is Incorrect</value>

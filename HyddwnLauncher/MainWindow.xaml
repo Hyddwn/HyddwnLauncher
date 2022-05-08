@@ -10,6 +10,7 @@
                       xmlns:controls1="clr-namespace:HyddwnLauncher.Controls"
                       xmlns:core="clr-namespace:HyddwnLauncher.Core"
                       xmlns:util="clr-namespace:HyddwnLauncher.Util"
+                      xmlns:dd="urn:gong-wpf-dragdrop"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}"
@@ -44,18 +45,21 @@
                      Fill="{Binding ColorBrush, Mode=OneWay}" />
             <DataTemplate x:Key="AppThemeComboBoxItem" DataType="{x:Type util:AppThemeMenuData}">
                 <StackPanel Orientation="Horizontal">
-                    <ContentPresenter Height="16" Width="16" Margin="4" Content="{StaticResource AppThemeMenuIcon}" />
+                    <ContentControl Height="16" Width="16" Margin="4" Content="{StaticResource AppThemeMenuIcon}" />
                     <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 5 0" Text="{Binding TranslatedName}" />
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="AccentComboBoxItem" DataType="{x:Type util:AccentColorMenuData}">
                 <StackPanel Orientation="Horizontal">
-                    <ContentPresenter Height="16" Width="16" Margin="4" Content="{StaticResource AccentMenuIcon}" />
+                    <ContentControl Height="16" Width="16" Margin="4" Content="{StaticResource AccentMenuIcon}" />
                     <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 5 0" Text="{Binding TranslatedName}" />
                 </StackPanel>
             </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo Description="A fun alternative launcher for Mabinogi."/>
+    </Window.TaskbarItemInfo>
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
             <Button Content="Discord"/>
@@ -99,6 +103,8 @@
                             <Button Margin="5" Content="{x:Static p:Resources.Remove}" Click="ProfileEditorOnRemoveClientProfileButtonCLick" />
                         </StackPanel>
                         <ListBox x:Name="ClientProfileListBox" Grid.Row="1" Grid.Column="0"
+                                 dd:DragDrop.IsDragSource="True"
+                                 dd:DragDrop.IsDropTarget="True"
                                  ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
                                  ItemTemplate="{DynamicResource ClientProfileDataTemplate}"
                                  SelectionChanged="ProfileEditorOnClientProfileListBoxSelectionChanged" />
@@ -126,6 +132,8 @@
                             <Button Margin="5" Content="{x:Static p:Resources.Remove}" Click="ProfileEditorOnRemoveServerProfileButtonCLick" />
                         </StackPanel>
                         <ListBox x:Name="ServerProfileListBox" Grid.Row="1" Grid.Column="0"
+                                 dd:DragDrop.IsDragSource="True"
+                                 dd:DragDrop.IsDropTarget="True"
                                  ItemsSource="{Binding ElementName=This, Path=ProfileManager.ServerProfiles}"
                                  ItemTemplate="{DynamicResource ServerProfileDataTemplate}"
                                  SelectionChanged="ProfileEditorOnServerProfileListBoxSelectionChanged" />
@@ -467,13 +475,14 @@
                                     <StackPanel Margin="5">
                                         <TextBlock Margin="5 2.5" Text="Advanced Settings" FontWeight="Bold" />
                                         <StackPanel Margin="5 2.5">
-                                            <StackPanel Orientation="Horizontal" Margin="5 2.5">
+                                            <!--<StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                 <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                     <CheckBox Content="Ignore Package Folder" VerticalAlignment="Center"
-                                                  ToolTip="Forces the patcher to skip updating files in the package folder."
+                                                              IsEnabled="False"
+                                                  ToolTip="[Deprecated] Forces the patcher to skip updating files in the package folder."
                                                   IsChecked="{Binding ElementName=This, Path=PatcherSettings.IgnorePackageFolder}"/>
                                                 </StackPanel>
-                                            </StackPanel>
+                                            </StackPanel>-->
                                             <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                 <StackPanel Orientation="Horizontal" Margin="5 2.5">
                                                     <CheckBox Content="Force Automatic Updates" VerticalAlignment="Center"
@@ -524,9 +533,9 @@
         <TextBlock Margin="704,423,0,0" VerticalAlignment="Top" TextWrapping="Wrap" FontSize="8">
             <Run Text="{x:Static p:Resources.Copyright}"/><Run Text=" © Project Hyddwn"/>
         </TextBlock>
-        <Button Click="LaunchButton_Click" x:Name="LaunchButton" Content="{x:Static p:Resources.Launch}" HorizontalAlignment="Left"
-                Margin="704,374,0,0" VerticalAlignment="Top" Width="112" Height="45" />
-        <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="185,374,0,0"
+        <Button Click="LaunchButton_Click" x:Name="LaunchButton" IsEnabled="{Binding ElementName=This, Path=IsLaunchAvailable, FallbackValue=False, TargetNullValue=False}" Content="{x:Static p:Resources.Launch}" HorizontalAlignment="Right"
+                Margin="0,0,16,35" VerticalAlignment="Bottom" Width="112" Height="45" />
+        <controls1:ProgressIndicator x:Name="MainProgressReporter" HorizontalAlignment="Left" Margin="185,362,0,0"
                                      VerticalAlignment="Top" Width="514" Height="44" />
         <ComboBox x:Name="ClientProfileComboBox" DisplayMemberPath="Name"
                   ItemsSource="{Binding ElementName=This, Path=ProfileManager.ClientProfiles}"
@@ -577,10 +586,10 @@
         <CheckBox x:Name="UsePackfilesCheckBox" Content="{x:Static p:Resources.UsePackFile}" HorizontalAlignment="Left" Margin="291,331,0,0"
                   VerticalAlignment="Top"
                   IsChecked="{Binding ElementName=This, Path=Settings.LauncherSettings.UsePackFiles}" Height="26" />
-        <TextBlock x:Name="IsInMaintenanceTextBlock" HorizontalAlignment="Left" Height="16" Margin="704,353,0,0"
+        <TextBlock x:Name="IsInMaintenanceTextBlock" HorizontalAlignment="Right" Height="16" Margin="0,0,16,85"
                    TextWrapping="Wrap" Text="{x:Static p:Resources.Maintenance}" Foreground="{DynamicResource AccentColorBrush}"
                    Visibility="{Binding ElementName=This, Path=IsInMaintenance, Converter={StaticResource BooleanToVisibilityConverter}}"
-                   FontWeight="Bold" VerticalAlignment="Top" Width="110"/>
+                   FontWeight="Bold" VerticalAlignment="Bottom" Width="110"/>
         <TextBlock x:Name="UpdateAvailableTextBlock" HorizontalAlignment="Left" Height="16" Margin="13,419,0,0"
                    TextWrapping="Wrap"
                    Visibility="{Binding ElementName=This, Path=IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"

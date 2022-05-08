@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
+using HyddwnLauncher.Network;
 using HyddwnLauncher.Util;
 using Newtonsoft.Json;
 
@@ -11,31 +13,74 @@ namespace HyddwnLauncher.Core
     {
         public static readonly CredentialsStorage Instance = new CredentialsStorage();
 
-        public readonly string _credentialsJson =
-            $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher\\credentials.json";
+        private readonly string _credentialsRoot =
+            $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\Hyddwn Launcher";
+
+        private readonly string _credentialsJson;
+        private readonly string _credentialsDat;
+
+        public ObservableDictionary<string, CredentialsObject> Credentials { get; private set; }
 
         public CredentialsStorage()
         {
-            if (!Directory.Exists(Path.GetDirectoryName(_credentialsJson)))
-                Directory.CreateDirectory(Path.GetDirectoryName(_credentialsJson));
+            _credentialsJson = $"{_credentialsRoot}\\credentials.json";
+            _credentialsDat = $"{_credentialsRoot}\\credentials.dat";
 
-            CredntialsObjects = Load();
+            Directory.CreateDirectory(_credentialsRoot);
+
+            if (File.Exists(_credentialsJson))
+            {
+                UpgradeStorage();
+                return;
+            }
+            
+            Credentials = Load();
         }
 
-        public ObservableDictionary<string, CredentialsObject> CredntialsObjects { get; }
+        private void UpgradeStorage()
+        {
+            try
+            {
+                var result =
+                    JsonConvert.DeserializeObject<ObservableDictionary<string, CredentialsObject>>(File.ReadAllText(_credentialsJson));
+
+                Credentials = result ?? new ObservableDictionary<string, CredentialsObject>();
+
+                Save();
+            }
+            catch (Exception ex)
+            {
+                Log.Exception(ex, "Failed to load credentials storage for upgrade.");
+                Credentials = new ObservableDictionary<string, CredentialsObject>();
+            }
+            finally
+            {
+                if (File.Exists(_credentialsJson))
+                    File.Delete(_credentialsJson);
+
+                if (File.Exists($"{_credentialsJson}.backup"))
+                    File.Delete($"{_credentialsJson}.backup");
+
+                Log.Info("Credentials upgraded");
+            }
+        }
 
         private ObservableDictionary<string, CredentialsObject> Load()
         {
             try
             {
-                var fs = new FileStream(_credentialsJson, FileMode.Open);
-                var sr = new StreamReader(fs);
+                if (!File.Exists(_credentialsDat))
+                    return new ObservableDictionary<string, CredentialsObject>();
 
-                var result =
-                    JsonConvert.DeserializeObject<ObservableDictionary<string, CredentialsObject>>(sr.ReadToEnd());
+                var encryptedBytes = File.ReadAllBytes(_credentialsDat);
 
-                sr.Dispose();
-                fs.Dispose();
+                var entropy = this.CreateEntropyFromDeviceId();
+
+                var plainBytes = ProtectedData.Unprotect(encryptedBytes, entropy, DataProtectionScope.LocalMachine);
+
+                var jsonData = Encoding.UTF8.GetString(plainBytes);
+
+                var result = JsonConvert.DeserializeObject<ObservableDictionary<string, CredentialsObject>>(jsonData);
 
                 return result ?? new ObservableDictionary<string, CredentialsObject>();
             }
@@ -49,8 +94,16 @@ namespace HyddwnLauncher.Core
         {
             try
             {
-                var jsonFile = JsonConvert.SerializeObject(CredntialsObjects, Formatting.Indented);
-                jsonFile.WriteAllTextWithBackup(_credentialsJson);
+                var jsonFile = JsonConvert.SerializeObject(Credentials, Formatting.Indented);
+                
+                var initialBytes = Encoding.UTF8.GetBytes(jsonFile);
+                this.PadToMultipleOf(ref initialBytes, 16);
+
+                var entropy = this.CreateEntropyFromDeviceId();
+                
+                var encryptedBytes = ProtectedData.Protect(initialBytes, entropy, DataProtectionScope.LocalMachine);
+
+                encryptedBytes.WriteAllBytesWithBackup(_credentialsDat);
             }
             catch (Exception ex)
             {
@@ -61,7 +114,7 @@ namespace HyddwnLauncher.Core
 
         public void Reset()
         {
-            CredntialsObjects.Clear();
+            Credentials.Clear();
             Save();
         }
 
@@ -72,11 +125,11 @@ namespace HyddwnLauncher.Core
             if (credentials != null)
             {
                 credentials = new CredentialsObject(username, password);
-                CredntialsObjects[guid] = credentials;
+                Credentials[guid] = credentials;
             }
             else
             {
-                CredntialsObjects.Add(guid, new CredentialsObject(username, password));
+                Credentials.Add(guid, new CredentialsObject(username, password));
             }
 
             Save();
@@ -89,7 +142,7 @@ namespace HyddwnLauncher.Core
 
             credentials = new CredentialsObject(username, password);
 
-            CredntialsObjects[guid] = credentials;
+            Credentials[guid] = credentials;
             Save();
         }
 
@@ -97,7 +150,7 @@ namespace HyddwnLauncher.Core
         {
             try
             {
-                CredntialsObjects.Remove(guid);
+                Credentials.Remove(guid);
             }
             catch
             {
@@ -108,9 +161,22 @@ namespace HyddwnLauncher.Core
 
         public CredentialsObject GetCredentialsForProfile(string guid)
         {
-            CredntialsObjects.TryGetValue(guid, out var credentials);
+            Credentials.TryGetValue(guid, out var credentials);
 
             return credentials;
+        }
+
+        private byte[] CreateEntropyFromDeviceId()
+        {
+            var entropy = Encoding.UTF8.GetBytes(NexonApi.GetDeviceUuid());
+
+            return entropy;
+        }
+
+        private void PadToMultipleOf(ref byte[] src, int pad)
+        {
+            int len = (src.Length + pad - 1) / pad * pad;
+            Array.Resize(ref src, len);
         }
     }
 
