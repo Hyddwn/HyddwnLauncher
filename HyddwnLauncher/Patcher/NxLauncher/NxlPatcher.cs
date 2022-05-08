@@ -111,7 +111,6 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             if (ValidateAction()) return false;
 
             PatcherContext.SetPatcherState(true);
-            PatcherContext.ShowSession();
             PatcherContext.UpdateMainProgress(Resources.ApplyingUpdates, "", 0, true, true);
 
             var patchDownloader = new PatchDownloader(Patches, ClientProfile, PatcherContext);

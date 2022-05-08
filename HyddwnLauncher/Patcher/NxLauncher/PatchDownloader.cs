@@ -56,7 +56,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             var downloadTasks = new List<Func<Task>>();
             double files = _queueManager.Count;
 
-            _patcherContext.UpdateMainProgress(Properties.Resources.DownloadingParts, $"{_completed}/{files}", 0, false, true);
+            _patcherContext.UpdateMainProgress("Preparing tasks...", isProgressbarVisible: true, isIndeterminate: true);
 
             while (_queueManager.Count != 0)
             {
@@ -69,6 +69,9 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
                 downloadTasks.Add(() => DownloadPartTaskAsync(downloadDirectory, filePart, downloadUrl, files));
             }
+
+            _patcherContext.UpdateMainProgress(Properties.Resources.DownloadingParts, $"{_completed}/{files}", 0, false, true);
+            _patcherContext.ShowSession();
 
             await TaskQueueHelper.PerformTaskQueueAsync(downloadTasks, _patcherContext.GetMaxDownloadWorkers());
 
