@@ -1,8 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using HyddwnLauncher.Annotations;
 using HyddwnLauncher.Extensibility.Interfaces;
-using HyddwnLauncher.Properties;
 using HyddwnLauncher.Util;
 
 namespace HyddwnLauncher.Controls
@@ -45,7 +45,7 @@ namespace HyddwnLauncher.Controls
 
         public void SetLeftText(string text)
         {
-            Dispatcher.Invoke(() => LeftTextBlock.Text = text);
+            Dispatcher.BeginInvoke(new Action(() => LeftTextBlock.Text = text));
         }
 
         [StringFormatMethod("format")]
@@ -56,7 +56,7 @@ namespace HyddwnLauncher.Controls
 
         public void SetRightText(string text)
         {
-            Dispatcher.Invoke(() => RighTextBlock.Text = text);
+            Dispatcher.BeginInvoke(new Action(() => RighTextBlock.Text = text));
         }
     }
 }
