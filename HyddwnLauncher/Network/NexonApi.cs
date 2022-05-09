@@ -356,8 +356,6 @@ namespace HyddwnLauncher.Network
             var cookies = response.GetCookies();
             var body = JsonConvert.DeserializeObject<AccountLoginNoAuthV1Response>(data);
 
-            Log.Info("GetAccessTokenResponseResponseBody: {0}", data);
-
             _accessToken = cookies.FirstOrDefault(x => x.Key == "AToken").Value;
             _gaccessToken = cookies.FirstOrDefault(x => x.Key == "g_AToken").Value;
             _idToken = cookies.FirstOrDefault(x => x.Key == "NxLSession").Value;
@@ -453,8 +451,6 @@ namespace HyddwnLauncher.Network
             var cookies = response.GetCookies();
 
             var body = JsonConvert.DeserializeObject<AccountLoginNoAuthV1Response>(data);
-
-            Log.Info("GetAccessToken Response: {0}", data);
 
             _accessToken = cookies.FirstOrDefault(x => x.Key == "AToken").Value;
             _gaccessToken = cookies.FirstOrDefault(x => x.Key == "g_AToken").Value;
