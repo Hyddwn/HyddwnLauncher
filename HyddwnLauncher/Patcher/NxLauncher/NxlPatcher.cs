@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -102,6 +102,9 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
                 return Patches.Count > 0;
             }
+
+            if (version != _latestVersion)
+                this.WriteVersion(_latestVersion);
 
             return false;
         }
