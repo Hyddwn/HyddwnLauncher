@@ -1266,7 +1266,7 @@ namespace HyddwnLauncher
 
                 LoginSuccess += successAction;
                 LoginCancel += cancelAction;
-                NxAuthLogin.IsOpen = true;
+                this.Dispatcher.Invoke(() => NxAuthLogin.IsOpen = true);
             };
             patcherContext.ShowDialogInternal += (title, message) =>
             {
