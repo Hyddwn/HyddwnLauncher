@@ -74,7 +74,7 @@ namespace HyddwnLauncher.Core
         public async Task UpdateProfiles()
         {
             foreach (var serverProfile in ServerProfiles)
-                await serverProfile.GetUpdates();
+                await serverProfile.GetUpdatesAsync();
             SaveServerProfiles();
         }
 

@@ -31,7 +31,7 @@ namespace HyddwnLauncher.Core
             //});
         }
 
-        public async Task<string> ApplyPatchesToProcessById(int processId)
+        public async Task<string> ApplyPatchesToProcessByIdAsync(int processId)
         {
             Log.Info("Started patching process with ID: {0}", processId);
             var memory = new Memory(processId);
@@ -81,7 +81,7 @@ namespace HyddwnLauncher.Core
 
             if (address == IntPtr.Zero)
             {
-                address = await memory.QuickSearchUnprotected((uint)moduleInfo.lpBaseOfDll,
+                address = await memory.QuickSearchUnprotectedAsync((uint)moduleInfo.lpBaseOfDll,
                     (uint)moduleInfo.lpBaseOfDll + moduleInfo.SizeOfImage, pattern);
 
                 if (address == IntPtr.Zero)

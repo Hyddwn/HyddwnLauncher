@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -60,7 +60,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 return false;
             }
 
-            var result = await CheckForUpdatesInternal(ReadVersion());
+            var result = await CheckForUpdatesInternalAsync(ReadVersion());
 
             PatcherContext.SetPatcherState(false);
             PatcherContext.UpdateMainProgress();
@@ -70,14 +70,14 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
         public override async Task<bool> RepairInstallAsync()
         {
-            var shouldUpdate = await CheckForUpdatesInternal(-1, true);
+            var shouldUpdate = await CheckForUpdatesInternalAsync(-1, true);
             if (shouldUpdate) return await ApplyUpdatesAsync();
             PatcherContext.SetPatcherState(false);
             PatcherContext.UpdateMainProgress();
             return true;
         }
 
-        private async Task<bool> CheckForUpdatesInternal(int version = -1, bool overrideSettings = false)
+        private async Task<bool> CheckForUpdatesInternalAsync(int version = -1, bool overrideSettings = false)
         {
             if (ValidateAction()) return false;
 
@@ -85,15 +85,15 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             PatchIgnore.Initialize(ClientProfile.Location);
 
-            _latestVersion = await NexonApi.Instance.GetLatestVersion();
+            _latestVersion = await NexonApi.Instance.GetLatestVersionAsync();
 
             _version = _latestVersion;
 
-            await GetManifestJson(_version);
+            await GetManifestJsonAsync(_version);
 
             _latestVersion = await GetManagedVersion();
 
-            FileDownloadInfos = await GetFileDownloadInfo();
+            FileDownloadInfos = await GetFileDownloadInfoAsync();
 
             if (version < _latestVersion || overrideSettings ||
                 (version == _latestVersion && PatchSettingsManager.Instance.PatcherSettings.ForceUpdateCheck))
@@ -123,7 +123,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             try
             {
                 patchDownloader.Prepare();
-                result = await patchDownloader.Patch();
+                result = await patchDownloader.PatchAsync();
                 patchDownloader.Cleanup();
                 if (result) WriteVersion(_latestVersion);
             }
@@ -168,7 +168,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 .AddForm("Action", "CV")
                 .AddForm("buildtime", buildTime.ToString(CultureInfo.InvariantCulture));
 
-            var response = await request.ExecutePost<string>();
+            var response = await request.ExecutePostAsync<string>();
             var data = await response.GetContentAsync();
 
             if (string.IsNullOrWhiteSpace(data)) return 0;
@@ -228,17 +228,17 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             return false;
         }
 
-        private async Task GetManifestJson(int version)
+        private async Task GetManifestJsonAsync(int version)
         {
             if (version == -1)
             {
                 PatcherContext.UpdateMainProgress(Resources.GettingLatestVersion, "", 0, true, true);
-                _version = version = await NexonApi.Instance.GetLatestVersion();
+                _version = version = await NexonApi.Instance.GetLatestVersionAsync();
             }
 
             PatcherContext.UpdateMainProgress(Resources.DownloadingManifest, "", 0, true, true);
             // Get Manifest String
-            var manifestHashString = await NexonApi.Instance.GetManifestHashString();
+            var manifestHashString = await NexonApi.Instance.GetManifestHashStringAsync();
 
             // Download Manifest
             var buffer = DownloadManifestBuffer(manifestHashString);
@@ -252,7 +252,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             PatchData = data;
         }
 
-        private async Task<List<FileDownloadInfo>> GetFileDownloadInfo()
+        private async Task<List<FileDownloadInfo>> GetFileDownloadInfoAsync()
         {
             double entries = ((ICollection) PatchData.files).Count;
 

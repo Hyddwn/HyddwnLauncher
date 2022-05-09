@@ -222,106 +222,106 @@ namespace HyddwnLauncher.Network.Rest
             //         Properties.Resources.NexonAPIUnauthorized);
         }
 
-        public async Task<RestResponse<T>> ExecuteGet<T>()
+        public async Task<RestResponse<T>> ExecuteGetAsync<T>()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Get).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Get).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
         }
 
-        public async Task<RestResponse<TData, TError>> ExecuteGet<TData, TError>()
+        public async Task<RestResponse<TData, TError>> ExecuteGetAsync<TData, TError>()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Get).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Get).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        public async Task<RestResponse> ExecutePost()
+        public async Task<RestResponse> ExecutePostAsync()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Post).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse(httpResponseMessage);
         }
 
-        public async Task<RestResponse<T>> ExecutePost<T>()
+        public async Task<RestResponse<T>> ExecutePostAsync<T>()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Post).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
         }
 
-        public async Task<RestResponse<TData, TError>> ExecutePost<TData, TError>()
+        public async Task<RestResponse<TData, TError>> ExecutePostAsync<TData, TError>()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Post).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Post).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        public async Task<RestResponse> ExecuteDelete()
+        public async Task<RestResponse> ExecuteDeleteAsync()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Delete).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse(httpResponseMessage);
         }
 
-        public async Task<RestResponse<T>> ExecuteDelete<T>()
+        public async Task<RestResponse<T>> ExecuteDeleteAsync<T>()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Delete).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
         }
 
-        public async Task<RestResponse<TData, TError>> ExecuteDelete<TData, TError>()
+        public async Task<RestResponse<TData, TError>> ExecuteDeleteAsync<TData, TError>()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Delete).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Delete).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        public async Task<RestResponse> ExecutePut()
+        public async Task<RestResponse> ExecutePutAsync()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Put).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse(httpResponseMessage);
         }
 
-        public async Task<RestResponse<T>> ExecutePut<T>()
+        public async Task<RestResponse<T>> ExecutePutAsync<T>()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Put).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<T>(httpResponseMessage);
         }
 
-        public async Task<RestResponse<TData, TError>> ExecutePut<TData, TError>()
+        public async Task<RestResponse<TData, TError>> ExecutePutAsync<TData, TError>()
         {
-            var httpResponseMessage = await SendInternal(HttpMethod.Put).ConfigureAwait(false);
+            var httpResponseMessage = await SendInternalAsync(HttpMethod.Put).ConfigureAwait(false);
 
             // CheckResponse(httpResponseMessage);
 
             return new RestResponse<TData, TError>(httpResponseMessage);
         }
 
-        private async Task<HttpResponseMessage> SendInternal(HttpMethod method)
+        private async Task<HttpResponseMessage> SendInternalAsync(HttpMethod method)
         {
             // Account for the following settings:
             // - MaxRetryCount                          Max times to retry

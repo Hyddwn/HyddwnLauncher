@@ -224,7 +224,7 @@ namespace HyddwnLauncher.Core
             }
         }
 
-        public async Task GetUpdates()
+        public async Task GetUpdatesAsync()
         {
             if (string.IsNullOrWhiteSpace(ProfileUpdateUrl)) return;
 

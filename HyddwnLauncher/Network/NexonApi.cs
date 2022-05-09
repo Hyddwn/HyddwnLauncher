@@ -68,7 +68,7 @@ namespace HyddwnLauncher.Network
             _sessionId = Guid.NewGuid().ToString().ToLower().Replace("-", "");
         }
 
-        public async Task<dynamic> GetMabinogiMetadata()
+        public async Task<dynamic> GetMabinogiMetadataAsync()
         {
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
@@ -79,7 +79,7 @@ namespace HyddwnLauncher.Network
             request.AddCookie("g_AToken", _gaccessToken);
             request.AddCookie("NxLSession", _idToken);
             request.AddCookie("NexonUserID", _hashedUserId);
-            var restResponse = await request.ExecuteGet<string>();
+            var restResponse = await request.ExecuteGetAsync<string>();
             if (restResponse.StatusCode == HttpStatusCode.BadRequest) return default(dynamic);
             var body = await restResponse.GetContentAsync();
 
@@ -95,7 +95,7 @@ namespace HyddwnLauncher.Network
             request.AddCookie("g_AToken", _gaccessToken);
             request.AddCookie("NxLSession", _idToken);
             request.AddCookie("NexonUserID", _hashedUserId);
-            var response = await request.ExecuteGet<string>();
+            var response = await request.ExecuteGetAsync<string>();
 
             return response.StatusCode != HttpStatusCode.NotFound;
         }
@@ -111,7 +111,7 @@ namespace HyddwnLauncher.Network
             request.AddCookie("g_AToken", _gaccessToken);
             request.AddCookie("NxLSession", _idToken);
             request.AddCookie("NexonUserID", _hashedUserId);
-            var restResponse = await request.ExecuteGet<string>();
+            var restResponse = await request.ExecuteGetAsync<string>();
             if (restResponse.StatusCode == HttpStatusCode.BadRequest) return default(GameBuildConfigurationV1Response);
             var body = await restResponse.GetContentAsync();
 
@@ -139,7 +139,7 @@ namespace HyddwnLauncher.Network
             }
         }
 
-        public async Task<GetManifestResponse> GetManifestUrl()
+        public async Task<GetManifestResponse> GetManifestUrlAsync()
         {
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
@@ -151,7 +151,7 @@ namespace HyddwnLauncher.Network
             request.AddCookie("NxLSession", _idToken);
             request.AddCookie("NexonUserID", _hashedUserId);
 
-            var restResponse = await request.ExecuteGet<string>();
+            var restResponse = await request.ExecuteGetAsync<string>();
             if (restResponse.StatusCode == HttpStatusCode.BadRequest) return null;
             var body = await restResponse.GetContentAsync();
 
@@ -167,13 +167,13 @@ namespace HyddwnLauncher.Network
             }
         }
 
-        public async Task<string> GetManifestHashString()
+        public async Task<string> GetManifestHashStringAsync()
         {
-            var details = await GetManifestUrl();
+            var details = await GetManifestUrlAsync();
             var manifestUrl = details.ManifestUrl.Replace("http://download2.nexon.net", "");
             _restClient = new RestClient(new Uri("http://download2.nexon.net"), null);
             var request = _restClient.Create($"{manifestUrl}");
-            var response = await request.ExecuteGet<string>();
+            var response = await request.ExecuteGetAsync<string>();
             var manifestHashString = await response.GetContentAsync();
             return manifestHashString;
         }
@@ -184,12 +184,12 @@ namespace HyddwnLauncher.Network
                    (_accessToken != NexonErrorCode.LoginFailed || _accessToken != NexonErrorCode.DevError) && guid == _lastAuthenticationProfileGuid;
         }
 
-        public async Task<string> GetNxAuthHash(string username)
+        public async Task<string> GetNxAuthHashAsync(string username)
         {
             if (!IsAccessTokenValid(_lastAuthenticationProfileGuid))
                 return _accessToken;
 
-            var success = await CheckPlayable();
+            var success = await CheckPlayableAsync();
             if (!success)
                 return NexonErrorCode.DevError;
 
@@ -209,7 +209,7 @@ namespace HyddwnLauncher.Network
 
             request.SetBody(requestBody2);
 
-            var response2 = await request.ExecutePost<GetPassportV1Response>();
+            var response2 = await request.ExecutePostAsync<GetPassportV1Response>();
 
             if (response2.StatusCode == HttpStatusCode.BadRequest)
                 return NexonErrorCode.DevError;
@@ -219,7 +219,7 @@ namespace HyddwnLauncher.Network
             return obj.Passport;
         }
 
-        public async Task<UserProfileResponse> GetUserProfile()
+        public async Task<UserProfileResponse> GetUserProfileAsync()
         {
             if (_accessToken == null || _accessTokenIsExpired)
                 throw new Exception("Invalid or expired access token!");
@@ -229,7 +229,7 @@ namespace HyddwnLauncher.Network
 
             var request = _restClient.Create("/users/me/profile");
 
-            var response = await request.ExecuteGet<string>();
+            var response = await request.ExecuteGetAsync<string>();
 
             if (response.StatusCode != HttpStatusCode.OK)
                 return null;
@@ -248,7 +248,7 @@ namespace HyddwnLauncher.Network
             }
         }
 
-        public async Task<int> GetLatestVersion()
+        public async Task<int> GetLatestVersionAsync()
         {
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -266,12 +266,12 @@ namespace HyddwnLauncher.Network
             request.AddCookie("NxLSession", _idToken);
             request.AddCookie("NexonUserID", _hashedUserId);
 
-            var response = await request.ExecutePost<GameAuth2AccessV1Response>();
+            var response = await request.ExecutePostAsync<GameAuth2AccessV1Response>();
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
                 return 0;
 
-            var details = await GetManifestUrl();
+            var details = await GetManifestUrlAsync();
             var manifestUrl = details.ManifestUrl.Replace("https://download2.nexon.net", "");
             var versionSearch = "([\\d]*R)";
             if (manifestUrl == null)
@@ -283,7 +283,7 @@ namespace HyddwnLauncher.Network
             return version;
         }
 
-        public async Task<bool> CheckPlayable()
+        public async Task<bool> CheckPlayableAsync()
         {
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -301,7 +301,7 @@ namespace HyddwnLauncher.Network
             request.AddCookie("NxLSession", _idToken);
             request.AddCookie("NexonUserID", _hashedUserId);
 
-            var response = await request.ExecutePost<GameAuth2CheckPlayableV1Response>();
+            var response = await request.ExecutePostAsync<GameAuth2CheckPlayableV1Response>();
 
             if (response.StatusCode == HttpStatusCode.BadRequest)
                 return false;
@@ -309,14 +309,14 @@ namespace HyddwnLauncher.Network
             return true;
         }
 
-        public async Task<GetAccessTokenResponse> GetAccessTokenWithIdTokenOrPassword(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging)
+        public async Task<GetAccessTokenResponse> GetAccessTokenWithIdTokenOrPasswordAsync(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging)
         {
             var currentDate = DateTime.Now;
 
             if (string.IsNullOrWhiteSpace(clientProfile.LastIdToken) ||  currentDate.Subtract(clientProfile.LastRefreshTime) > TimeSpan.FromSeconds(clientProfile.TokenExpirationTimeFrame) || !rememberMe)
             {
                 Log.Info("Using username and password");
-                return await GetAccessToken(username, password, clientProfile, rememberMe, enableTagging, true);
+                return await GetAccessTokenAsync(username, password, clientProfile, rememberMe, enableTagging, true);
             }
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
@@ -334,7 +334,7 @@ namespace HyddwnLauncher.Network
             request.SetBody(initialRequestBody)
                 .AddCookie("NxLSession", clientProfile.LastIdToken);
 
-            var response = await request.ExecutePost<AccountLoginNoAuthV1Response, string>();
+            var response = await request.ExecutePostAsync<AccountLoginNoAuthV1Response, string>();
 
             var data = "";
 
@@ -343,7 +343,7 @@ namespace HyddwnLauncher.Network
                 data = await response.GetContentAsync();
                 var error = JsonConvert.DeserializeObject<ErrorResponse>(data);
                 Log.Info("Refresh failed, using username and password: \r\nError: {0}\r\nMessage: {1}", error.Code, error.Message);
-                return await GetAccessToken(username, password, clientProfile, true, enableTagging, true);
+                return await GetAccessTokenAsync(username, password, clientProfile, true, enableTagging, true);
             }
 
             // dispose of password yo
@@ -379,18 +379,18 @@ namespace HyddwnLauncher.Network
             return new GetAccessTokenResponse { Success = true };
         }
 
-        public async Task<GetAccessTokenResponse> GetAccessToken(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging, bool isFirstLogin = false)
+        public async Task<GetAccessTokenResponse> GetAccessTokenAsync(string username, string password, IClientProfile clientProfile, bool rememberMe, bool enableTagging, bool isFirstLogin = false)
         {
             if (_accessToken != null && !_accessTokenIsExpired && _lastAuthenticationProfileGuid == clientProfile.Guid)
                 return new GetAccessTokenResponse {Success = true};
 
             _recaptchaToken = App.IsAdministrator() && LauncherContext.Instance.LauncherSettingsManager.LauncherSettings.EnableCaptchaBypass 
-                ? await WebServer.Instance.Run() ?? CreateString(256) : CreateString(256);
+                ? await WebServer.Instance.RunAsync() ?? CreateString(256) : CreateString(256);
 
             var deviceId = GetDeviceUuid(enableTagging ? username : "");
 
             if (isFirstLogin)
-                await InitializeArenaSession(username, deviceId);
+                await InitializeArenaSessionAsync(username, deviceId);
 
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -424,7 +424,7 @@ namespace HyddwnLauncher.Network
                 Log.Exception(ex, "Failure during WebServer.Stop");
             }
 
-            response = await request.ExecutePost();
+            response = await request.ExecutePostAsync();
 
             // dispose of password yo
             password = null;
@@ -493,7 +493,7 @@ namespace HyddwnLauncher.Network
                 .ToLower();
         }
 
-        public async Task<bool> PutAuthTrustDevice(string name, string deviceId)
+        public async Task<bool> PutAuthTrustDeviceAsync(string name, string deviceId)
         {
             // https://www.nexon.com/api/account/v1/trusted-device
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
@@ -513,7 +513,7 @@ namespace HyddwnLauncher.Network
             request.AddCookie("NxLSession", _idToken);
             request.AddCookie("NexonUserID", _hashedUserId);
 
-            var response = await request.ExecutePut<string>();
+            var response = await request.ExecutePutAsync<string>();
 
             if (response.StatusCode != HttpStatusCode.BadRequest)
                 return true;
@@ -526,7 +526,7 @@ namespace HyddwnLauncher.Network
             return false;
         }
 
-        public async Task<bool> PostRequestEmailCode(string email)
+        public async Task<bool> PostRequestEmailCodeAsync(string email)
         {
             // https://www.nexon.com/api/account/v1/no-auth/mfa/email/request-code
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
@@ -545,7 +545,7 @@ namespace HyddwnLauncher.Network
             request.AddCookie("NxLSession", _idToken);
             request.AddCookie("NexonUserID", _hashedUserId);
 
-            var response = await request.ExecutePost<string>();
+            var response = await request.ExecutePostAsync<string>();
 
             if (response.StatusCode != HttpStatusCode.BadRequest)
                 return true;
@@ -558,7 +558,7 @@ namespace HyddwnLauncher.Network
             return false;
         }
 
-        public async Task<bool> PutVerifyDevice(string email, string code, string deviceId, bool rememberDevice, string name, AuthyType authType)
+        public async Task<bool> PutVerifyDeviceAsync(string email, string code, string deviceId, bool rememberDevice, string name, AuthyType authType)
         {
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -576,7 +576,7 @@ namespace HyddwnLauncher.Network
 
             request.SetBody(requestBody);
 
-            var response = await request.ExecutePut<string>();
+            var response = await request.ExecutePutAsync<string>();
 
             if (response.StatusCode != HttpStatusCode.BadRequest)
             {
@@ -677,7 +677,7 @@ namespace HyddwnLauncher.Network
             return (_sessionId, ++_apiCallTraceSequence);
         }
 
-        internal async Task InitializeArenaSession(string username, string deviceId)
+        internal async Task InitializeArenaSessionAsync(string username, string deviceId)
         {
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -691,7 +691,7 @@ namespace HyddwnLauncher.Network
 
             request.SetBody(validateRequest);
 
-            var response = await request.ExecutePost<string>();
+            var response = await request.ExecutePostAsync<string>();
         }
 
 

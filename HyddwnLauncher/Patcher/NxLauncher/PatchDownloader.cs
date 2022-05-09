@@ -46,7 +46,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             _prepared = true;
         }
 
-        public async Task<bool> Patch()
+        public async Task<bool> PatchAsync()
         {
             if (!_prepared)
                 throw new InvalidOperationException(Properties.Resources.PatchDownloaderNotInitializedMessage);
@@ -90,7 +90,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 var partFilename = Path.Combine(downloadDirectory,
                     $"{filePart.FileName}.{filePart.Index:D3}");
 
-                await DownloadPart(downloadUrl, partFilename);
+                await DownloadPartAsync(downloadUrl, partFilename);
                 _queueManager.AddToFileTable(filePart.FileName, partFilename, filePart.Index);
                 Log.Info(Properties.Resources.DownloadedPartNumberPartNameForFileNameSuccessfully,
                     filePart.Index, filePart.PartName, filePart.FileName);
@@ -102,7 +102,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                     var partFilename = Path.Combine(downloadDirectory,
                         $"{filePart.FileName}.{filePart.Index:D3}");
 
-                    await DownloadPart(downloadUrl, partFilename);
+                    await DownloadPartAsync(downloadUrl, partFilename);
                     _queueManager.AddToFileTable(filePart.FileName, partFilename, filePart.Index);
                     Log.Info(Properties.Resources.DownloadedPartNumberPartNameForFileNameSuccessfully,
                         filePart.Index, filePart.PartName, filePart.FileName);
@@ -128,7 +128,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             }
         }
 
-        public async Task DownloadPart(string uri, string filename)
+        public async Task DownloadPartAsync(string uri, string filename)
         {
             var progressReporter = _patcherContext.CreateProgressIndicator();
 

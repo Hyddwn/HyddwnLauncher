@@ -418,6 +418,7 @@ namespace HyddwnLauncher.Patcher.Legacy
                 });
             }
 
+            // TODO: Make use tasks... no more Parallel.Invoke either
             Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 10 }, copyTasks.ToArray());
 
             //Parallel.Invoke(new ParallelOptions
