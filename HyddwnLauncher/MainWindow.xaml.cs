@@ -370,7 +370,7 @@ namespace HyddwnLauncher
 
                             if (credentials != null)
                             {
-                                var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
+                                var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(credentials.Username,
                                     credentials.Password, ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
 
                                 LastResponseObject = success;
@@ -507,7 +507,7 @@ namespace HyddwnLauncher
         private void ServerProfileComboBoxOnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ActiveServerProfile = ((ComboBox) sender).SelectedItem as ServerProfile;
-            ActiveServerProfile?.GetUpdates();
+            ActiveServerProfile?.GetUpdatesAsync();
             if (!IsInitialized || !IsLoaded) return;
             ConfigureLauncher();
             ConfigurePatcher();
@@ -664,14 +664,14 @@ namespace HyddwnLauncher
             if (RememberMeCheckBox.IsChecked != null && (bool) RememberMeCheckBox.IsChecked)
                 CredentialsStorage.Instance.Add(ActiveClientProfile.Guid, username, password);
 
-            var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, password, ActiveClientProfile, RememberMeCheckBox.IsChecked != null && (bool)RememberMeCheckBox.IsChecked, Settings.LauncherSettings.EnableDeviceIdTagging);
+            var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(username, password, ActiveClientProfile, RememberMeCheckBox.IsChecked != null && (bool)RememberMeCheckBox.IsChecked, Settings.LauncherSettings.EnableDeviceIdTagging);
 
             if (!success.Success)
             {
                 // TODO: Release+: Add proper support for detection of response codes
                 if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                 {
-                    await NexonApi.Instance.PostRequestEmailCode(username);
+                    await NexonApi.Instance.PostRequestEmailCodeAsync(username);
 
                     NxAuthLogin.IsOpen = false;
 
@@ -751,11 +751,11 @@ namespace HyddwnLauncher
             var name = saveDevice ? NxDeviceTrustDeviceName.Text : string.Empty;
 
             var success =
-                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.TrustDevice);
+                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.TrustDevice);
 
             if (!success)
             {
-                await NexonApi.Instance.PostRequestEmailCode(username);
+                await NexonApi.Instance.PostRequestEmailCodeAsync(username);
                 ToggleDeviceControls();
 
                 NxDeviceTrustNotice.Text = Properties.Resources.VerificationCodeError;
@@ -770,12 +770,12 @@ namespace HyddwnLauncher
             if (UsingCredentials)
             {
                 if (credentials != null)
-                    loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username, credentials.Password,
+                    loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(credentials.Username, credentials.Password,
                         ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
             }
             else
             {
-                loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, NxAuthLoginPassword.Password,
+                loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(username, NxAuthLoginPassword.Password,
                     ActiveClientProfile, false, Settings.LauncherSettings.EnableDeviceIdTagging);
             }
 
@@ -844,7 +844,7 @@ namespace HyddwnLauncher
             var name = saveDevice ? NxDeviceTrustDeviceName.Text : string.Empty;
 
             var success =
-                await NexonApi.Instance.PutVerifyDevice(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.Authenticator);
+                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.Authenticator);
 
             if (!success)
             {
@@ -862,12 +862,12 @@ namespace HyddwnLauncher
             if (UsingCredentials)
             {
                 if (credentials != null)
-                    loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username, credentials.Password,
+                    loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(credentials.Username, credentials.Password,
                         ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
             }
             else
             {
-                loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(username, NxAuthLoginPassword.Password,
+                loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(username, NxAuthLoginPassword.Password,
                     ActiveClientProfile, false, Settings.LauncherSettings.EnableDeviceIdTagging);
             }
 
@@ -944,7 +944,7 @@ namespace HyddwnLauncher
         private void ProfileEditorOnServerProfileListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var serverProfile = ServerProfileListBox.SelectedItem as ServerProfile;
-            serverProfile?.GetUpdates();
+            serverProfile?.GetUpdatesAsync();
             ProfileManager.SaveServerProfiles();
         }
 
@@ -1031,7 +1031,7 @@ namespace HyddwnLauncher
                                        Properties.Resources.ServerProfileUrlMessage) ?? "";
 
             serverProfile.ProfileUpdateUrl = profileUpdateUrl;
-            await serverProfile.GetUpdates();
+            await serverProfile.GetUpdatesAsync();
 
             ProfileManager.ServerProfiles.Add(serverProfile);
             ServerProfileListBox.SelectedItem = serverProfile;
@@ -1234,7 +1234,7 @@ namespace HyddwnLauncher
 
                 if (credentials != null)
                 {
-                    var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
+                    var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(credentials.Username,
                         credentials.Password,
                         ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
 
@@ -1249,7 +1249,7 @@ namespace HyddwnLauncher
 
                     if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                     {
-                        await NexonApi.Instance.PostRequestEmailCode(credentials.Username);
+                        await NexonApi.Instance.PostRequestEmailCodeAsync(credentials.Username);
 
                         NxDeviceTrust.IsOpen = true;
                         UsingCredentials = true;
@@ -1266,7 +1266,7 @@ namespace HyddwnLauncher
 
                 LoginSuccess += successAction;
                 LoginCancel += cancelAction;
-                NxAuthLogin.IsOpen = true;
+                this.Dispatcher.Invoke(() => NxAuthLogin.IsOpen = true);
             };
             patcherContext.ShowDialogInternal += (title, message) =>
             {
@@ -1372,7 +1372,7 @@ namespace HyddwnLauncher
 
                             if (credentials != null)
                             {
-                                var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPassword(credentials.Username,
+                                var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(credentials.Username,
                                     credentials.Password,
                                     ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
 
@@ -1536,7 +1536,7 @@ namespace HyddwnLauncher
             MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.GettingPassport);
-            var passport = await NexonApi.Instance.GetNxAuthHash(Settings.LauncherSettings.EnableDeviceIdTagging ? NexonApi.Instance.LastLoginUsername : "");
+            var passport = await NexonApi.Instance.GetNxAuthHashAsync(Settings.LauncherSettings.EnableDeviceIdTagging ? NexonApi.Instance.LastLoginUsername : "");
 
             MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
             var launchArgs = await Patcher.GetLauncherArgumentsAsync();
@@ -1603,7 +1603,7 @@ namespace HyddwnLauncher
             try
             {
                 var memoryEditor = new MemoryEditor(ActiveClientProfile, Patcher.ReadVersion());
-                var error = await memoryEditor.ApplyPatchesToProcessById(process.Id);
+                var error = await memoryEditor.ApplyPatchesToProcessByIdAsync(process.Id);
                 if (error == null)
                     Log.Info("Patched successfully!");
 

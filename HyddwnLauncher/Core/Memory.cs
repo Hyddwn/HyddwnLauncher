@@ -156,7 +156,7 @@ namespace HyddwnLauncher.Core
             return bufferWritten;
         }
 
-        public async Task<IntPtr> QuickSearch(uint lowerAddress, uint upperAddress, short[] searchPattern)
+        public async Task<IntPtr> QuickSearchAsync(uint lowerAddress, uint upperAddress, short[] searchPattern)
         {
             uint address = 0;
 
@@ -185,7 +185,7 @@ namespace HyddwnLauncher.Core
             return (IntPtr)address;
         }
 
-        public async Task<IntPtr> QuickSearchUnprotected(uint lowerAddress, uint upperAddress, short[] searchPattern)
+        public async Task<IntPtr> QuickSearchUnprotectedAsync(uint lowerAddress, uint upperAddress, short[] searchPattern)
         {
             uint address = 0;
 

@@ -24,7 +24,7 @@ namespace HyddwnLauncher.Http
 
         private const string HostsFilePath = "C:\\Windows\\system32\\drivers\\etc\\hosts";
 
-        public async Task<string> Run()
+        public async Task<string> RunAsync()
         {
             Log.Info("Initializing Captcha Bypass WebServer...");
 
