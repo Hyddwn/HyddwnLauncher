@@ -1266,15 +1266,14 @@ namespace HyddwnLauncher
                     if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                     {
                         await NexonApi.Instance.PostRequestEmailCodeAsync(credentials.Username);
-
-                        NxDeviceTrust.IsOpen = true;
+                        this.Dispatcher.Invoke(() => NxDeviceTrust.IsOpen = true);
                         UsingCredentials = true;
                         return;
                     }
 
                     if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
                     {
-                        NxAuthenticator.IsOpen = true;
+                        this.Dispatcher.Invoke(() => NxAuthenticator.IsOpen = true);
                         UsingCredentials = true;
                         return;
                     }
