@@ -572,44 +572,60 @@ namespace HyddwnLauncher
 
         private async Task PerformLauncherUpdate()
         {
-            MainProgressReporter.SetProgressBar(0.0);
-            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
-            Application.Current.Dispatcher.Invoke(() => { IsPatching = true; });
-            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingUpdate);
+            Dispatcher.Invoke(() =>
+            {
+                MainProgressReporter.SetProgressBar(0.0);
+                MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
+                IsPatching = true;
+                MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingUpdate);
+            });
             try
             {
                 await UpdaterUpdate();
-                MainProgressReporter.SetProgressBar(0.0);
-                this.TaskbarItemInfo.SetProgressValueSafe(0.0);
-                MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+                Dispatcher.Invoke(() =>
+                {
+                    MainProgressReporter.SetProgressBar(0.0);
+                    this.TaskbarItemInfo.SetProgressValueSafe(0.0);
+                    MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+                });
 
                 await AsyncDownloader.DownloadFileWithCallbackAsync(
                     _updateInfo["Link"],
                     Path.Combine(Assemblypath, _updateInfo["File"]),
                     (d, s) =>
                     {
-                        MainProgressReporter.SetProgressBar(d);
-                        this.TaskbarItemInfo.SetProgressValueSafe(d);
-                        MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
+                        Dispatcher.Invoke(() =>
+                        {
+                            MainProgressReporter.SetProgressBar(d);
+                            this.TaskbarItemInfo.SetProgressValueSafe(d);
+                            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
+                        });
                     }
                 );
 
-                MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadSuccessfulLaunchingUpdater);
-                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
-                MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
-                Closing -= Updater_Closing;
-                _updateClose = true;
-                Dispatcher.Invoke(Close);
+                Dispatcher.Invoke(() =>
+                {
+                    MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadSuccessfulLaunchingUpdater);
+                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
+                    MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                    Closing -= Updater_Closing;
+                    _updateClose = true;
+                    Dispatcher.Invoke(Close);
+                });
             }
             catch (Exception ex)
             {
                 Log.Exception(ex, Properties.Resources.ErrorOccurredDuringUpdate);
-                MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.FailedToDownloadUpdateCont);
-                MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
-                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
-                MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
-                IsPatching = false;
+                
+                Dispatcher.Invoke(() =>
+                {
+                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.FailedToDownloadUpdateCont);
+                    MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
+                    MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                    IsPatching = false;
+                });
             }
         }
 
@@ -1250,15 +1266,14 @@ namespace HyddwnLauncher
                     if (success.Code == NexonErrorCode.TrustedDeviceRequired)
                     {
                         await NexonApi.Instance.PostRequestEmailCodeAsync(credentials.Username);
-
-                        NxDeviceTrust.IsOpen = true;
+                        this.Dispatcher.Invoke(() => NxDeviceTrust.IsOpen = true);
                         UsingCredentials = true;
                         return;
                     }
 
                     if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
                     {
-                        NxAuthenticator.IsOpen = true;
+                        this.Dispatcher.Invoke(() => NxAuthenticator.IsOpen = true);
                         UsingCredentials = true;
                         return;
                     }
@@ -1780,55 +1795,77 @@ namespace HyddwnLauncher
 
             if (current < version2)
             {
-                MainProgressReporter.SetProgressBar(0.0);
-                this.TaskbarItemInfo.SetProgressValueSafe(0.0);
-                MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-                this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
-                Application.Current.Dispatcher.Invoke(() => { IsPatching = true; });
-                MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingAppUpdater);
-                try
+                
+                Dispatcher.Invoke(() =>
                 {
                     MainProgressReporter.SetProgressBar(0.0);
                     this.TaskbarItemInfo.SetProgressValueSafe(0.0);
                     MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
                     this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
+                    IsPatching = true;
+                    MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.DownloadingAppUpdater);
+                });
+                
+                try
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainProgressReporter.SetProgressBar(0.0);
+                        this.TaskbarItemInfo.SetProgressValueSafe(0.0);
+                        MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Normal);
+                    });
 
                     await AsyncDownloader.DownloadFileWithCallbackAsync(
                         _updateInfo["UpdateLink"],
                         Path.Combine(Assemblypath, _updateInfo["UpdateFile"]),
                         (d, s) =>
                         {
-                            MainProgressReporter.SetProgressBar(d);
-                            this.TaskbarItemInfo.SetProgressValueSafe(d);
-                            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
+                            Dispatcher.Invoke(() =>
+                            {
+                                MainProgressReporter.SetProgressBar(d);
+                                this.TaskbarItemInfo.SetProgressValueSafe(d);
+                                MainProgressReporter.LeftTextBlock.SetTextBlockSafe(s);
+                            });
                         }
                     );
 
-                    MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
-                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
-                    MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.ExtractingUpdater);
-                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
+                        MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.ExtractingUpdater);
+                        MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+
+                    });
+
                     using (var zipFile = ZipFile.Read(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))))
                     {
                         zipFile.ExtractExistingFile = ExtractExistingFileAction.OverwriteSilently;
                         zipFile.ExtractAll(Path.GetDirectoryName(Path.GetFullPath(Path.Combine(Assemblypath, "Updater.zip"))));
                     }
 
-                    MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CleaningUp);
+                    Dispatcher.Invoke(() => MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.CleaningUp));
                     File.Delete(Path.Combine(Assemblypath, "Updater.zip"));
-                    MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
-                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
-                    MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
-                    IsPatching = false;
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
+                        MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                        IsPatching = false;
+                    });
                 }
                 catch (Exception ex)
                 {
                     Log.Exception(ex, Properties.Resources.ErrorOccurredDuringUpdate);
-                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.FailedToDownloadUpdateCont);
-                    MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
-                    MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
-                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
-                    IsPatching = false;
+                    Dispatcher.Invoke(() =>
+                    {
+                        MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.FailedToDownloadUpdateCont);
+                        MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                        MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
+                        IsPatching = false;
+                    });
                 }
             }
         }

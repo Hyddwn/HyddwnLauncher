@@ -42,14 +42,17 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             PatcherContext.UpdateMainProgress(Resources.Initialize, "", 0, true, true);
 
-            bool? completed = null;
+            bool? completed = true;
 
             PatcherContext.SetPatcherState(true);
 
             PatcherContext.UpdateMainProgress(Resources.CheckingForUpdates, "", 0, true, true);
 
             if (!NexonApi.Instance.IsAccessTokenValid(ClientProfile.Guid))
+            {
+                completed = null;
                 PatcherContext.RequestUserLogin(() => completed = true, () => completed = false);
+            }
 
             while (!completed.HasValue) await Task.Delay(100);
 
