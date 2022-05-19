@@ -174,6 +174,8 @@ namespace HyddwnLauncher.Patcher.NxLauncher
             var response = await request.ExecutePostAsync<string>();
             var data = await response.GetContentAsync();
 
+            Log.Info($"Get Managed Version response: [{response.StatusCode}] => {data}");
+
             if (string.IsNullOrWhiteSpace(data)) return 0;
 
             if (data.StartsWith("-"))
