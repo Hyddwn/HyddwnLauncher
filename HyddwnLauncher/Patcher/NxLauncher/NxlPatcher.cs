@@ -165,7 +165,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             var request = restClient.Create("/api.php");
 
-            var buildTime = Math.Round((double)PatchData.buildtime, 0, MidpointRounding.AwayFromZero);
+            var buildTime = Math.Round((double)PatchData.buildtime, 0);
 
             request = request
                 .AddForm("Action", "CV")
