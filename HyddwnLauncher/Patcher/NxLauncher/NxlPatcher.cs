@@ -165,7 +165,7 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             var request = restClient.Create("/api.php");
 
-            var buildTime = Math.Round((double)PatchData.buildtime, 0, MidpointRounding.AwayFromZero);
+            var buildTime = Math.Round((double)PatchData.buildtime, 0);
 
             request = request
                 .AddForm("Action", "CV")
@@ -173,6 +173,8 @@ namespace HyddwnLauncher.Patcher.NxLauncher
 
             var response = await request.ExecutePostAsync<string>();
             var data = await response.GetContentAsync();
+
+            Log.Info($"Get Managed Version response: [{response.StatusCode}] => {data}");
 
             if (string.IsNullOrWhiteSpace(data)) return 0;
 

@@ -119,16 +119,16 @@ namespace HyddwnLauncher.Network
             {
                 var obj = JsonConvert.DeserializeObject<GameBuildConfigurationV1Response>(body);
 
-                // Override Nexon provided game config with community provided config 
-                var newLogIp = "logip:54.214.43.237";
-                var logIpIndex = obj.Arguments.IndexOf(obj.Arguments.FirstOrDefault(a => a.StartsWith("logip:")));
-                obj.Arguments.RemoveAt(logIpIndex);
-                obj.Arguments.Insert(logIpIndex, newLogIp);
+                //// Override Nexon provided game config with community provided config 
+                //var newLogIp = "logip:54.214.43.237";
+                //var logIpIndex = obj.Arguments.IndexOf(obj.Arguments.FirstOrDefault(a => a.StartsWith("logip:")));
+                //obj.Arguments.RemoveAt(logIpIndex);
+                //obj.Arguments.Insert(logIpIndex, newLogIp);
 
-                var newLogPort = "logport:11002";
-                var lopPortIndex = obj.Arguments.IndexOf(obj.Arguments.FirstOrDefault(a => a.StartsWith("logport:")));
-                obj.Arguments.RemoveAt(lopPortIndex);
-                obj.Arguments.Insert(lopPortIndex, newLogPort);
+                //var newLogPort = "logport:11002";
+                //var lopPortIndex = obj.Arguments.IndexOf(obj.Arguments.FirstOrDefault(a => a.StartsWith("logport:")));
+                //obj.Arguments.RemoveAt(lopPortIndex);
+                //obj.Arguments.Insert(lopPortIndex, newLogPort);
 
                 return obj;
             }
