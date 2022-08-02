@@ -81,6 +81,9 @@ namespace HyddwnLauncher.Extensibility.Model
                 case NexonErrorCode.ProtectedUserSMode:
                     Message = "Protected User (N): Please log in via Nexon Launcher or https://nexon.net to address this issue.";
                     break;
+                case NexonErrorCode.TooManyAttempts:
+                    Message = "Too many attempts in a short period of time. Please try again later.";
+                    break;
                 case NexonErrorCode.InvalidParameter:
                     if (Message.Contains("error.email")) 
                         Message = "Malformed email!";

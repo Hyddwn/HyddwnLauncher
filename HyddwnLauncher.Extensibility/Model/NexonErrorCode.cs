@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,5 +27,6 @@ namespace HyddwnLauncher.Extensibility.Model
         public const string BlockedUserSuspiciousIP = "20102";
         public const string ProtectedUserNMode = "20036";
         public const string ProtectedUserSMode = "20037";
+        public const string TooManyAttempts = "20157";
     }
 }
