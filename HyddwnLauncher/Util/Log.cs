@@ -91,6 +91,9 @@ namespace HyddwnLauncher.Util
 
         private static void WriteLine(LogLevel level, string format, params object[] args)
         {
+            if (args.Length == 0)
+                format = format.Replace('{', '[').Replace('}', ']');
+
             Write(level, format + Environment.NewLine, args);
         }
 
