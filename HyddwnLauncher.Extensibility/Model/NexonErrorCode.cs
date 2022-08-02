@@ -28,5 +28,6 @@ namespace HyddwnLauncher.Extensibility.Model
         public const string ProtectedUserNMode = "20036";
         public const string ProtectedUserSMode = "20037";
         public const string TooManyAttempts = "20157";
+        public const string Unknown20029 = "20029";
     }
 }
