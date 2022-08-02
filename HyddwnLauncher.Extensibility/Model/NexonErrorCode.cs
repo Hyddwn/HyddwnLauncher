@@ -22,5 +22,9 @@ namespace HyddwnLauncher.Extensibility.Model
         public const string InvalidPassword = "20055";
         public const string AuthenticatorNotVerified = "20111";
         public const string InvalidAuthenticatorCode = "20188";
+        public const string BlockedUserPortalBan = "20100";
+        public const string BlockedUserSuspiciousIP = "20102";
+        public const string ProtectedUserNMode = "20036";
+        public const string ProtectedUserSMode = "20037";
     }
 }
