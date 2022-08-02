@@ -441,9 +441,9 @@ namespace HyddwnLauncher.Network
                 var code = response.GetHeader("x-arena-web-errorcode", "0");
 
                 var accessTokenResponse = new GetAccessTokenResponse(responseObject, code);
+                Log.Info("Login failed: \r\nError: {0}\r\nMessage: {1}", accessTokenResponse.Code, accessTokenResponse.Message);
 
                 accessTokenResponse.Success = false;
-
                 return accessTokenResponse;
             }
 
