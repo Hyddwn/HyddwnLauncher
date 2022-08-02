@@ -70,6 +70,9 @@ namespace HyddwnLauncher.Extensibility.Model
                     if (Message.Contains("error.email")) 
                         Message = "Malformed email!";
                     break;
+                default:
+                    Message = "Undocumented error; Code: " + code;
+                    break;
             }
         }
     }
