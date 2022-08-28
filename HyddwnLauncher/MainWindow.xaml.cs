@@ -1748,7 +1748,7 @@ namespace HyddwnLauncher
             NxDeviceTrustContinue.IsEnabled = !NxDeviceTrustContinue.IsEnabled;
             NxDeviceTrustCancel.IsEnabled = !NxDeviceTrustCancel.IsEnabled;
 
-            NxDeviceTrustLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
+            NxDeviceTrustLoadingIndicator.IsActive = !NxDeviceTrustLoadingIndicator.IsActive;
         }
 
         private void ToggleAuthenticatorControls()
