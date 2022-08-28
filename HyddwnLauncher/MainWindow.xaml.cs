@@ -868,7 +868,7 @@ namespace HyddwnLauncher
             var username = UsingCredentials ? credentials.Username : NxAuthLoginUsername.Text;
             var verification = NxAuthenticatorCode.Text;
             var saveDevice = NxAuthenticatorRememberMe.IsChecked != null && (bool)NxAuthenticatorRememberMe.IsChecked;
-            var name = saveDevice ? NxDeviceTrustDeviceName.Text : string.Empty;
+            var name = saveDevice ? NxAuthenticatorDeviceName.Text : string.Empty;
 
             var success =
                 await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.Authenticator);
