@@ -26,6 +26,7 @@ using HyddwnLauncher.Patcher;
 using HyddwnLauncher.Patcher.Legacy;
 using HyddwnLauncher.Patcher.NxLauncher;
 using HyddwnLauncher.Util;
+using HyddwnLauncher.Util.Helpers;
 using Ionic.Zip;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
@@ -1928,5 +1929,11 @@ namespace HyddwnLauncher
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void DiscordButtonClick(object sender, RoutedEventArgs e) => 
+            Process.Start(BrowserHelper.GetDefaultBrowserPath(), "https://discord.gg/Waf2Cxn");
+
+        private void GihubButtonClick(object sender, RoutedEventArgs e) =>
+            Process.Start(BrowserHelper.GetDefaultBrowserPath(), "https://github.com/Hyddwn/HyddwnLauncher");
     }
 }
