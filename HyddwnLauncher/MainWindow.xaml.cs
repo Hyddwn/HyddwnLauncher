@@ -852,6 +852,17 @@ namespace HyddwnLauncher
                 return;
             }
 
+            if ((NxAuthenticatorRememberMe.IsChecked ?? false) && string.IsNullOrWhiteSpace(NxAuthenticatorDeviceName.Text))
+            {
+                ToggleAuthenticatorControls();
+
+                NxAuthenticatorNotice.Text = Properties.Resources.DeviceNameEmpty;
+                NxAuthenticatorNotice.Visibility = Visibility.Visible;
+
+                NxAuthenticatorDeviceName.Focus();
+                return;
+            }
+
             var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
 
             var username = UsingCredentials ? credentials.Username : NxAuthLoginUsername.Text;
