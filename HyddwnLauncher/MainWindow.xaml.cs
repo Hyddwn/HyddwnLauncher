@@ -219,7 +219,7 @@ namespace HyddwnLauncher
         public GetAccessTokenResponse LastResponseObject { get; set; }
         public bool UsingCredentials { get; set; }
         public IPatcher Patcher { get; set; }
-
+        private AuthType CurrentAuthType { get; set; }
 
         public bool IsUpdateAvailable
         {
@@ -386,23 +386,29 @@ namespace HyddwnLauncher
 
                                 LoginSuccess += LaunchOfficial;
 
-                                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
+                                switch (success.Code)
                                 {
-                                    NxDeviceTrust.IsOpen = true;
-                                    UsingCredentials = true;
-                                    return;
+                                    case NexonErrorCode.TrustedDeviceRequired:
+                                        NxDeviceTrust.IsOpen = true;
+                                        UsingCredentials = true;
+                                        return;
+                                    case NexonErrorCode.AuthenticatorNotVerified:
+                                        CurrentAuthType = AuthType.Authenticator;
+                                        NxAuthenticator.IsOpen = true;
+                                        UsingCredentials = true;
+                                        return;
+                                    case NexonErrorCode.SmsNotVerified:
+                                        await NexonApi.Instance.PostRequestSmsCodeAsync(credentials.Username);
+                                        CurrentAuthType = AuthType.Sms;
+                                        NxAuthenticator.IsOpen = true;
+                                        UsingCredentials = true;
+                                        return;
+                                    default:
+                                        NxAuthLogin.IsOpen = true;
+
+                                        NxAuthLoginNotice.Text = success.Message;
+                                        break;
                                 }
-
-                                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
-                                {
-                                    NxAuthenticator.IsOpen = true;
-                                    UsingCredentials = true;
-                                    return;
-                                }
-
-                                NxAuthLogin.IsOpen = true;
-
-                                NxAuthLoginNotice.Text = success.Message;
                             }
 
                             IsPatching = false;
@@ -685,30 +691,40 @@ namespace HyddwnLauncher
             if (!success.Success)
             {
                 // TODO: Release+: Add proper support for detection of response codes
-                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
+                switch (success.Code)
                 {
-                    await NexonApi.Instance.PostRequestEmailCodeAsync(username);
+                    case NexonErrorCode.TrustedDeviceRequired:
+                        await NexonApi.Instance.PostRequestEmailCodeAsync(username);
 
-                    NxAuthLogin.IsOpen = false;
+                        NxAuthLogin.IsOpen = false;
 
-                    NxAuthLoginPassword.Password = password;
-                    NxAuthLoginPassword.IsEnabled = false;
+                        NxAuthLoginPassword.Password = password;
+                        NxAuthLoginPassword.IsEnabled = false;
 
-                    NxDeviceTrust.IsOpen = true;
+                        NxDeviceTrust.IsOpen = true;
 
-                    return;
-                }
+                        return;
+                    case NexonErrorCode.AuthenticatorNotVerified:
+                        NxAuthLogin.IsOpen = false;
 
-                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
-                {
-                    NxAuthLogin.IsOpen = false;
+                        NxAuthLoginPassword.Password = password;
+                        NxAuthLoginPassword.IsEnabled = false;
 
-                    NxAuthLoginPassword.Password = password;
-                    NxAuthLoginPassword.IsEnabled = false;
+                        CurrentAuthType = AuthType.Authenticator;
+                        NxAuthenticator.IsOpen = true;
 
-                    NxAuthenticator.IsOpen = true;
+                        return;
+                    case NexonErrorCode.SmsNotVerified:
+                        await NexonApi.Instance.PostRequestSmsCodeAsync(username);
+                        NxAuthLogin.IsOpen = false;
 
-                    return;
+                        NxAuthLoginPassword.Password = password;
+                        NxAuthLoginPassword.IsEnabled = false;
+
+                        CurrentAuthType = AuthType.Sms;
+                        NxAuthenticator.IsOpen = true;
+
+                        return;
                 }
 
                 ToggleLoginControls();
@@ -767,7 +783,7 @@ namespace HyddwnLauncher
             var name = saveDevice ? NxDeviceTrustDeviceName.Text : string.Empty;
 
             var success =
-                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.TrustDevice);
+                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthType.Email);
 
             if (!success)
             {
@@ -806,6 +822,15 @@ namespace HyddwnLauncher
 
                 NxAuthLogin.IsOpen = true;
                 return;
+            }
+
+            if (UsingCredentials)
+            {
+                var deviceRemembered = await NexonApi.Instance.PutTrustDeviceAsync(name, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : string.Empty));
+                if (!deviceRemembered)
+                {
+                    Log.Warning("Failed to remember device!");
+                }
             }
 
             NxAuthLoginNotice.Visibility = Visibility.Collapsed;
@@ -867,11 +892,11 @@ namespace HyddwnLauncher
 
             var username = UsingCredentials ? credentials.Username : NxAuthLoginUsername.Text;
             var verification = NxAuthenticatorCode.Text;
-            var saveDevice = NxAuthenticatorRememberMe.IsChecked != null && (bool)NxAuthenticatorRememberMe.IsChecked;
+            var saveDevice = NxAuthenticatorRememberMe?.IsChecked ?? false;
             var name = saveDevice ? NxAuthenticatorDeviceName.Text : string.Empty;
 
             var success =
-                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.Authenticator);
+                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, CurrentAuthType);
 
             if (!success)
             {
@@ -896,6 +921,15 @@ namespace HyddwnLauncher
             {
                 loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(username, NxAuthLoginPassword.Password,
                     ActiveClientProfile, false, Settings.LauncherSettings.EnableDeviceIdTagging);
+            }
+
+            if (UsingCredentials)
+            {
+                var deviceRemembered = await NexonApi.Instance.PutTrustDeviceAsync(name, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : string.Empty));
+                if (!deviceRemembered)
+                {
+                    Log.Warning("Failed to remember device!");
+                }
             }
 
             if (!loginSuccess.Success)
@@ -1274,19 +1308,24 @@ namespace HyddwnLauncher
                     LoginSuccess += successAction;
                     LoginCancel += cancelAction;
 
-                    if (success.Code == NexonErrorCode.TrustedDeviceRequired)
+                    switch (success.Code)
                     {
-                        await NexonApi.Instance.PostRequestEmailCodeAsync(credentials.Username);
-                        this.Dispatcher.Invoke(() => NxDeviceTrust.IsOpen = true);
-                        UsingCredentials = true;
-                        return;
-                    }
-
-                    if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
-                    {
-                        this.Dispatcher.Invoke(() => NxAuthenticator.IsOpen = true);
-                        UsingCredentials = true;
-                        return;
+                        case NexonErrorCode.TrustedDeviceRequired:
+                            await NexonApi.Instance.PostRequestEmailCodeAsync(credentials.Username);
+                            this.Dispatcher.Invoke(() => NxDeviceTrust.IsOpen = true);
+                            UsingCredentials = true;
+                            return;
+                        case NexonErrorCode.AuthenticatorNotVerified:
+                            CurrentAuthType = AuthType.Authenticator;
+                            this.Dispatcher.Invoke(() => NxAuthenticator.IsOpen = true);
+                            UsingCredentials = true;
+                            return;
+                        case NexonErrorCode.SmsNotVerified:
+                            await NexonApi.Instance.PostRequestSmsCodeAsync(credentials.Username);
+                            CurrentAuthType = AuthType.Sms;
+                            this.Dispatcher.Invoke(() => NxAuthenticator.IsOpen = true);
+                            UsingCredentials = true;
+                            return;
                     }
                 }
 
@@ -1411,18 +1450,19 @@ namespace HyddwnLauncher
                                 LoginSuccess += successAction;
                                 LoginCancel += cancelAction;
 
-                                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
+                                switch (success.Code)
                                 {
-                                    NxDeviceTrust.IsOpen = true;
-                                    UsingCredentials = true;
-                                    return;
-                                }
-
-                                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
-                                {
-                                    NxAuthenticator.IsOpen = true;
-                                    UsingCredentials = true;
-                                    return;
+                                    case NexonErrorCode.AuthenticatorNotVerified:
+                                        CurrentAuthType = AuthType.Authenticator;
+                                        NxAuthenticator.IsOpen = true;
+                                        UsingCredentials = true;
+                                        return;
+                                    case NexonErrorCode.SmsNotVerified:
+                                        await NexonApi.Instance.PostRequestSmsCodeAsync(credentials.Username);
+                                        CurrentAuthType = AuthType.Sms;
+                                        NxAuthenticator.IsOpen = true;
+                                        UsingCredentials = true;
+                                        return;
                                 }
                             }
 

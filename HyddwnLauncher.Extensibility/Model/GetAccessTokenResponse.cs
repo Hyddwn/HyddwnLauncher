@@ -66,13 +66,13 @@ namespace HyddwnLauncher.Extensibility.Model
                 case NexonErrorCode.InvalidPassword:
                     Message = "The password is incorrect.";
                     break;
-                case NexonErrorCode.DevieNameIsInvalid:
+                case NexonErrorCode.DeviceNameIsInvalid:
                     Message = "Device name is empty, already in use, or invalid.";
                     break;
                 case NexonErrorCode.BlockedUserPortalBan:
                     Message = "Login blocked: User banned. Please contact Nexon support to address this issue.";
                     break;
-                case NexonErrorCode.BlockedUserSuspiciousIP:
+                case NexonErrorCode.BlockedUserSuspiciousIp:
                     Message = "Login blocked: Suspicious IP. Please log in via Nexon Launcher or https://nexon.net to address this issue.";
                     break;
                 case NexonErrorCode.ProtectedUserNMode:

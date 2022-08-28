@@ -231,7 +231,7 @@
                     <TextBlock Text="Enter Security Code" HorizontalAlignment="Center" FontSize="30" />
                     <CheckBox x:Name="NxAuthenticatorRememberMe" Content="{x:Static p:Resources.RememberThisDevice}" Margin="75 5 75 2" />
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="12,5">
-                        <Run Text="Please enter the code found in Authenticator app." />
+                        <Run Text="Please enter the code found in SMS or Authenticator app." />
                     </TextBlock>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">

@@ -703,6 +703,16 @@ namespace HyddwnLauncher.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A unique device name is required when 
+        ///attempting to remember this device!.
+        /// </summary>
+        public static string DeviceNameEmpty {
+            get {
+                return ResourceManager.GetString("DeviceNameEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DoesNotExist.
         /// </summary>
         public static string DoesNotExist {
@@ -2570,7 +2580,7 @@ namespace HyddwnLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please check your email, you should have received an email with a verification code. You will need to enter it below to continue..
+        ///   Looks up a localized string similar to Please check your email, you should have received an **email** with a verification code. You will need to enter it below to continue..
         /// </summary>
         public static string TrustedDeviceRequiredMessage1 {
             get {

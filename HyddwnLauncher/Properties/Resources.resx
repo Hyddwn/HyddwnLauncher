@@ -610,7 +610,7 @@ This will most likely result in improper operations.</value>
     <value>Trusted Device Required</value>
   </data>
   <data name="TrustedDeviceRequiredMessage1" xml:space="preserve">
-    <value>Please check your email, you should have received an email with a verification code. You will need to enter it below to continue.</value>
+    <value>Please check your email, you should have received an **email** with a verification code. You will need to enter it below to continue.</value>
   </data>
   <data name="UnableToCheckForUpdates" xml:space="preserve">
     <value>Unable to check for updates.</value>
@@ -693,6 +693,10 @@ New Version: {1}</value>
   </data>
   <data name="VerificationCodeEmpty" xml:space="preserve">
     <value>Verification code is empty!</value>
+  </data>
+  <data name="DeviceNameEmpty" xml:space="preserve">
+    <value>A unique device name is required when 
+attempting to remember this device!</value>
   </data>
   <data name="VerificationCodeError" xml:space="preserve">
     <value>Verification code error!</value>

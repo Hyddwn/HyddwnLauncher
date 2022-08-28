@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Management;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Security.Cryptography;
-using System.Security.RightsManagement;
-using System.ServiceModel.Channels;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Markup;
 using System.Windows.Threading;
 using HyddwnLauncher.Core;
 using HyddwnLauncher.Extensibility.Interfaces;
@@ -493,7 +487,7 @@ namespace HyddwnLauncher.Network
                 .ToLower();
         }
 
-        public async Task<bool> PutAuthTrustDeviceAsync(string name, string deviceId)
+        public async Task<bool> PutTrustDeviceAsync(string name, string deviceId)
         {
             // https://www.nexon.com/api/account/v1/trusted-device
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
@@ -515,12 +509,36 @@ namespace HyddwnLauncher.Network
 
             var response = await request.ExecutePutAsync<string>();
 
+            return response.IsSuccessful;
+        }
+
+        public async Task<bool> PostRequestSmsCodeAsync(string email)
+        {
+            // https://www.nexon.com/api/account/v1/no-auth/mfa/sms/request-code
+            _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
+
+            var request = _restClient.Create("/api/account/v1/no-auth/mfa/sms/request-code");
+
+            var requestBody = new AccountEmailCodeNoAuthV1Request
+            {
+                Email = email
+            };
+
+            request.SetBody(requestBody);
+
+            request.AddCookie("AToken", _accessToken);
+            request.AddCookie("g_AToken", _gaccessToken);
+            request.AddCookie("NxLSession", _idToken);
+            request.AddCookie("NexonUserID", _hashedUserId);
+
+            var response = await request.ExecutePostAsync<string>();
+
             if (response.StatusCode != HttpStatusCode.BadRequest)
                 return true;
 
             var data = await response.GetContentAsync();
             var responseObject = JsonConvert.DeserializeObject<ErrorResponse>(data);
-            Log.Info("Failed to save device. Code: {0} | Description: {1}", response.GetHeader("x-arena-web-errorcode", "0"),
+            Log.Info("Failed to send code email. Code: {0} | Description: {1}", response.GetHeader("x-arena-web-errorcode", "0"),
                 responseObject.Description);
 
             return false;
@@ -558,7 +576,7 @@ namespace HyddwnLauncher.Network
             return false;
         }
 
-        public async Task<bool> PutVerifyDeviceAsync(string email, string code, string deviceId, bool rememberDevice, string name, AuthyType authType)
+        public async Task<bool> PutVerifyDeviceAsync(string email, string code, string deviceId, bool rememberDevice, string name, AuthType authType)
         {
             _restClient = new RestClient(new Uri("https://www.nexon.com"), null);
 
@@ -570,19 +588,15 @@ namespace HyddwnLauncher.Network
                 Email = email,
                 VerificationCode = code,
                 DeviceId = deviceId,
-                RememberMe = rememberDevice,
-                Name = name
+                RememberMe = false,
             };
 
             request.SetBody(requestBody);
 
             var response = await request.ExecutePutAsync<string>();
 
-            if (response.StatusCode != HttpStatusCode.BadRequest)
+            if (response.IsSuccessful)
             {
-                //if (rememberDevice)
-                //    await PutAuthTrustDevice(name, deviceId);
-
                 return true;
             }
 
