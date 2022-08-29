@@ -57,6 +57,7 @@
     <Compile Include="Interfaces\IProgressIndicator.cs" />
     <Compile Include="Interfaces\IServerProfile.cs" />
     <Compile Include="Interfaces\ISettingsManager.cs" />
+    <Compile Include="Model\AccountSmsCodeNoAuthV1Request.cs" />
     <Compile Include="Model\AccountEmailCodeNoAuthV1Request.cs" />
     <Compile Include="Model\AccountAutoLoginNoAuthV1Request.cs" />
     <Compile Include="Model\AccountAutoLoginNoAuthV1Response.cs" />

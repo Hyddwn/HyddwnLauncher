@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace HyddwnLauncher.Core
 {
-    public enum AuthyType
+    // Maybe this is actually like email text, etc
+    public enum AuthType
     {
-        TrustDevice,
-        Authenticator
+        Email,
+        Authenticator,
+        Sms
     }
 }

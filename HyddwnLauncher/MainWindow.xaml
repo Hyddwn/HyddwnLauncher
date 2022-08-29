@@ -11,6 +11,7 @@
                       xmlns:core="clr-namespace:HyddwnLauncher.Core"
                       xmlns:util="clr-namespace:HyddwnLauncher.Util"
                       xmlns:dd="urn:gong-wpf-dragdrop"
+                      xmlns:local="clr-namespace:HyddwnLauncher"
                       mc:Ignorable="d"
                       ResizeMode="NoResize"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}"
@@ -20,14 +21,14 @@
                       Closed="OnClose"
                       x:Name="This" Title="Hyddwn Launcher" Height="470" Width="830">
     <!--DISABLED EVENTS  KeyDown="This_KeyDown" KeyUp="This_KeyUp" DISABLED EVENTS-->
-    <FrameworkElement.Style>
+    <Window.Style>
         <Style TargetType="{x:Type controls:MetroWindow}">
             <Setter Property="WindowTitleBrush" Value="{DynamicResource WindowBackgroundBrush}" />
             <Setter Property="NonActiveWindowTitleBrush" Value="{DynamicResource WindowBackgroundBrush}" />
             <Setter Property="TitleForeground" Value="{DynamicResource BlackColorBrush}" />
             <Setter Property="OverrideDefaultWindowCommandsBrush" Value="{DynamicResource BlackColorBrush}" />
         </Style>
-    </FrameworkElement.Style>
+    </Window.Style>
     <Window.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -62,8 +63,8 @@
     </Window.TaskbarItemInfo>
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
-            <Button Content="Discord"/>
-            <Button Content="Github"/>
+            <Button Content="Discord" Click="DiscordButtonClick"/>
+            <Button Content="Github" Click="GihubButtonClick"/>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
     <Grid>
@@ -231,7 +232,7 @@
                     <TextBlock Text="Enter Security Code" HorizontalAlignment="Center" FontSize="30" />
                     <CheckBox x:Name="NxAuthenticatorRememberMe" Content="{x:Static p:Resources.RememberThisDevice}" Margin="75 5 75 2" />
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="12,5">
-                        <Run Text="Please enter the code found in Authenticator app." />
+                        <Run Text="Please enter the code found in SMS or Authenticator app." />
                     </TextBlock>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" Margin="15 20 15 0">

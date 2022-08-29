@@ -26,6 +26,7 @@ using HyddwnLauncher.Patcher;
 using HyddwnLauncher.Patcher.Legacy;
 using HyddwnLauncher.Patcher.NxLauncher;
 using HyddwnLauncher.Util;
+using HyddwnLauncher.Util.Helpers;
 using Ionic.Zip;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
@@ -219,7 +220,7 @@ namespace HyddwnLauncher
         public GetAccessTokenResponse LastResponseObject { get; set; }
         public bool UsingCredentials { get; set; }
         public IPatcher Patcher { get; set; }
-
+        private AuthType CurrentAuthType { get; set; }
 
         public bool IsUpdateAvailable
         {
@@ -356,116 +357,138 @@ namespace HyddwnLauncher
 
                 if (ActiveServerProfile.IsOfficial)
                 {
-                    if (ActiveClientProfile.Localization == ClientLocalization.NorthAmerica)
+                    switch (ActiveClientProfile.Localization)
                     {
-                        await DeletePackFiles();
-
-                        MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Getting passport...");
-                        MainProgressReporter.RighTextBlock.SetTextBlockSafe("Get Access Token...");
-
-                        if (!NexonApi.Instance.IsAccessTokenValid(ActiveClientProfile.Guid))
+                        case ClientLocalization.NorthAmerica:
                         {
-                            var credentials =
-                                CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
+                            await DeletePackFiles();
 
-                            if (credentials != null)
+                            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("Getting passport...");
+                            MainProgressReporter.RighTextBlock.SetTextBlockSafe("Get Access Token...");
+
+                            if (!NexonApi.Instance.IsAccessTokenValid(ActiveClientProfile.Guid))
                             {
-                                var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(credentials.Username,
-                                    credentials.Password, ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
+                                var credentials =
+                                    CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
 
-                                LastResponseObject = success;
-
-                                if (success.Success)
+                                if (credentials != null)
                                 {
+                                    var success = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(credentials.Username,
+                                        credentials.Password, ActiveClientProfile, true, Settings.LauncherSettings.EnableDeviceIdTagging);
+
+                                    LastResponseObject = success;
+
+                                    if (success.Success)
+                                    {
+                                        LoginSuccess += LaunchOfficial;
+                                        LaunchOfficial();
+                                        return;
+                                    }
+
+                                    IsPatching = false;
+
                                     LoginSuccess += LaunchOfficial;
-                                    LaunchOfficial();
-                                    return;
+
+                                    switch (success.Code)
+                                    {
+                                        case NexonErrorCode.TrustedDeviceRequired:
+                                            NxDeviceTrust.IsOpen = true;
+                                            UsingCredentials = true;
+                                            return;
+                                        case NexonErrorCode.AuthenticatorNotVerified:
+                                            CurrentAuthType = AuthType.Authenticator;
+                                            NxAuthenticator.IsOpen = true;
+                                            UsingCredentials = true;
+                                            return;
+                                        case NexonErrorCode.SmsNotVerified:
+                                            await NexonApi.Instance.PostRequestSmsCodeAsync(credentials.Username);
+                                            CurrentAuthType = AuthType.Sms;
+                                            NxAuthenticator.IsOpen = true;
+                                            UsingCredentials = true;
+                                            return;
+                                        default:
+                                            NxAuthLogin.IsOpen = true;
+
+                                            NxAuthLoginNotice.Text = success.Message;
+                                            break;
+                                    }
                                 }
 
                                 IsPatching = false;
-
                                 LoginSuccess += LaunchOfficial;
-
-                                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
-                                {
-                                    NxDeviceTrust.IsOpen = true;
-                                    UsingCredentials = true;
-                                    return;
-                                }
-
-                                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
-                                {
-                                    NxAuthenticator.IsOpen = true;
-                                    UsingCredentials = true;
-                                    return;
-                                }
-
                                 NxAuthLogin.IsOpen = true;
 
-                                NxAuthLoginNotice.Text = success.Message;
-                            }
-
-                            IsPatching = false;
-                            LoginSuccess += LaunchOfficial;
-                            NxAuthLogin.IsOpen = true;
-
-                            return;
-                        }
-
-                        LaunchOfficial();
-                        return;
-                    }
-
-                    if (ActiveClientProfile.Localization == ClientLocalization.Japan ||
-                        ActiveClientProfile.Localization == ClientLocalization.JapanHangame)
-                    {
-                        var response = await Patcher.GetMaintenanceStatusAsync();
-                        if (response)
-                        {
-                            var result = await this.ShowMessageAsync(Properties.Resources.Maintenance,
-                                Properties.Resources.MaintenanceMessage,
-                                MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings
-                                {
-                                    AffirmativeButtonText = Properties.Resources.Continue,
-                                    NegativeButtonText = Properties.Resources.Cancel,
-                                    DefaultButtonFocus = MessageDialogResult.Negative
-                                });
-
-                            if (result != MessageDialogResult.Affirmative)
-                            {
-                                IsPatching = false;
-                                MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
                                 return;
                             }
+
+                            LaunchOfficial();
+                            return;
                         }
-
-                        MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Launching);
-                        MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
-                        this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
-                        MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
-
-                        MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
-                        var launchArgs = await Patcher.GetLauncherArgumentsAsync();
-
-                        try
+                        case ClientLocalization.Japan:
+                        case ClientLocalization.JapanHangame:
                         {
+                            var response = await Patcher.GetMaintenanceStatusAsync();
+                            if (response)
+                            {
+                                var result = await this.ShowMessageAsync(Properties.Resources.Maintenance,
+                                    Properties.Resources.MaintenanceMessage,
+                                    MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings
+                                    {
+                                        AffirmativeButtonText = Properties.Resources.Continue,
+                                        NegativeButtonText = Properties.Resources.Cancel,
+                                        DefaultButtonFocus = MessageDialogResult.Negative
+                                    });
+
+                                if (result != MessageDialogResult.Affirmative)
+                                {
+                                    IsPatching = false;
+                                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                                    return;
+                                }
+                            }
+
+                            MainProgressReporter.LeftTextBlock.SetTextBlockSafe(Properties.Resources.Launching);
+                            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(true);
+                            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.Indeterminate);
+                            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Visible);
+
+                            MainProgressReporter.RighTextBlock.SetTextBlockSafe(Properties.Resources.StartingClient);
+                            var launchArgs = await Patcher.GetLauncherArgumentsAsync();
+
                             try
                             {
-                                Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs);
-                                Process.Start(ActiveClientProfile.Location, launchArgs);
-                                PluginHost.PostLaunch();
+                                try
+                                {
+                                    Log.Info(Properties.Resources.StartingClientWithTheFollwingArguments, launchArgs);
+                                    Process.Start(ActiveClientProfile.Location, launchArgs);
+                                    PluginHost.PostLaunch();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(Properties.Resources.CannotStartMabinogi, ex.Message);
+
+                                    throw new IOException();
+                                }
+
+                                Log.Info(Properties.Resources.ClientStartSuccess);
+                                Settings.SaveLauncherSettings();
+
+                                if (!Settings.LauncherSettings.CloseAfterLaunching)
+                                {
+                                    MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
+                                    MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
+                                    MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
+                                    this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
+                                    MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
+                                    IsPatching = false;
+
+                                    return;
+                                }
+
+                                PluginHost.ShutdownPlugins();
+                                Application.Current.Shutdown();
                             }
-                            catch (Exception ex)
-                            {
-                                Log.Error(Properties.Resources.CannotStartMabinogi, ex.Message);
-
-                                throw new IOException();
-                            }
-
-                            Log.Info(Properties.Resources.ClientStartSuccess);
-                            Settings.SaveLauncherSettings();
-
-                            if (!Settings.LauncherSettings.CloseAfterLaunching)
+                            catch (IOException ex)
                             {
                                 MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
                                 MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
@@ -473,23 +496,11 @@ namespace HyddwnLauncher
                                 this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
                                 MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
                                 IsPatching = false;
-
-                                return;
+                                await this.ShowMessageAsync(Properties.Resources.LaunchFailed, string.Format(Properties.Resources.CannotStartMabinogi, ex.Message));
+                                Log.Exception(ex, Properties.Resources.ClientStartWithErrors);
                             }
 
-                            PluginHost.ShutdownPlugins();
-                            Application.Current.Shutdown();
-                        }
-                        catch (IOException ex)
-                        {
-                            MainProgressReporter.LeftTextBlock.SetTextBlockSafe("");
-                            MainProgressReporter.RighTextBlock.SetTextBlockSafe("");
-                            MainProgressReporter.ReporterProgressBar.SetMetroProgressIndeterminateSafe(false);
-                            this.TaskbarItemInfo.SetProgressStateSafe(TaskbarItemProgressState.None);
-                            MainProgressReporter.ReporterProgressBar.SetVisibilitySafe(Visibility.Hidden);
-                            IsPatching = false;
-                            await this.ShowMessageAsync(Properties.Resources.LaunchFailed, string.Format(Properties.Resources.CannotStartMabinogi, ex.Message));
-                            Log.Exception(ex, Properties.Resources.ClientStartWithErrors);
+                            break;
                         }
                     }
                 }
@@ -685,30 +696,40 @@ namespace HyddwnLauncher
             if (!success.Success)
             {
                 // TODO: Release+: Add proper support for detection of response codes
-                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
+                switch (success.Code)
                 {
-                    await NexonApi.Instance.PostRequestEmailCodeAsync(username);
+                    case NexonErrorCode.TrustedDeviceRequired:
+                        await NexonApi.Instance.PostRequestEmailCodeAsync(username);
 
-                    NxAuthLogin.IsOpen = false;
+                        NxAuthLogin.IsOpen = false;
 
-                    NxAuthLoginPassword.Password = password;
-                    NxAuthLoginPassword.IsEnabled = false;
+                        NxAuthLoginPassword.Password = password;
+                        NxAuthLoginPassword.IsEnabled = false;
 
-                    NxDeviceTrust.IsOpen = true;
+                        NxDeviceTrust.IsOpen = true;
 
-                    return;
-                }
+                        return;
+                    case NexonErrorCode.AuthenticatorNotVerified:
+                        NxAuthLogin.IsOpen = false;
 
-                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
-                {
-                    NxAuthLogin.IsOpen = false;
+                        NxAuthLoginPassword.Password = password;
+                        NxAuthLoginPassword.IsEnabled = false;
 
-                    NxAuthLoginPassword.Password = password;
-                    NxAuthLoginPassword.IsEnabled = false;
+                        CurrentAuthType = AuthType.Authenticator;
+                        NxAuthenticator.IsOpen = true;
 
-                    NxAuthenticator.IsOpen = true;
+                        return;
+                    case NexonErrorCode.SmsNotVerified:
+                        await NexonApi.Instance.PostRequestSmsCodeAsync(username);
+                        NxAuthLogin.IsOpen = false;
 
-                    return;
+                        NxAuthLoginPassword.Password = password;
+                        NxAuthLoginPassword.IsEnabled = false;
+
+                        CurrentAuthType = AuthType.Sms;
+                        NxAuthenticator.IsOpen = true;
+
+                        return;
                 }
 
                 ToggleLoginControls();
@@ -767,7 +788,7 @@ namespace HyddwnLauncher
             var name = saveDevice ? NxDeviceTrustDeviceName.Text : string.Empty;
 
             var success =
-                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.TrustDevice);
+                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthType.Email);
 
             if (!success)
             {
@@ -806,6 +827,15 @@ namespace HyddwnLauncher
 
                 NxAuthLogin.IsOpen = true;
                 return;
+            }
+
+            if (UsingCredentials)
+            {
+                var deviceRemembered = await NexonApi.Instance.PutTrustDeviceAsync(name, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : string.Empty));
+                if (!deviceRemembered)
+                {
+                    Log.Warning("Failed to remember device!");
+                }
             }
 
             NxAuthLoginNotice.Visibility = Visibility.Collapsed;
@@ -852,15 +882,26 @@ namespace HyddwnLauncher
                 return;
             }
 
+            if ((NxAuthenticatorRememberMe.IsChecked ?? false) && string.IsNullOrWhiteSpace(NxAuthenticatorDeviceName.Text))
+            {
+                ToggleAuthenticatorControls();
+
+                NxAuthenticatorNotice.Text = Properties.Resources.DeviceNameEmpty;
+                NxAuthenticatorNotice.Visibility = Visibility.Visible;
+
+                NxAuthenticatorDeviceName.Focus();
+                return;
+            }
+
             var credentials = CredentialsStorage.Instance.GetCredentialsForProfile(ActiveClientProfile.Guid);
 
             var username = UsingCredentials ? credentials.Username : NxAuthLoginUsername.Text;
             var verification = NxAuthenticatorCode.Text;
-            var saveDevice = NxAuthenticatorRememberMe.IsChecked != null && (bool)NxAuthenticatorRememberMe.IsChecked;
-            var name = saveDevice ? NxDeviceTrustDeviceName.Text : string.Empty;
+            var saveDevice = NxAuthenticatorRememberMe?.IsChecked ?? false;
+            var name = saveDevice ? NxAuthenticatorDeviceName.Text : string.Empty;
 
             var success =
-                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, AuthyType.Authenticator);
+                await NexonApi.Instance.PutVerifyDeviceAsync(username, verification, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : ""), saveDevice, name, CurrentAuthType);
 
             if (!success)
             {
@@ -885,6 +926,15 @@ namespace HyddwnLauncher
             {
                 loginSuccess = await NexonApi.Instance.GetAccessTokenWithIdTokenOrPasswordAsync(username, NxAuthLoginPassword.Password,
                     ActiveClientProfile, false, Settings.LauncherSettings.EnableDeviceIdTagging);
+            }
+
+            if (UsingCredentials)
+            {
+                var deviceRemembered = await NexonApi.Instance.PutTrustDeviceAsync(name, NexonApi.GetDeviceUuid(Settings.LauncherSettings.EnableDeviceIdTagging ? username : string.Empty));
+                if (!deviceRemembered)
+                {
+                    Log.Warning("Failed to remember device!");
+                }
             }
 
             if (!loginSuccess.Success)
@@ -1263,19 +1313,24 @@ namespace HyddwnLauncher
                     LoginSuccess += successAction;
                     LoginCancel += cancelAction;
 
-                    if (success.Code == NexonErrorCode.TrustedDeviceRequired)
+                    switch (success.Code)
                     {
-                        await NexonApi.Instance.PostRequestEmailCodeAsync(credentials.Username);
-                        this.Dispatcher.Invoke(() => NxDeviceTrust.IsOpen = true);
-                        UsingCredentials = true;
-                        return;
-                    }
-
-                    if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
-                    {
-                        this.Dispatcher.Invoke(() => NxAuthenticator.IsOpen = true);
-                        UsingCredentials = true;
-                        return;
+                        case NexonErrorCode.TrustedDeviceRequired:
+                            await NexonApi.Instance.PostRequestEmailCodeAsync(credentials.Username);
+                            this.Dispatcher.Invoke(() => NxDeviceTrust.IsOpen = true);
+                            UsingCredentials = true;
+                            return;
+                        case NexonErrorCode.AuthenticatorNotVerified:
+                            CurrentAuthType = AuthType.Authenticator;
+                            this.Dispatcher.Invoke(() => NxAuthenticator.IsOpen = true);
+                            UsingCredentials = true;
+                            return;
+                        case NexonErrorCode.SmsNotVerified:
+                            await NexonApi.Instance.PostRequestSmsCodeAsync(credentials.Username);
+                            CurrentAuthType = AuthType.Sms;
+                            this.Dispatcher.Invoke(() => NxAuthenticator.IsOpen = true);
+                            UsingCredentials = true;
+                            return;
                     }
                 }
 
@@ -1400,18 +1455,19 @@ namespace HyddwnLauncher
                                 LoginSuccess += successAction;
                                 LoginCancel += cancelAction;
 
-                                if (success.Code == NexonErrorCode.TrustedDeviceRequired)
+                                switch (success.Code)
                                 {
-                                    NxDeviceTrust.IsOpen = true;
-                                    UsingCredentials = true;
-                                    return;
-                                }
-
-                                if (success.Code == NexonErrorCode.AuthenticatorNotVerified)
-                                {
-                                    NxAuthenticator.IsOpen = true;
-                                    UsingCredentials = true;
-                                    return;
+                                    case NexonErrorCode.AuthenticatorNotVerified:
+                                        CurrentAuthType = AuthType.Authenticator;
+                                        NxAuthenticator.IsOpen = true;
+                                        UsingCredentials = true;
+                                        return;
+                                    case NexonErrorCode.SmsNotVerified:
+                                        await NexonApi.Instance.PostRequestSmsCodeAsync(credentials.Username);
+                                        CurrentAuthType = AuthType.Sms;
+                                        NxAuthenticator.IsOpen = true;
+                                        UsingCredentials = true;
+                                        return;
                                 }
                             }
 
@@ -1737,7 +1793,7 @@ namespace HyddwnLauncher
             NxDeviceTrustContinue.IsEnabled = !NxDeviceTrustContinue.IsEnabled;
             NxDeviceTrustCancel.IsEnabled = !NxDeviceTrustCancel.IsEnabled;
 
-            NxDeviceTrustLoadingIndicator.IsActive = !NxAuthLoginLoadingIndicator.IsActive;
+            NxDeviceTrustLoadingIndicator.IsActive = !NxDeviceTrustLoadingIndicator.IsActive;
         }
 
         private void ToggleAuthenticatorControls()
@@ -1877,5 +1933,11 @@ namespace HyddwnLauncher
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void DiscordButtonClick(object sender, RoutedEventArgs e) => 
+            Process.Start(BrowserHelper.GetDefaultBrowserPath(), "https://discord.gg/Waf2Cxn");
+
+        private void GihubButtonClick(object sender, RoutedEventArgs e) =>
+            Process.Start(BrowserHelper.GetDefaultBrowserPath(), "https://github.com/Hyddwn/HyddwnLauncher");
     }
 }

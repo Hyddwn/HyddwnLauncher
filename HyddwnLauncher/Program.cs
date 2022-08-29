@@ -17,7 +17,7 @@ namespace HyddwnLauncher
             var sentryOptions = new SentryOptions
             {
                 BeforeSend = BeforeSend,
-                Dsn = new Dsn("https://62a499d239a54e118ea5770379c06b37@o302488.ingest.sentry.io/1795758")
+                Dsn = "https://62a499d239a54e118ea5770379c06b37@o302488.ingest.sentry.io/1795758"
             };
 
             using (SentrySdk.Init(sentryOptions))
