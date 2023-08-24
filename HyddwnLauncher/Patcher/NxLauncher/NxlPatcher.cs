@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -355,13 +355,10 @@ namespace HyddwnLauncher.Patcher.NxLauncher
         private static string DecodeFilename(string filename)
         {
             var filenameDecodedBytes = Convert.FromBase64String(filename);
-            var utf8Bytes = Encoding.Convert(Encoding.Unicode, Encoding.UTF8, filenameDecodedBytes);
-            var chars = new char[utf8Bytes.Length];
+            var decodedString = Encoding.Unicode.GetString(filenameDecodedBytes);
 
-            for (var i = 0; i < utf8Bytes.Length; i++) chars[i] = BitConverter.ToChar(new byte[] {utf8Bytes[i], 0}, 0);
-
-            // Return UTF8
-            return new string(chars).Substring(3);
+            // Remove BOM
+            return decodedString.TrimStart('\uFEFF');
         }
 
 
