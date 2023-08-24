@@ -322,29 +322,25 @@ namespace HyddwnLauncher.Patcher.NxLauncher
                 return false;
 
             var packName = Path.GetFileName(filePath);
-
-            string match;
-            var packVersion = -1;
+            List<Match> matches = new List<Match>();
 
             if (packName.Contains("_to_"))
             {
-                const string matchRegex = @"(_\d+)";
-                match = Regex.Match(packName, matchRegex).Value;
-                var toMatch = match.Replace("_", "");
-
-                int.TryParse(toMatch, out packVersion);
+                matches = Regex.Matches(packName, @"_(\d+)_").Cast<Match>().ToList();
             }
 
             if (packName.Contains("full"))
             {
-                const string matchRegex = @"(\d+_)";
-                match = Regex.Match(packName, matchRegex).Value;
-                var fromMatch = match.Replace("_", "");
-
-                int.TryParse(fromMatch, out packVersion);
+                matches = Regex.Matches(packName, @"(\d+)_").Cast<Match>().ToList();
             }
 
-            if (packVersion != -1) return packVersion.IsWithin(minimum + 1, maximum);
+            foreach (Match match in matches)
+            {
+                if (int.TryParse(match.Groups[1].Value, out int packVersion) && packVersion.IsWithin(minimum + 1, maximum))
+                {
+                    return true;
+                }
+            }
 
             Log.Warning(
                 "There was an issue with detecting the pack version using the pack naming scheme. Forcing the download of '{0}'",
